@@ -5,7 +5,7 @@ on:
     branches: [ '*' ] 
   
   push:
-    branches: [ 'main' ]
+    branches: [ 'prod', 'dev' ]
 
 jobs:
   build:
