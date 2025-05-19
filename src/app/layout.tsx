@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${poppins.variable} antialiased`}>
+			<body className={`${poppins.variable} antialiased font-sans`}>
 				<NextTopLoader showSpinner={false} />
 				{children}
 				<Toaster richColors closeButton position="top-right" />
