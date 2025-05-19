@@ -65,3 +65,5 @@ export type ResendEmailOTPDto = {
 };
 
 export type ResendEmailOTPDao = null;
+
+export type UserRole = "freelancer" | "contractor";
