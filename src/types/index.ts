@@ -12,4 +12,11 @@ export interface Tab {
 export type PartialRequired<T, K extends keyof T> = Required<Pick<T, K>> &
 	Omit<T, K>;
 
-export type Unwrap<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+export type ActionResult<T> = {
+	success: boolean;
+	data: T | null;
+	status: number;
+	message: string;
+};

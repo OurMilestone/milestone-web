@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import { AuthContextProvider } from "@/components/providers/auth-context-provider";
+import AuthSessionProvider from "@/components/providers/auth-session-provider";
 import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
 
@@ -25,7 +27,9 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={`${poppins.variable} antialiased font-sans`}>
 				<NextTopLoader showSpinner={false} color="#59594E" />
-				{children}
+				<AuthSessionProvider>
+					<AuthContextProvider>{children}</AuthContextProvider>
+				</AuthSessionProvider>
 				<Toaster richColors closeButton position="top-right" />
 			</body>
 		</html>

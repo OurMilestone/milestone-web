@@ -17,15 +17,26 @@ import { cn } from "@/lib/utils";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import type { z } from "zod";
 
 const LoginForm = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [parentEmail] = useAutoAnimate();
 	const [parentPassword] = useAutoAnimate();
+	const router = useRouter();
+	const searchParams = useSearchParams();
+
+	const callbackUrl = searchParams.get("callbackUrl");
+	const postLoginUrl = callbackUrl
+		? `/post-login-redirect?callbackUrl=${encodeURIComponent(callbackUrl)}`
+		: "/post-login-redirect";
 
 	const form = useForm<z.infer<typeof loginFormSchema>>({
 		resolver: zodResolver(loginFormSchema),
@@ -44,8 +55,29 @@ const LoginForm = () => {
 		}
 	}, [form.formState.errors, form]);
 
-	const onSubmit = (data: z.infer<typeof loginFormSchema>) => {
-		console.log(data);
+	const onSubmit = async (data: z.infer<typeof loginFormSchema>) => {
+		try {
+			const result = await signIn("credentials", {
+				email: data.email,
+				password: data.password,
+				callbackUrl: postLoginUrl,
+				redirect: false,
+			});
+
+			console.log("result", { result });
+
+			if (result.error) {
+				toast.error(result.error);
+			} else {
+				form.reset();
+				toast.success("Login successful");
+				setTimeout(() => {
+					router.push(postLoginUrl);
+				}, 1000);
+			}
+		} catch (error) {
+			toast.error("Login failed");
+		}
 	};
 
 	return (
