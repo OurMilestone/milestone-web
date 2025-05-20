@@ -1,5 +1,6 @@
 "use client";
 
+import { registerAction } from "@/actions/auth-actions/auth.actions";
 import {
 	Form,
 	FormControl,
@@ -16,8 +17,10 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, Mail, UserRound } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "nextjs-toploader/app";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import type { z } from "zod";
 import SectionHeader from "../../typography/section-header";
 import { Input } from "../../ui/input";
@@ -29,6 +32,7 @@ interface RegistrationFormProps {
 
 const RegistrationForm = ({ selectedRole }: RegistrationFormProps) => {
 	const [showPassword, setShowPassword] = useState(false);
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof registerFormSchema>>({
 		resolver: zodResolver(registerFormSchema),
@@ -54,8 +58,26 @@ const RegistrationForm = ({ selectedRole }: RegistrationFormProps) => {
 	}, [form.formState.errors, form]);
 
 	const onsubmit = (data: z.infer<typeof registerFormSchema>) => {
-		console.log({ ...data, role: selectedRole });
-		form.reset();
+		const formData = { ...data, role: selectedRole };
+
+		toast.promise(
+			(async () => {
+				const result = await registerAction(formData);
+				console.log("Registration result", { result });
+
+				if (!result.success) {
+					throw new Error(result.message || "Registration failed");
+				}
+
+				form.reset();
+				router.push(AppRoutePaths.SignIn);
+			})(),
+			{
+				loading: "Registering...",
+				success: "Registration successful",
+				error: (err) => err.message || "Registration failed",
+			},
+		);
 	};
 	return (
 		<div className="flex flex-col items-center">
