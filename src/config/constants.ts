@@ -5,7 +5,7 @@ export const tabs: Tab[] = [
 	{
 		id: 1,
 		name: "Freelancer/Employee",
-		role: "freelancer",
+		role: "Freelancer",
 		description:
 			"Showcase your skills, find exciting projects, and grow your independent career.",
 		icon: UsersRound,
@@ -13,7 +13,7 @@ export const tabs: Tab[] = [
 	{
 		id: 2,
 		name: "Contractors",
-		role: "contractor",
+		role: "Contractor",
 		description: "Track your projects, teams and make payments efficiently.",
 		icon: BriefcaseBusiness,
 	},
