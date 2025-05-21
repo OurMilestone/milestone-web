@@ -16,6 +16,7 @@ const PostLoginRedirect = () => {
 		if (status === "loading") return;
 
 		const user = session?.user;
+		console.log("user in post login redirect", { user });
 		const callbackUrl = searchParams.get("callbackUrl");
 
 		const isFreelancerPath = (path: string) =>

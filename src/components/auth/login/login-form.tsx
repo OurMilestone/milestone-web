@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { AppRoutePaths } from "@/config/routes-config";
 import { loginFormSchema } from "@/lib/schemas/auth-schema";
-import { cn } from "@/lib/utils";
+import { cn, nextAuthErrorMessagesMap } from "@/lib/utils";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
@@ -67,7 +67,9 @@ const LoginForm = () => {
 			console.log("result", { result });
 
 			if (result.error) {
-				toast.error(result.error);
+				const message =
+					nextAuthErrorMessagesMap[result.error] || "Login failed";
+				toast.error(message);
 			} else {
 				form.reset();
 				toast.success("Login successful");

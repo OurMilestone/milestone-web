@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { UserRole } from "./auth/auth-types";
+import type { ApiResponse, UserRole } from "./auth/auth-types";
 
 export interface Tab {
 	id: number;
@@ -20,3 +20,14 @@ export type ActionResult<T> = {
 	status: number;
 	message: string;
 };
+export interface AxiosApiResponse<T> {
+	data: ApiResponse<T>;
+	status: number;
+	statusText: string;
+}
+
+export interface ApiError {
+	message: string;
+	status?: number;
+	data: ApiResponse<null>;
+}

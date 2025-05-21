@@ -47,8 +47,15 @@ const authOptions: NextAuthConfig = {
 		async signIn({ user }) {
 			return !!user;
 		},
-		async jwt({ user }) {
-			return user as CustomJWT;
+		async jwt({ user, token }) {
+			if (user) {
+				return {
+					...token,
+					user: { ...user },
+				} as CustomJWT;
+			}
+
+			return token;
 		},
 		async session({ session, token }: { session: Session; token: JWT }) {
 			const customToken = token as CustomJWT;
@@ -83,15 +90,13 @@ const authOptions: NextAuthConfig = {
 				paystack_customer_id: customToken.user.paystack_customer_id as string,
 				stripe_customer_id: customToken.user.stripe_customer_id as string,
 				username: customToken.user.username as string,
-				access: customToken.access as string,
-				refresh: customToken.refresh as string,
+				access: customToken.user.access as string,
+				refresh: customToken.user.refresh as string,
 			};
 
 			session.expires = customToken.expires as string;
 
-			if (typeof window !== "undefined") {
-				window.localStorage.setItem("lastActivity", Date.now().toString());
-			}
+			console.log("session in session", { session });
 
 			return session;
 		},
