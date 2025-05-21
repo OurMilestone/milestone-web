@@ -1,9 +1,12 @@
+"use server";
 import axios from "axios";
-import { env } from "../../../env.mjs";
+
+const API_BASE_URL =
+	"https://8bmx14wuvb.execute-api.us-east-1.amazonaws.com/dev/api/v1";
 
 const axiosInstance = axios.create({
-	baseURL: env.API_BASE_URL,
-	timeout: 10000,
+	baseURL: API_BASE_URL,
+	timeout: 30000,
 	headers: {
 		"Content-Type": "application/json",
 	},

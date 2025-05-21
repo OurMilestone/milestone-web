@@ -1,7 +1,13 @@
-import React from "react";
+import ForgotPasswordForm from "@/components/auth/forgot-password/forgot-password-form";
+import type { Metadata } from "next";
 
-const ForgotPassword = () => {
-	return <div>ForgotPassword</div>;
+export const metadata: Metadata = {
+	title: "Forgot Password | Milestone",
+	description: "Forgot Password",
 };
 
-export default ForgotPassword;
+const ForgotPasswordPage = () => {
+	return <ForgotPasswordForm />;
+};
+
+export default ForgotPasswordPage;
