@@ -1,3 +1,7 @@
+"use server";
+
+import type { ApiError, AxiosApiResponse } from "@/types";
+import type { ApiResponse } from "@/types/auth/auth-types";
 import axios, {
 	type AxiosError,
 	AxiosInstance,
@@ -5,18 +9,6 @@ import axios, {
 	type AxiosRequestConfig,
 } from "axios";
 import axiosInstance from "./axios-config";
-
-export interface ApiResponse<T> {
-	data: T;
-	status: number;
-	statusText: string;
-}
-
-export interface ApiError {
-	message: string;
-	status?: number;
-	data?: unknown;
-}
 
 function getAuthToken(): string | null {
 	if (typeof window !== "undefined") {
@@ -46,118 +38,122 @@ function getConfig(
 	return config;
 }
 
-const handleError = (error: AxiosError): ApiError => {
-	return {
-		message: error.message || "An unexpected error occurred",
+const handleError = (error: AxiosError): never => {
+	console.error("API Request Error:", {
+		message: error.message,
 		status: error.response?.status,
 		data: error.response?.data,
-	};
+		url: error.config?.url,
+		method: error.config?.method,
+	});
+
+	throw error;
 };
 
-export const apiClient = {
-	async get<T>(
-		url: string,
-		requireAuth = false,
-		config: AxiosRequestConfig = {},
-	): Promise<ApiResponse<T>> {
-		try {
-			const response: AxiosResponse<T> = await axiosInstance.get(
-				url,
-				getConfig(config, requireAuth),
-			);
-			return {
-				data: response.data,
-				status: response.status,
-				statusText: response.statusText,
-			};
-		} catch (error) {
-			throw handleError(error as AxiosError);
-		}
-	},
+export async function getRequest<T>(
+	url: string,
+	requireAuth = false,
+	config: AxiosRequestConfig = {},
+): Promise<AxiosApiResponse<T>> {
+	try {
+		const response: AxiosResponse<T> = await axiosInstance.get(
+			url,
+			getConfig(config, requireAuth),
+		);
 
-	async post<T, D>(
-		url: string,
-		data: D,
-		requireAuth = false,
-		config: AxiosRequestConfig = {},
-	): Promise<ApiResponse<T>> {
-		try {
-			const response: AxiosResponse<T> = await axiosInstance.post(
-				url,
-				data,
-				getConfig(config, requireAuth),
-			);
-			return {
-				data: response.data,
-				status: response.status,
-				statusText: response.statusText,
-			};
-		} catch (error) {
-			throw handleError(error as AxiosError);
-		}
-	},
+		return {
+			data: response.data as ApiResponse<T>,
+			status: response.status,
+			statusText: response.statusText,
+		};
+	} catch (error) {
+		throw handleError(error as AxiosError);
+	}
+}
 
-	async put<T, D>(
-		url: string,
-		data: D,
-		requireAuth = false,
-		config: AxiosRequestConfig = {},
-	): Promise<ApiResponse<T>> {
-		try {
-			const response: AxiosResponse<T> = await axiosInstance.put(
-				url,
-				data,
-				getConfig(config, requireAuth),
-			);
-			return {
-				data: response.data,
-				status: response.status,
-				statusText: response.statusText,
-			};
-		} catch (error) {
-			throw handleError(error as AxiosError);
-		}
-	},
+export async function postRequest<T, D>(
+	url: string,
+	data: D,
+	requireAuth = false,
+	config: AxiosRequestConfig = {},
+): Promise<AxiosApiResponse<T>> {
+	try {
+		const response: AxiosResponse<T> = await axiosInstance.post(
+			url,
+			data,
+			getConfig(config, requireAuth),
+		);
 
-	async patch<T, D>(
-		url: string,
-		data: D,
-		requireAuth = false,
-		config: AxiosRequestConfig = {},
-	): Promise<ApiResponse<T>> {
-		try {
-			const response: AxiosResponse<T> = await axiosInstance.patch(
-				url,
-				data,
-				getConfig(config, requireAuth),
-			);
-			return {
-				data: response.data,
-				status: response.status,
-				statusText: response.statusText,
-			};
-		} catch (error) {
-			throw handleError(error as AxiosError);
-		}
-	},
+		return {
+			data: response.data as ApiResponse<T>,
+			status: response.status,
+			statusText: response.statusText,
+		};
+	} catch (error) {
+		throw handleError(error as AxiosError);
+	}
+}
 
-	async delete<T>(
-		url: string,
-		requireAuth = false,
-		config: AxiosRequestConfig = {},
-	): Promise<ApiResponse<T>> {
-		try {
-			const response: AxiosResponse<T> = await axiosInstance.delete(
-				url,
-				getConfig(config, requireAuth),
-			);
-			return {
-				data: response.data,
-				status: response.status,
-				statusText: response.statusText,
-			};
-		} catch (error) {
-			throw handleError(error as AxiosError);
-		}
-	},
-};
+export async function putRequest<T, D>(
+	url: string,
+	data: D,
+	requireAuth = false,
+	config: AxiosRequestConfig = {},
+): Promise<AxiosApiResponse<T>> {
+	try {
+		const response: AxiosResponse<T> = await axiosInstance.put(
+			url,
+			data,
+			getConfig(config, requireAuth),
+		);
+		return {
+			data: response.data as ApiResponse<T>,
+			status: response.status,
+			statusText: response.statusText,
+		};
+	} catch (error) {
+		throw handleError(error as AxiosError);
+	}
+}
+
+export async function patchRequest<T, D>(
+	url: string,
+	data: D,
+	requireAuth = false,
+	config: AxiosRequestConfig = {},
+): Promise<AxiosApiResponse<T>> {
+	try {
+		const response: AxiosResponse<T> = await axiosInstance.patch(
+			url,
+			data,
+			getConfig(config, requireAuth),
+		);
+		return {
+			data: response.data as ApiResponse<T>,
+			status: response.status,
+			statusText: response.statusText,
+		};
+	} catch (error) {
+		throw handleError(error as AxiosError);
+	}
+}
+
+export async function deleteRequest<T>(
+	url: string,
+	requireAuth = false,
+	config: AxiosRequestConfig = {},
+): Promise<AxiosApiResponse<T>> {
+	try {
+		const response: AxiosResponse<T> = await axiosInstance.delete(
+			url,
+			getConfig(config, requireAuth),
+		);
+		return {
+			data: response.data as ApiResponse<T>,
+			status: response.status,
+			statusText: response.statusText,
+		};
+	} catch (error) {
+		throw handleError(error as AxiosError);
+	}
+}
