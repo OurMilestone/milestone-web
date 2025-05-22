@@ -10,6 +10,10 @@ import type {
 	CreateSessionDto,
 	LoginFormData,
 	RegisterFormData,
+	ResendEmailOTPDao,
+	ResendEmailOTPDto,
+	VerifyEmailOTPDao,
+	VerifyEmailOTPDto,
 } from "@/types/auth/auth-types";
 import axios from "axios";
 
@@ -87,5 +91,45 @@ export const registerAction = async (
 		};
 	} catch (error) {
 		return handleApiError(error, "Registration failed. Please try again.");
+	}
+};
+
+export const verifyOtpAction = async (
+	formData: VerifyEmailOTPDto,
+): Promise<ActionResult<VerifyEmailOTPDao | null>> => {
+	try {
+		const response = await postRequest<VerifyEmailOTPDao, VerifyEmailOTPDto>(
+			"/verify-otp/",
+			{ email: formData.email, otp: formData.otp },
+		);
+
+		return {
+			success: true,
+			data: response.data.data,
+			status: response.status,
+			message: response.data.message ?? "OTP verified successfully",
+		};
+	} catch (error) {
+		return handleApiError(error, "OTP verification failed. Please try again.");
+	}
+};
+
+export const resendOtpAction = async (
+	formData: ResendEmailOTPDto,
+): Promise<ActionResult<ResendEmailOTPDao | null>> => {
+	try {
+		const response = await postRequest<ResendEmailOTPDao, ResendEmailOTPDto>(
+			"/resend-otp/",
+			{ email: formData.email },
+		);
+
+		return {
+			success: true,
+			data: response.data.data,
+			status: response.status,
+			message: response.data.message ?? "OTP resent successfully",
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to resend OTP. Please try again.");
 	}
 };
