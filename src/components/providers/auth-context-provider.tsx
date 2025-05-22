@@ -15,11 +15,7 @@ import { useLocalStorage } from "usehooks-ts";
 export type UserContext = Expand<
 	Omit<
 		Session["user"],
-		| "paystack_customer_id"
-		| "stripe_customer_id"
-		| "is_verified"
-		| "name"
-		| "image"
+		"paystack_customer_id" | "stripe_customer_id" | "name" | "image"
 	>
 >;
 
@@ -32,6 +28,7 @@ const defaultUserContext: UserContext = {
 	full_name: "",
 	preferred_name: "",
 	username: "",
+	is_verified: false,
 };
 
 export const AuthContext = createContext<{
@@ -68,6 +65,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				full_name: session.user.full_name,
 				preferred_name: session.user.preferred_name,
 				username: session.user.username,
+				is_verified: session.user.is_verified,
 			};
 
 			setUser(updatedUserData);
