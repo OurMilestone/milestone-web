@@ -78,7 +78,6 @@ export default auth(async (req) => {
 		return NextResponse.redirect(new URL(AppRoutePaths.Index, origin));
 	}
 
-	// If on the home page, redirect to dashboard if logged in, else to login
 	if (pathname === AppRoutePaths.Index || pathname === "/") {
 		if (req.auth?.user) {
 			const role = req.auth.user.role;
@@ -97,38 +96,31 @@ export default auth(async (req) => {
 		}
 	}
 
-	// If trying to access a dashboard page but not logged in, redirect to login with callbackUrl
 	if (isDashboardPage(pathname) && !req.auth?.user) {
 		const redirectUrl = new URL(AppRoutePaths.SignIn, origin);
 		redirectUrl.searchParams.set("callbackUrl", `${pathname}${search}`);
 		return NextResponse.redirect(redirectUrl);
 	}
 
-	// If logged in, enforce role-based access to dashboards
 	if (req.auth?.user) {
 		const role = req.auth.user.role;
 		if (isFreelancerPage(pathname) && role !== "Freelancer") {
-			// Contractor trying to access freelancer page
 			return NextResponse.redirect(
 				new URL(AppRoutePaths.ContractorDashboard.Home, origin),
 			);
 		}
 		if (isContractorPage(pathname) && role !== "Contractor") {
-			// Freelancer trying to access contractor page
 			return NextResponse.redirect(
 				new URL(AppRoutePaths.FreelancerDashboard.Home, origin),
 			);
 		}
 	}
 
-	// If not logged in and not on an auth page, allow access only to public pages (add more if needed)
-	// (If you want to restrict all non-auth pages, add logic here)
-
 	return NextResponse.next();
 });
 
 export const config = {
 	matcher: [
-		"/((?!api|_next/static|_next/image|favicon\\.ico|assets|images|fonts|css|public).*)",
+		"/((?!api|_next/static|_next/image|favicon\\.ico|assets|images|fonts|css|public|verify-email).*)",
 	],
 };

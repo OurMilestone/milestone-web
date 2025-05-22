@@ -33,18 +33,31 @@ const LoginForm = () => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
-	const callbackUrl = searchParams.get("callbackUrl");
-	const postLoginUrl = callbackUrl
-		? `/post-login-redirect?callbackUrl=${encodeURIComponent(callbackUrl)}`
+	const callbackUrlFromQuery = searchParams.get("callbackUrl");
+	const emailFromQuery = searchParams.get("email");
+	const justVerified = searchParams.get("verified") === "true";
+
+	const postLoginUrl = callbackUrlFromQuery
+		? `/post-login-redirect?callbackUrl=${encodeURIComponent(callbackUrlFromQuery)}`
 		: "/post-login-redirect";
 
 	const form = useForm<z.infer<typeof loginFormSchema>>({
 		resolver: zodResolver(loginFormSchema),
 		defaultValues: {
-			email: "",
+			email: emailFromQuery || "",
 			password: "",
 		},
 	});
+
+	useEffect(() => {
+		if (justVerified && emailFromQuery) {
+			toast.success("Email verified! Please log in to continue.");
+
+			if (form.getValues("email")) {
+				form.setFocus("password");
+			}
+		}
+	}, [justVerified, emailFromQuery, form]);
 
 	useEffect(() => {
 		if (Object.keys(form.formState.errors).length > 0) {
@@ -64,21 +77,21 @@ const LoginForm = () => {
 				redirect: false,
 			});
 
-			console.log("result", { result });
-
 			if (result.error) {
 				const message =
 					nextAuthErrorMessagesMap[result.error] || "Login failed";
+
 				toast.error(message);
-			} else {
+			} else if (result?.ok && result.url) {
 				form.reset();
-				toast.success("Login successful");
-				setTimeout(() => {
-					router.push(postLoginUrl);
-				}, 1000);
+				toast.success("Login successful. Redirecting...");
+				router.push(result.url || postLoginUrl);
+			} else {
+				toast.error("An unexpected error occurred during login.");
 			}
 		} catch (error) {
-			toast.error("Login failed");
+			console.error("Login submission error:", error);
+			toast.error("Login failed due to an unexpected error.");
 		}
 	};
 
@@ -89,6 +102,12 @@ const LoginForm = () => {
 				caption="Enter your account information to dive back in."
 				className="flex flex-col items-center mb-7"
 			/>
+
+			{justVerified && (
+				<p className="mb-4 text-green-600 bg-green-100 p-3 rounded-md">
+					Your email has been successfully verified! Please log in.
+				</p>
+			)}
 
 			<Form {...form}>
 				<form
