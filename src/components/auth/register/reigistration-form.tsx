@@ -70,11 +70,16 @@ const RegistrationForm = ({ selectedRole }: RegistrationFormProps) => {
 				}
 
 				form.reset();
-				router.push(AppRoutePaths.SignIn);
+				router.push(
+					`${AppRoutePaths.VerifyEmail}?email=${encodeURIComponent(
+						formData.email,
+					)}`,
+				);
 			})(),
 			{
 				loading: "Registering...",
-				success: "Registration successful",
+				success:
+					"Registration successful. Please check your email for verification code.",
 				error: (err) => err.message || "Registration failed",
 			},
 		);

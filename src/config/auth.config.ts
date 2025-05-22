@@ -66,29 +66,41 @@ const authOptions: NextAuthConfig = {
 		maxAge: 7 * 24 * 60 * 60,
 	},
 	callbacks: {
-		async signIn({ user }) {
-			return !!user;
+		async signIn({ user, account }) {
+			if (account?.provider === "credentials") {
+				return !!user;
+			}
+			return true;
 		},
-		async jwt({ user, token, trigger }) {
-			if (user) {
+		async jwt({ user, token, account, trigger, session: updateData }) {
+			const customToken = token as CustomJWT;
+
+			if (user && account) {
 				const authorizedUser = user as User;
-				token.user = authorizedUser;
-				token.access = authorizedUser.access;
-				token.refresh = authorizedUser.refresh;
-				token.expires = new Date(
+				customToken.user = authorizedUser;
+				customToken.access = authorizedUser.access;
+				customToken.refresh = authorizedUser.refresh;
+				customToken.expires = new Date(
 					Date.now() + 7 * 24 * 60 * 60 * 1000,
 				).toISOString();
-				token.id = authorizedUser.id;
-				token.email = authorizedUser.email;
-				token.role = authorizedUser.role;
-				token.full_name = authorizedUser.full_name;
-				token.preferred_name = authorizedUser.preferred_name;
-				token.is_verified = authorizedUser.is_verified;
-				token.paystack_customer_id = authorizedUser.paystack_customer_id;
-				token.sub = authorizedUser.id;
+				customToken.id = authorizedUser.id;
+				customToken.email = authorizedUser.email;
+				customToken.role = authorizedUser.role;
+				customToken.full_name = authorizedUser.full_name;
+				customToken.preferred_name = authorizedUser.preferred_name;
+				customToken.is_verified = authorizedUser.is_verified;
+				customToken.paystack_customer_id = authorizedUser.paystack_customer_id;
+				customToken.sub = authorizedUser.id;
 			}
 
-			return token;
+			if (trigger === "update" && customToken.user) {
+				if (updateData?.is_verified_now === true) {
+					customToken.user.is_verified = true;
+				}
+				customToken.user = updateData.user;
+			}
+
+			return customToken;
 		},
 		async session({ session, token }: { session: Session; token: JWT }) {
 			const customToken = token as CustomJWT;
