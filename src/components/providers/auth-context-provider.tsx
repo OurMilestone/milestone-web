@@ -1,5 +1,6 @@
 "use client";
 
+import { AppRoutePaths } from "@/config/routes-config";
 import type { Expand } from "@/types";
 import type { Session } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
@@ -46,10 +47,11 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	const { data: session, status } = useSession();
 	const [userData, setUserData, removeUserData] =
 		useLocalStorage<UserContext | null>("user", null);
-	const [authToken, setAuthToken, removeAuthToken] = useLocalStorage<
-		string | null
-	>("authToken", null);
-	const [refreshToken, setRefreshToken, removeRefreshToken] = useLocalStorage<
+	const [_, setAuthToken, removeAuthToken] = useLocalStorage<string | null>(
+		"authToken",
+		null,
+	);
+	const [__, setRefreshToken, removeRefreshToken] = useLocalStorage<
 		string | null
 	>("refreshToken", null);
 
@@ -82,8 +84,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 		}
 	}, [status, session]);
 
-	const logout = () => {
-		signOut({ redirect: false });
+	const logout = async () => {
+		await signOut({ callbackUrl: AppRoutePaths.SignIn, redirect: true });
 		setUser(defaultUserContext);
 		removeUserData();
 		removeAuthToken();

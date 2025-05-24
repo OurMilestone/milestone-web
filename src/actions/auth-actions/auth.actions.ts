@@ -71,7 +71,6 @@ export const registerAction = async (
 	formData: RegisterFormData,
 ): Promise<ActionResult<CreateAccountDao | null>> => {
 	try {
-		console.log("Registering user", { formData });
 		const response = await postRequest<CreateAccountDao, CreateAccountDto>(
 			"/user/create/",
 			{
