@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PNPM_DEBUG: 1
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+      NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+      NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
 
     steps:
       - name: Checkout repository
@@ -64,7 +67,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
-      - name: Build Next.js app
+      - name: Build Milestone Frontend Nextjs App
         run: pnpm run build
 
       - name: Upload build artifact
