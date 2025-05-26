@@ -7,10 +7,10 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { AppRoutePaths } from "@/config/routes-config";
 import { USER_PROFILE } from "@/lib/constants";
 import { LogOut } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 export function UserProfile() {
 	const { data: session, status } = useSession();
@@ -42,7 +42,15 @@ export function UserProfile() {
 		event: React.MouseEvent<HTMLButtonElement | SVGSVGElement>,
 	) => {
 		event.stopPropagation();
-		logout();
+		toast.promise(logout(), {
+			loading: "Signing out...",
+			success: () => {
+				return "Signed out successfully! Redirecting...";
+			},
+			error: () => {
+				return "Failed to sign out. Please try again.";
+			},
+		});
 	};
 
 	if (status === "loading" && !authContextUser.id) {
@@ -105,6 +113,7 @@ export function UserProfile() {
 
 						<button
 							type="button"
+							onClick={handleSignOut}
 							className="ml-auto p-1 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground flex-shrink-0 cursor-pointer"
 							aria-label="Sign out"
 							title="Sign out"

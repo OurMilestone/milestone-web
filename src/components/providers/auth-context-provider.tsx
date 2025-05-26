@@ -35,11 +35,11 @@ const defaultUserContext: UserContext = {
 export const AuthContext = createContext<{
 	user: UserContext;
 	setUser: (user: UserContext) => void;
-	logout: () => void;
+	logout: () => Promise<void>;
 }>({
 	user: defaultUserContext,
 	setUser: () => {},
-	logout: () => {},
+	logout: async () => {},
 });
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
@@ -55,41 +55,60 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 		string | null
 	>("refreshToken", null);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		if (status === "authenticated") {
+		if (status === "authenticated" && session?.user) {
 			const updatedUserData = {
-				id: session.user.id,
-				email: session.user.email,
-				role: session.user.role,
-				access: session.user.access,
-				refresh: session.user.refresh,
-				full_name: session.user.full_name,
-				preferred_name: session.user.preferred_name,
-				username: session.user.username,
-				is_verified: session.user.is_verified,
+				id: session.user.id || "",
+				email: session.user.email || "",
+				role: session.user.role || "Freelancer",
+				access: session.user.access || "",
+				refresh: session.user.refresh || "",
+				full_name: session.user.full_name || "",
+				preferred_name: session.user.preferred_name || "",
+				username: session.user.username || "",
+				is_verified: session.user.is_verified || false,
 			};
 
 			setUser(updatedUserData);
 			setUserData(updatedUserData);
-			setAuthToken(session.user.access);
-			setRefreshToken(session.user.refresh);
-		} else {
+			if (session.user.access) setAuthToken(session.user.access);
+			if (session.user.refresh) setRefreshToken(session.user.refresh);
+		} else if (status === "unauthenticated") {
 			const storedUserData = userData;
-			if (storedUserData) {
+
+			if (storedUserData && !session) {
 				setUser(storedUserData);
-			} else {
+			} else if (!session) {
 				setUser(defaultUserContext);
+				removeUserData();
+				removeAuthToken();
+				removeRefreshToken();
 			}
 		}
-	}, [status, session]);
+	}, [
+		status,
+		session,
+		setUserData,
+		setAuthToken,
+		setRefreshToken,
+		removeAuthToken,
+		removeUserData,
+		removeRefreshToken,
+		userData,
+	]);
 
-	const logout = async () => {
-		await signOut({ callbackUrl: AppRoutePaths.SignIn, redirect: true });
-		setUser(defaultUserContext);
-		removeUserData();
-		removeAuthToken();
-		removeRefreshToken();
+	const logout = async (): Promise<void> => {
+		try {
+			await signOut({ redirect: true, callbackUrl: AppRoutePaths.SignIn });
+
+			setUser(defaultUserContext);
+			removeUserData();
+			removeAuthToken();
+			removeRefreshToken();
+		} catch (error) {
+			console.error("Error during logout:", error);
+			throw error;
+		}
 	};
 
 	return (
