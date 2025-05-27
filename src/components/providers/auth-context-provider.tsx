@@ -55,6 +55,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 		string | null
 	>("refreshToken", null);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (status === "authenticated" && session?.user) {
 			const updatedUserData = {
@@ -85,17 +86,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 				removeRefreshToken();
 			}
 		}
-	}, [
-		status,
-		session,
-		setUserData,
-		setAuthToken,
-		setRefreshToken,
-		removeAuthToken,
-		removeUserData,
-		removeRefreshToken,
-		userData,
-	]);
+	}, [status, session]);
 
 	const logout = async (): Promise<void> => {
 		try {

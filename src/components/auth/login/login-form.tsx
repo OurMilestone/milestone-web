@@ -82,10 +82,10 @@ const LoginForm = () => {
 					nextAuthErrorMessagesMap[result.error] || "Login failed";
 
 				toast.error(message);
-			} else if (result?.ok && result.url) {
+			} else if (result?.ok) {
 				form.reset();
 				toast.success("Login successful. Redirecting...");
-				router.push(result.url || postLoginUrl);
+				router.push(postLoginUrl);
 			} else {
 				toast.error("An unexpected error occurred during login.");
 			}
