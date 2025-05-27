@@ -15,39 +15,57 @@ const PostLoginRedirect = () => {
 	useEffect(() => {
 		if (status === "loading") return;
 
-		const user = session?.user;
-		console.log("user in post login redirect", { user });
-		const callbackUrl = searchParams.get("callbackUrl");
+		const callbackUrlFromQuery = searchParams.get("callbackUrl");
 
-		const isFreelancerPath = (path: string) =>
-			path?.startsWith(
-				AppRoutePaths.FreelancerDashboard.Home.replace("/overview", ""),
-			);
-		const isContractorPath = (path: string) =>
-			path?.startsWith(
-				AppRoutePaths.ContractorDashboard.Home.replace("/overview", ""),
-			);
-
-		if (!user) {
+		if (status === "unauthenticated") {
 			router.replace(AppRoutePaths.SignIn);
 			return;
 		}
-		if (callbackUrl) {
-			if (
-				(user.role === "Freelancer" && isFreelancerPath(callbackUrl)) ||
-				(user.role === "Contractor" && isContractorPath(callbackUrl))
-			) {
-				router.replace(callbackUrl);
-				return;
-			}
-		}
 
-		if (user.role === "Freelancer") {
-			router.replace(AppRoutePaths.FreelancerDashboard.Home);
-		} else if (user.role === "Contractor") {
-			router.replace(AppRoutePaths.ContractorDashboard.Home);
-		} else {
-			router.replace(AppRoutePaths.SignIn);
+		if (status === "authenticated" && session?.user) {
+			const user = session.user;
+
+			const isFreelancerPath = (path: string | null) =>
+				path?.startsWith(
+					AppRoutePaths.FreelancerDashboard.Home.split("/overview")[0],
+				);
+			const isContractorPath = (path: string | null) =>
+				path?.startsWith(
+					AppRoutePaths.ContractorDashboard.Home.split("/overview")[0],
+				);
+
+			if (callbackUrlFromQuery) {
+				if (
+					(user.role === "Freelancer" &&
+						isFreelancerPath(callbackUrlFromQuery)) ||
+					(user.role === "Contractor" && isContractorPath(callbackUrlFromQuery))
+				) {
+					console.log(
+						"PostLoginRedirect: Valid callbackUrl for role, redirecting to:",
+						callbackUrlFromQuery,
+					);
+					router.replace(callbackUrlFromQuery);
+					return;
+					// biome-ignore lint/style/noUselessElse: <explanation>
+				} else {
+					console.warn(
+						"PostLoginRedirect: callbackUrl role mismatch or invalid. Falling back to default dashboard.",
+					);
+				}
+			}
+
+			if (user.role === "Freelancer") {
+				console.log("PostLoginRedirect: Redirecting Freelancer to dashboard.");
+				router.replace(AppRoutePaths.FreelancerDashboard.Home);
+			} else if (user.role === "Contractor") {
+				console.log("PostLoginRedirect: Redirecting Contractor to dashboard.");
+				router.replace(AppRoutePaths.ContractorDashboard.Home);
+			} else {
+				console.warn(
+					"PostLoginRedirect: Unknown user role, redirecting to sign-in.",
+				);
+				router.replace(AppRoutePaths.SignIn);
+			}
 		}
 	}, [session, status, router, searchParams]);
 

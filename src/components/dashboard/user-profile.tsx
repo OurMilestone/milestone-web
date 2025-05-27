@@ -77,51 +77,42 @@ export function UserProfile() {
 
 	return (
 		<SidebarMenu>
-			<SidebarMenuItem>
-				<SidebarMenuButton
-					size="lg"
-					className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:!bg-white"
-					title={displayName}
-				>
-					<div className="flex items-center gap-3 w-full">
-						<div className="relative flex-shrink-0">
-							<Avatar className="h-8 w-8">
-								<AvatarImage
-									src={USER_PROFILE.avatar}
-									alt={USER_PROFILE.name}
-								/>
-								<AvatarFallback>{getInitials(displayName)}</AvatarFallback>
-							</Avatar>
-							{USER_PROFILE.isOnline && (
-								<div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
-							)}
-						</div>
-						<div className="flex flex-col text-left flex-grow min-w-0">
-							<span
-								className="text-sm font-medium truncate"
-								title={displayName}
-							>
-								{displayName}
-							</span>
-							<span
-								className="text-xs text-muted-foreground truncate"
-								title={displayEmail}
-							>
-								{displayEmail}
-							</span>
-						</div>
-
-						<button
-							type="button"
-							onClick={handleSignOut}
-							className="ml-auto p-1 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground flex-shrink-0 cursor-pointer"
-							aria-label="Sign out"
-							title="Sign out"
-						>
-							<LogOut className="h-4 w-4" />
-						</button>
+			<SidebarMenuItem
+				className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:!bg-white"
+				title={displayName}
+			>
+				<div className="flex items-center gap-3 w-full">
+					<div className="relative flex-shrink-0">
+						<Avatar className="h-8 w-8">
+							<AvatarImage src={USER_PROFILE.avatar} alt={USER_PROFILE.name} />
+							<AvatarFallback>{getInitials(displayName)}</AvatarFallback>
+						</Avatar>
+						{USER_PROFILE.isOnline && (
+							<div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+						)}
 					</div>
-				</SidebarMenuButton>
+					<div className="flex flex-col text-left flex-grow min-w-0">
+						<span className="text-sm font-medium truncate" title={displayName}>
+							{displayName}
+						</span>
+						<span
+							className="text-xs text-muted-foreground truncate"
+							title={displayEmail}
+						>
+							{displayEmail}
+						</span>
+					</div>
+
+					<button
+						type="button"
+						onClick={handleSignOut}
+						className="ml-auto p-1 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground flex-shrink-0 cursor-pointer"
+						aria-label="Sign out"
+						title="Sign out"
+					>
+						<LogOut className="h-4 w-4" />
+					</button>
+				</div>
 			</SidebarMenuItem>
 		</SidebarMenu>
 	);

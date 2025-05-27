@@ -20,8 +20,9 @@ const AUTH_PAGES = [
 	AppRoutePaths.SignIn,
 	AppRoutePaths.SignUp,
 	AppRoutePaths.ForgotPassword,
-	AppRoutePaths.CheckRole,
 ];
+
+const TRANSITIONAL_AUTH_PAGES = [AppRoutePaths.CheckRole];
 
 const FREELANCER_PATHS = [
 	AppRoutePaths.FreelancerDashboard.Home,
@@ -43,6 +44,10 @@ function isAuthPage(pathname: string) {
 	return AUTH_PAGES.includes(pathname);
 }
 
+function isTransitionalAuthPage(pathname: string) {
+	return TRANSITIONAL_AUTH_PAGES.includes(pathname);
+}
+
 function isFreelancerPage(pathname: string) {
 	return FREELANCER_PATHS.some((p) => pathname.startsWith(p));
 }
@@ -62,7 +67,11 @@ export default auth(async (req) => {
 		return NextResponse.next();
 	}
 
-	if (isAuthPage(pathname) && req.auth?.user) {
+	if (
+		isAuthPage(pathname) &&
+		req.auth?.user &&
+		!isTransitionalAuthPage(pathname)
+	) {
 		const role = req.auth.user.role;
 		if (role === "Freelancer") {
 			return NextResponse.redirect(
