@@ -11,6 +11,8 @@ export const AppRoutePaths = {
 		Notifications: "/freelancer/dashboard/notifications",
 		Projects: {
 			Home: "/freelancer/dashboard/projects",
+			Taskboard: (projectTitle: string) =>
+				`/freelancer/dashboard/projects/${encodeURIComponent(projectTitle.toLowerCase().replace(/\s+/g, "-"))}/taskboard`,
 		},
 		Workers: {
 			Home: "/freelancer/dashboard/workers",
@@ -24,6 +26,8 @@ export const AppRoutePaths = {
 		Notifications: "/contractor/dashboard/notifications",
 		Projects: {
 			Home: "/contractor/dashboard/projects",
+			Taskboard: (projectTitle: string) =>
+				`/contractor/dashboard/projects/${encodeURIComponent(projectTitle.toLowerCase().replace(/\s+/g, "-"))}/taskboard`,
 		},
 		Workers: {
 			Home: "/contractor/dashboard/workers",
