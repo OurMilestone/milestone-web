@@ -1,10 +1,14 @@
-import { ProjectsGrid } from "@/components/dashboard/project-grid";
-import { StatsCards } from "@/components/dashboard/stats-card";
+import { ProjectsGrid } from "@/components/dashboard/overview/project-grid";
+import { StatsCards } from "@/components/dashboard/overview/stats-card";
 import SectionHeader from "@/components/typography/section-header";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { auth } from "../../../../../../../auth";
 
-const ContractorDashboardOverviewPage = () => {
+const ContractorDashboardOverviewPage = async () => {
+	const session = await auth();
+	const userRole = session?.user?.role ?? "Contractor";
+
 	return (
 		<div className="space-y-8">
 			<div className="flex items-center justify-between">
@@ -19,9 +23,9 @@ const ContractorDashboardOverviewPage = () => {
 				</Button>
 			</div>
 
-			<StatsCards userRole="Contractor" />
+			<StatsCards userRole={userRole} />
 
-			<ProjectsGrid />
+			<ProjectsGrid userRole={userRole} />
 		</div>
 	);
 };

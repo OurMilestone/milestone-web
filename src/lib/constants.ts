@@ -1,4 +1,5 @@
 import type { UserRole } from "@/types/auth/auth-types";
+import type { ProjectTaskBoardData } from "@/types/dashboard/taskboard-types";
 import { Briefcase, DollarSign, type LucideIcon } from "lucide-react";
 
 export interface TeamMember {
@@ -18,12 +19,6 @@ export interface Project {
 	image?: string;
 	teamMembers: TeamMember[];
 	comments: number;
-	// You might add more fields like:
-	// description?: string;
-	// startDate?: string | Date;
-	// endDate?: string | Date;
-	// progress?: number; // 0-100
-	// lastUpdated?: string;
 }
 
 export interface StatCardData {
@@ -189,7 +184,7 @@ export const PROJECTS_DATA: Project[] = [
 			{ initials: "CI", color: "bg-blue-200" },
 			{ initials: "SD", color: "bg-yellow-200" },
 		],
-		comments: 3,
+		comments: 2,
 	},
 	{
 		id: "3",
@@ -205,7 +200,7 @@ export const PROJECTS_DATA: Project[] = [
 			{ initials: "CI", color: "bg-blue-200" },
 			{ initials: "SD", color: "bg-yellow-200" },
 		],
-		comments: 3,
+		comments: 4,
 	},
 	{
 		id: "4",
@@ -251,7 +246,7 @@ export const PROJECTS_DATA: Project[] = [
 			{ initials: "CI", color: "bg-blue-200" },
 			{ initials: "SD", color: "bg-yellow-200" },
 		],
-		comments: 3,
+		comments: 1,
 	},
 ];
 
@@ -337,4 +332,195 @@ export const USER_PROFILE = {
 	email: "mofis@gmail.com",
 	avatar: "/placeholder.svg?height=40&width=40",
 	isOnline: true,
+};
+
+/**-----------TaskBoard------------------- */
+export const DEFAULT_ASSIGNEE_AVATAR = "/assets/svgs/default-avatar.svg";
+
+export const staticTaskBoardData: ProjectTaskBoardData = {
+	projectId: "mobile-app-redesign",
+	projectName: "Mobile App Redesign",
+	columns: [
+		{ id: "backlog", title: "Backlog" },
+		// { id: "selected_for_development", title: "Selected for Development" }, // <-- Remove this column
+		{ id: "in_progress", title: "In Progress" },
+		{ id: "in_review", title: "In Review" },
+		{ id: "done", title: "Done" },
+	],
+	tasks: [
+		// Backlog Tasks
+		{
+			id: "task-1",
+			columnId: "backlog",
+			order: 1,
+			title: "Return roles in the system with the Config endpoint",
+			code: "EB-2",
+			labels: [
+				{
+					id: "l1",
+					name: "Tech Debt",
+					colorClasses:
+						"bg-purple-100 text-purple-700 dark:bg-purple-700/30 dark:text-purple-300",
+				},
+			],
+			priority: "medium",
+			assignees: [
+				{
+					id: "u1",
+					name: "User One",
+					initials: "UO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user1",
+				},
+			],
+		},
+		{
+			id: "task-2",
+			columnId: "backlog",
+			order: 2,
+			title: "Implement user authentication flow",
+			code: "AUTH-1",
+			labels: [
+				{
+					id: "l2",
+					name: "Feature",
+					colorClasses:
+						"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300",
+				},
+			],
+			priority: "high",
+			assignees: [
+				{
+					id: "u2",
+					name: "User Two",
+					initials: "UT",
+					avatarUrl: "https://i.pravatar.cc/40?u=user2",
+				},
+			],
+		},
+		// Previously "Selected for Development" task, now moved to "Backlog" or "In Progress"
+		// Example: Moving task-3 to "Backlog"
+		{
+			id: "task-3",
+			columnId: "backlog",
+			order: 3,
+			title: "Design new dashboard components", // Was selected_for_development
+			code: "UI-5",
+			labels: [
+				{
+					id: "l3",
+					name: "Design",
+					colorClasses:
+						"bg-pink-100 text-pink-700 dark:bg-pink-700/30 dark:text-pink-300",
+				},
+			],
+			priority: "high",
+			assignees: [
+				{
+					id: "u3",
+					name: "User Three",
+					initials: "UH",
+					avatarUrl: "https://i.pravatar.cc/40?u=user3",
+				},
+			],
+		},
+		// In Progress Tasks
+		{
+			id: "task-4",
+			columnId: "in_progress",
+			order: 1,
+			title: "Develop API for project management",
+			code: "API-12",
+			labels: [
+				{
+					id: "l2",
+					name: "Feature",
+					colorClasses:
+						"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300",
+				},
+			],
+			priority: "urgent",
+			assignees: [
+				{
+					id: "u1",
+					name: "User One",
+					initials: "UO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user1",
+				},
+			],
+		},
+		// In Review Tasks
+		{
+			id: "task-5",
+			columnId: "in_review",
+			order: 1,
+			title: "Test payment gateway integration",
+			code: "QA-7",
+			labels: [
+				{
+					id: "l4",
+					name: "Testing",
+					colorClasses:
+						"bg-yellow-100 text-yellow-700 dark:bg-yellow-700/30 dark:text-yellow-300",
+				},
+			],
+			priority: "high",
+			assignees: [
+				{
+					id: "u4",
+					name: "User Four",
+					initials: "UF",
+					avatarUrl: "https://i.pravatar.cc/40?u=user4",
+				},
+			],
+		},
+		{
+			id: "task-6",
+			columnId: "in_review",
+			order: 2,
+			title: "Return roles in the system with the Config endpoint (Review)", // Clarified title for uniqueness
+			code: "EB-2R", // Made code unique for this example if it's a different instance
+			labels: [
+				{
+					id: "l1",
+					name: "Tech Debt",
+					colorClasses:
+						"bg-purple-100 text-purple-700 dark:bg-purple-700/30 dark:text-purple-300",
+				},
+			],
+			priority: "medium",
+			assignees: [
+				{
+					id: "u2",
+					name: "User Two",
+					initials: "UT",
+					avatarUrl: "https://i.pravatar.cc/40?u=user2",
+				},
+			],
+		},
+		// Done Tasks
+		{
+			id: "task-7",
+			columnId: "done",
+			order: 1,
+			title: "Setup project repository and CI/CD",
+			code: "DEV-1",
+			labels: [
+				{
+					id: "l5",
+					name: "DevOps",
+					colorClasses:
+						"bg-gray-100 text-gray-700 dark:bg-gray-700/30 dark:text-gray-300",
+				},
+			],
+			priority: "low",
+			assignees: [
+				{
+					id: "u3",
+					name: "User Three",
+					initials: "UH",
+					avatarUrl: "https://i.pravatar.cc/40?u=user3",
+				},
+			],
+		},
+	],
 };
