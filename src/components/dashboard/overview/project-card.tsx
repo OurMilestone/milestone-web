@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Project, TeamMember } from "@/lib/constants";
+import type { Project } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import {
 	AlertTriangle,
@@ -20,6 +20,7 @@ import Image from "next/image";
 
 interface ProjectCardProps {
 	project: Project;
+	onClick?: () => void;
 }
 
 const getStatusBadgeVariant = (
@@ -74,12 +75,40 @@ const getStatusBadgeVariant = (
 	}
 };
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, onClick }: ProjectCardProps) {
 	const statusInfo = getStatusBadgeVariant(project.status);
 	const StatusIcon = statusInfo.icon;
 
+	const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+		if (
+			(e.target as HTMLElement).closest("button[aria-label='More options']")
+		) {
+			return;
+		}
+		if (onClick) {
+			onClick();
+		}
+	};
+
 	return (
-		<Card className="overflow-hidden !shadow-none hover:shadow-lg transition-all duration-300 ease-in-out h-full flex flex-col cursor-pointer bg-white hover:bg-background/20">
+		<Card
+			className={cn(
+				"overflow-hidden !shadow-none duration-300 ease-in-out h-full flex flex-col bg-white hover:bg-background/30 hover:shadow-md transition-all",
+				onClick ? "cursor-pointer" : "cursor-default",
+			)}
+			onClick={onClick ? handleCardClick : undefined}
+			onKeyDown={
+				onClick
+					? (e) => {
+							// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+							if (e.key === "Enter" || e.key === " ") handleCardClick(e as any);
+						}
+					: undefined
+			}
+			tabIndex={onClick ? 0 : undefined}
+			role={onClick ? "button" : undefined}
+			aria-label={onClick ? `View project: ${project.title}` : undefined}
+		>
 			<CardContent className="p-1.5 flex flex-col flex-grow">
 				{project.image && (
 					<div className="relative h-40 w-full flex-shrink-0">
@@ -106,6 +135,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 							size="icon"
 							className="h-7 w-7 text-muted-foreground hover:text-foreground"
 							aria-label="More options"
+							// onClick={handleMoreOptionsClick}
 						>
 							<MoreVertical className="h-4 w-4" />
 						</Button>
@@ -136,12 +166,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
 					</div>
 					<hr className="my-3 border-border" /> {/* Use theme border color */}
 					<div className="flex items-center justify-between mt-auto">
-						{" "}
 						<div className="flex -space-x-2 overflow-hidden">
 							{project.teamMembers.slice(0, 4).map((member, index) => (
 								<Avatar
-									// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-									key={index}
+									key={`${member.initials}-${index}`}
 									className="h-7 w-7 md:h-8 md:w-8 border-2 border-card dark:border-background"
 									title={member.initials}
 								>
