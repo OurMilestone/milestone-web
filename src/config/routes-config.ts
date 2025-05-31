@@ -13,6 +13,10 @@ export const AppRoutePaths = {
 			Home: "/freelancer/dashboard/projects",
 			Taskboard: (projectTitle: string) =>
 				`/freelancer/dashboard/projects/${encodeURIComponent(projectTitle.toLowerCase().replace(/\s+/g, "-"))}/taskboard`,
+			TaskDetail: (projectSlug: string, taskId: string) =>
+				`/freelancer/dashboard/projects/${encodeURIComponent(
+					projectSlug.toLowerCase().replace(/\s+/g, "-"),
+				)}/task/${taskId}`,
 		},
 		Workers: {
 			Home: "/freelancer/dashboard/workers",
@@ -28,6 +32,10 @@ export const AppRoutePaths = {
 			Home: "/contractor/dashboard/projects",
 			Taskboard: (projectTitle: string) =>
 				`/contractor/dashboard/projects/${encodeURIComponent(projectTitle.toLowerCase().replace(/\s+/g, "-"))}/taskboard`,
+			TaskDetail: (projectSlug: string, taskId: string) =>
+				`/contractor/dashboard/projects/${encodeURIComponent(
+					projectSlug.toLowerCase().replace(/\s+/g, "-"),
+				)}/task/${taskId}`,
 		},
 		Workers: {
 			Home: "/contractor/dashboard/workers",

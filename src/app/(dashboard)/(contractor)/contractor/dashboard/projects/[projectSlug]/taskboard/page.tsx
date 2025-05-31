@@ -65,7 +65,7 @@ export default async function ContractorTaskBoardPage(props: {
 				/>
 				<TaskBoardFilterBar />
 			</div>
-			<div className="flex-grow overflow-x-auto custom-scrollbar min-h-0">
+			<div className="flex-grow overflow-x-auto custom-scrollbar">
 				<div className="h-full min-w-max flex">
 					<KanbanBoard
 						initialData={taskBoardDetails}

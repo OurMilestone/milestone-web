@@ -1,5 +1,14 @@
 import type { UserRole } from "@/types/auth/auth-types";
-import type { ProjectTaskBoardData } from "@/types/dashboard/taskboard-types";
+import type {
+	ProjectTaskListItem,
+	TaskDetail,
+	UserProfile,
+} from "@/types/dashboard/task-details-types";
+import type {
+	ProjectTaskBoardData,
+	TaskLabel,
+	TaskPriority,
+} from "@/types/dashboard/taskboard-types";
 import { Briefcase, DollarSign, type LucideIcon } from "lucide-react";
 
 export interface TeamMember {
@@ -334,7 +343,7 @@ export const USER_PROFILE = {
 	isOnline: true,
 };
 
-/**-----------TaskBoard------------------- */
+/**---------------------TaskBoard----------------------- */
 export const DEFAULT_ASSIGNEE_AVATAR = "/assets/svgs/default-avatar.svg";
 
 export const staticTaskBoardData: ProjectTaskBoardData = {
@@ -524,3 +533,355 @@ export const staticTaskBoardData: ProjectTaskBoardData = {
 		},
 	],
 };
+
+/**---------------------TaskPage----------------------- */
+
+export const staticTaskDetailData: Record<string, TaskDetail> = {
+	"task-1": {
+		id: "task-1",
+		title: "Return roles in the system with the Config endpoint",
+		project: {
+			id: "mobile-app-redesign",
+			name: "Mobile App Redesign",
+			slug: "mobile-app-redesign",
+		},
+		columnId: "backlog",
+		code: "EB-2",
+		description:
+			"<p>This task involves updating the <strong>configuration endpoint</strong> to include user roles. This is crucial for the frontend to adapt its UI based on the logged-in user's permissions.</p><ul><li>List item 1</li><li>List item 2</li></ul><p><code>GET /api/config</code> should return roles.</p>",
+		labels: [
+			{
+				id: "l1",
+				name: "Tech Debt",
+				colorClasses:
+					"bg-purple-100 text-purple-700 dark:bg-purple-700/30 dark:text-purple-300",
+			},
+			{
+				id: "l-api",
+				name: "API",
+				colorClasses:
+					"bg-sky-100 text-sky-700 dark:bg-sky-700/30 dark:text-sky-300",
+			},
+		],
+		priority: "medium",
+		assignees: [
+			{
+				id: "u1",
+				name: "User One",
+				initials: "UO",
+				avatarUrl: "https://i.pravatar.cc/40?u=user1",
+			},
+		],
+		reporter: {
+			id: "u2",
+			name: "John Obi",
+			initials: "JO",
+			avatarUrl: "https://i.pravatar.cc/40?u=user2",
+		},
+		subtasks: [
+			{
+				id: "sub-1",
+				title: "Define role structure in API response",
+				code: "EB-2.1",
+				isCompleted: true,
+				columnId: "done",
+				priority: "medium",
+				assignee: {
+					id: "u1",
+					name: "User One",
+					initials: "UO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user1",
+				},
+			},
+			{
+				id: "sub-2",
+				title: "Implement backend logic for roles",
+				code: "EB-2.2",
+				isCompleted: false,
+				columnId: "in_progress",
+				priority: "high",
+				assignee: {
+					id: "u2",
+					name: "User One",
+					initials: "UO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user1",
+				},
+			},
+			{
+				id: "sub-3",
+				title: "Rename 'User' data 'Userprofile'",
+				code: "EB-2.3",
+				isCompleted: true,
+				columnId: "backlog",
+				priority: "low",
+				assignee: {
+					id: "u2",
+					name: "John Obi",
+					initials: "JO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user2",
+				},
+			},
+		],
+		updateInterval: "Every 2 Days",
+		client: { id: "client-1", name: "John Obi" },
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+	},
+	"task-2": {
+		id: "task-4",
+		title: "Develop API for project management",
+		project: {
+			id: "mobile-app-redesign",
+			name: "Mobile App Redesign",
+			slug: "mobile-app-redesign",
+		},
+		columnId: "in_progress",
+		code: "API-12",
+		description: "<p>Initial API development for core project features.</p>",
+		labels: [
+			{
+				id: "l2",
+				name: "Feature",
+				colorClasses:
+					"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300",
+			},
+		],
+		priority: "urgent",
+		assignees: [
+			{
+				id: "u1",
+				name: "User One",
+				initials: "UO",
+				avatarUrl: "https://i.pravatar.cc/40?u=user1",
+			},
+		],
+		reporter: {
+			id: "u3",
+			name: "User Three",
+			initials: "UH",
+			avatarUrl: "https://i.pravatar.cc/40?u=user3",
+		},
+		subtasks: [
+			{
+				id: "sub-1",
+				title: "Define role structure in API response",
+				code: "EB-2.1",
+				isCompleted: true,
+				columnId: "done",
+				priority: "medium",
+				assignee: {
+					id: "u1",
+					name: "User One",
+					initials: "UO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user1",
+				},
+			},
+			{
+				id: "sub-2",
+				title: "Implement backend logic for roles",
+				code: "EB-2.2",
+				isCompleted: false,
+				columnId: "in_progress",
+				priority: "high",
+				assignee: {
+					id: "u2",
+					name: "User One",
+					initials: "UO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user1",
+				},
+			},
+			{
+				id: "sub-3",
+				title: "Rename 'User' data 'Userprofile'",
+				code: "EB-2.3",
+				isCompleted: true,
+				columnId: "backlog",
+				priority: "low",
+				assignee: {
+					id: "u2",
+					name: "John Obi",
+					initials: "JO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user2",
+				},
+			},
+		],
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+	},
+	"task-3": {
+		id: "task-4",
+		title: "Develop API for project management",
+		project: {
+			id: "mobile-app-redesign",
+			name: "Mobile App Redesign",
+			slug: "mobile-app-redesign",
+		},
+		columnId: "in_progress",
+		code: "API-12",
+		description: "<p>Initial API development for core project features.</p>",
+		labels: [
+			{
+				id: "l2",
+				name: "Feature",
+				colorClasses:
+					"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300",
+			},
+		],
+		priority: "urgent",
+		assignees: [
+			{
+				id: "u1",
+				name: "User One",
+				initials: "UO",
+				avatarUrl: "https://i.pravatar.cc/40?u=user1",
+			},
+		],
+		reporter: {
+			id: "u3",
+			name: "User Three",
+			initials: "UH",
+			avatarUrl: "https://i.pravatar.cc/40?u=user3",
+		},
+		subtasks: [
+			{
+				id: "sub-1",
+				title: "Define role structure in API response",
+				code: "EB-2.1",
+				isCompleted: true,
+				columnId: "done",
+				priority: "medium",
+				assignee: {
+					id: "u1",
+					name: "User One",
+					initials: "UO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user1",
+				},
+			},
+			{
+				id: "sub-2",
+				title: "Implement backend logic for roles",
+				code: "EB-2.2",
+				isCompleted: false,
+				columnId: "in_progress",
+				priority: "high",
+				assignee: {
+					id: "u2",
+					name: "User One",
+					initials: "UO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user1",
+				},
+			},
+			{
+				id: "sub-3",
+				title: "Rename 'User' data 'Userprofile'",
+				code: "EB-2.3",
+				isCompleted: true,
+				columnId: "backlog",
+				priority: "low",
+				assignee: {
+					id: "u2",
+					name: "John Obi",
+					initials: "JO",
+					avatarUrl: "https://i.pravatar.cc/40?u=user2",
+				},
+			},
+		],
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+	},
+};
+
+export const staticProjectTaskList: ProjectTaskListItem[] =
+	staticTaskBoardData.tasks.map((task) => ({
+		id: task.id,
+		title: task.title,
+		code: task.code,
+		priority: "low",
+		assignee: task.assignees?.[0]
+			? {
+					initials: task.assignees[0].initials,
+					avatarUrl: task.assignees[0].avatarUrl,
+				}
+			: undefined,
+		columnId: task.columnId,
+	}));
+
+export const assignableUsers: UserProfile[] = [
+	{
+		id: "u1",
+		name: "User One",
+		initials: "UO",
+		avatarUrl: "https://i.pravatar.cc/40?u=user1",
+	},
+	{
+		id: "u2",
+		name: "John Obi",
+		initials: "JO",
+		avatarUrl: "https://i.pravatar.cc/40?u=user2",
+	},
+	{
+		id: "u3",
+		name: "User Three",
+		initials: "UH",
+		avatarUrl: "https://i.pravatar.cc/40?u=user3",
+	},
+	{
+		id: "u4",
+		name: "User Four",
+		initials: "UF",
+		avatarUrl: "https://i.pravatar.cc/40?u=user4",
+	},
+];
+
+export const availableLabels: TaskLabel[] = [
+	{
+		id: "l1",
+		name: "Tech Debt",
+		colorClasses:
+			"bg-purple-100 text-purple-700 dark:bg-purple-700/30 dark:text-purple-300",
+	},
+	{
+		id: "l2",
+		name: "Feature",
+		colorClasses:
+			"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300",
+	},
+	{
+		id: "l3",
+		name: "Design",
+		colorClasses:
+			"bg-pink-100 text-pink-700 dark:bg-pink-700/30 dark:text-pink-300",
+	},
+	{
+		id: "l-api",
+		name: "API",
+		colorClasses:
+			"bg-sky-100 text-sky-700 dark:bg-sky-700/30 dark:text-sky-300",
+	},
+	{
+		id: "l-server",
+		name: "Server",
+		colorClasses:
+			"bg-emerald-100 text-emerald-700 dark:bg-emerald-700/30 dark:text-emerald-300",
+	},
+];
+
+export const priorities: {
+	value: TaskPriority;
+	label: string;
+	icon?: React.ElementType;
+}[] = [
+	{ value: "low", label: "Low" },
+	{ value: "medium", label: "Medium" },
+	{ value: "high", label: "High" },
+	{ value: "urgent", label: "Urgent" },
+];
+
+export const updateIntervals = [
+	"Every 2 Days",
+	"Every 4 Days",
+	"Every 1 week",
+	"Every 2 week",
+	"Every 1 month",
+	"None",
+];

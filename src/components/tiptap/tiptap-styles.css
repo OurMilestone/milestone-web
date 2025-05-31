@@ -1,0 +1,90 @@
+.ProseMirror {
+	outline: none;
+	min-height: 150px;
+	max-width: 100%;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+	content: attr(data-placeholder);
+	float: left;
+	color: hsl(var(--muted-foreground));
+	pointer-events: none;
+	height: 0;
+}
+
+.ProseMirror pre {
+	background: hsl(var(--muted));
+	color: hsl(var(--muted-foreground));
+	font-family: "JetBrainsMono", monospace;
+	padding: 0.75rem 1rem;
+	border-radius: 0.5rem;
+}
+
+.ProseMirror pre code {
+	color: inherit;
+	padding: 0;
+	background: none;
+	font-size: 0.8rem;
+}
+
+.ProseMirror code {
+	font-size: 0.9rem;
+	padding: 0.1em 0.3em;
+	border-radius: 0.25em;
+	background-color: hsl(var(--muted));
+	color: hsl(var(--muted-foreground));
+	box-decoration-break: clone;
+}
+
+.ProseMirror img {
+	max-width: 100%;
+	height: auto;
+	display: block; /* or inline-block based on preference */
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+	border-radius: 0.25rem;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+	outline: 3px solid hsl(var(--primary));
+}
+
+.ProseMirror blockquote {
+	border-left: 3px solid hsl(var(--border));
+	margin-left: 0;
+	margin-right: 0;
+	padding-left: 1rem;
+	font-style: italic;
+}
+
+.ProseMirror a {
+	color: hsl(var(--primary));
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.ProseMirror h1 {
+	font-size: 2.5em !important; /* Make it very obvious */
+	color: black !important;
+	font-weight: bold !important;
+	margin-top: 1em !important;
+	margin-bottom: 0.5em !important;
+}
+.ProseMirror h2 {
+	font-size: 2em !important;
+	color: black !important;
+	font-weight: bold !important;
+	margin-top: 0.8em !important;
+	margin-bottom: 0.4em !important;
+}
+.ProseMirror h3 {
+	font-size: 1.75em !important;
+	color: black !important;
+	font-weight: bold !important;
+	margin-top: 0.7em !important;
+	margin-bottom: 0.3em !important;
+}
+

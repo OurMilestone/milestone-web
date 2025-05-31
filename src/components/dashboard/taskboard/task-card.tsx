@@ -19,7 +19,7 @@ interface TaskCardProps {
 	projectSlug: string;
 }
 
-const PriorityDots = ({ priority }: { priority: Task["priority"] }) => {
+export const PriorityDots = ({ priority }: { priority: Task["priority"] }) => {
 	let color = "bg-gray-400";
 	let count = 1;
 	switch (priority) {
@@ -93,23 +93,29 @@ export default function TaskCard({
 	const handleCardClick = () => {
 		if (isDragging || isDraggingOverlay) return;
 
-		let basePath = "";
+		let taskDetailPath = "";
 
 		if (userRole === "Freelancer") {
-			basePath = AppRoutePaths.FreelancerDashboard.Projects.Taskboard(
+			taskDetailPath = AppRoutePaths.FreelancerDashboard.Projects.TaskDetail(
 				projectSlug,
-			).replace("/taskboard", "");
+				task.id,
+			);
 		} else if (userRole === "Contractor") {
-			basePath = AppRoutePaths.ContractorDashboard.Projects.Taskboard(
+			taskDetailPath = AppRoutePaths.ContractorDashboard.Projects.TaskDetail(
 				projectSlug,
-			).replace("/taskboard", "");
+				task.id,
+			);
 		}
-		// We'll need a new route for individual tasks, e.g., /task/[taskId]
-		// For now, I'll log it.
-		console.log(
-			`Navigate to task: ${task.id} for project: ${projectSlug} as ${userRole}`,
-		);
-		// router.push(`${basePath}/task/${task.id}`); // Uncomment when task detail page exists
+
+		if (taskDetailPath) {
+			router.push(taskDetailPath);
+		} else {
+			console.warn(
+				"Could not determine task detail path for role:",
+				userRole,
+				"or missing slug/ID.",
+			);
+		}
 	};
 
 	return (
@@ -147,7 +153,6 @@ export default function TaskCard({
 							<p className="text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug pr-2">
 								{task.title}
 							</p>
-							{/* Drag Handle - can be made visible on hover or always visible */}
 							<button
 								{...listeners}
 								className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded flex-shrink-0"
