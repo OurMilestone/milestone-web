@@ -77,8 +77,8 @@ export default function MarkAsDoneModal({
 		return (
 			<Dialog open={isOpen} onOpenChange={onOpenChange}>
 				<DialogContent className="sm:max-w-md p-0 bg-white">
-					<DialogTitle></DialogTitle>
-					<DialogHeader className="p-6 pb-0"></DialogHeader>
+					<DialogTitle />
+					<DialogHeader className="p-6 pb-0" />
 					{content}
 					<DialogFooter className="flex-row justify-center gap-3 pb-8 pt-0 sm:justify-center">
 						<Button
