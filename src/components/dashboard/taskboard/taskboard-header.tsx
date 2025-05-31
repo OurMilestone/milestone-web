@@ -13,9 +13,6 @@ import type { UserRole } from "@/types/auth/auth-types";
 import { Check, ChevronDown, ChevronRight, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 
-/**Attached are screenshots of the Figma design of these pages. Replicate them as best as possible with static data for now, as we don't have an API, but build as if you have one that will be integrated later. Do not build everything into one giant component, but break things down for easy understanding, composability and reusability.
-Let your implementation be robust, handle all cases, and be easy to extend for future features. Let it be responsive. Remember, implement all these as if you are going to use real data coming from a backend, but for now, use static data.*/
-
 interface TaskBoardHeaderProps {
 	projectName: string;
 	projectSlug: string;
@@ -80,7 +77,8 @@ export default function TaskBoardHeader({
 					Projects
 				</Link>
 				<ChevronRight size={14} />
-				{/* Link to project detail/overview page if it exists */}
+				{/* 
+				  // TODO: Link to project detail/overview page if it exists */}
 				{/* <Link href={`${projectsBasePath}/${projectSlug}`} className="hover:underline hover:text-primary"> */}
 				<span className="font-medium text-slate-700 dark:text-slate-200">
 					{projectName}

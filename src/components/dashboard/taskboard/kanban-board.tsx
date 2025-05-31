@@ -116,8 +116,8 @@ export default function KanbanBoard({
 					const activeTaskIndex = prevTasks.findIndex((t) => t.id === activeId);
 					if (activeTaskIndex === -1) return prevTasks;
 
-					// Update task's columnId and reset its order within the new column
-					// The actual reordering will happen in onDragEnd
+					// *Update task's columnId and reset its order within the new column
+					// *The actual reordering will happen in onDragEnd
 					const updatedTasks = [...prevTasks];
 					updatedTasks[activeTaskIndex] = {
 						...updatedTasks[activeTaskIndex],
@@ -128,7 +128,7 @@ export default function KanbanBoard({
 			}
 		}
 
-		// Dragging a Task over another Task (for reordering within the same column)
+		// *Dragging a Task over another Task (for reordering within the same column)
 		if (isOverATask) {
 			const overTask = tasks.find((t) => t.id === overId);
 

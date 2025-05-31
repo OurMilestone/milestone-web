@@ -3,7 +3,6 @@
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AppRoutePaths } from "@/config/routes-config";
-import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";

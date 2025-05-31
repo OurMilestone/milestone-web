@@ -1,7 +1,6 @@
 import KanbanBoard from "@/components/dashboard/taskboard/kanban-board";
 import TaskBoardFilterBar from "@/components/dashboard/taskboard/taskboard-filter-bar";
 import TaskBoardHeader from "@/components/dashboard/taskboard/taskboard-header";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AppRoutePaths } from "@/config/routes-config";
 import { staticTaskBoardData } from "@/lib/constants";
 import type { UserRole } from "@/types/auth/auth-types";
