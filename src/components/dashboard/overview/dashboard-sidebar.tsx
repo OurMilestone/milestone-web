@@ -14,7 +14,7 @@ import {
 import type { UserRole } from "@/types/auth/auth-types";
 import { Search } from "lucide-react";
 import Image from "next/image";
-import { MilestoneLogo } from "../../../public/assets/images/__index__";
+import { MilestoneLogo } from "../../../../public/assets/images/__index__";
 import { DashboardNavbar } from "./dashboard-navbar";
 import { UserProfile } from "./user-profile";
 

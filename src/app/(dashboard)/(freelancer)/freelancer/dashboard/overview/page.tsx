@@ -1,10 +1,13 @@
-import { ProjectsGrid } from "@/components/dashboard/project-grid";
-import { StatsCards } from "@/components/dashboard/stats-card";
+import { ProjectsGrid } from "@/components/dashboard/overview/project-grid";
+import { StatsCards } from "@/components/dashboard/overview/stats-card";
 import SectionHeader from "@/components/typography/section-header";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { auth } from "../../../../../../../auth";
 
-export default function FreelancerDashboardOverviewPage() {
+export default async function FreelancerDashboardOverviewPage() {
+	const session = await auth();
+	const userRole = session?.user?.role ?? "Freelancer";
 	return (
 		<div className="space-y-8">
 			<div className="flex items-center justify-between">
@@ -19,9 +22,9 @@ export default function FreelancerDashboardOverviewPage() {
 				</Button>
 			</div>
 
-			<StatsCards userRole="Freelancer" />
+			<StatsCards userRole={userRole} />
 
-			<ProjectsGrid />
+			<ProjectsGrid userRole={userRole} />
 		</div>
 	);
 }

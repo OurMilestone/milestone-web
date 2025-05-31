@@ -1,5 +1,6 @@
 {
   "editor.formatOnSave": true,
+  "tailwindCSS.experimental.classRegex": ["class:\\s*?[\"'`]([^\"'`]*).*?,"],
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "always"
   },

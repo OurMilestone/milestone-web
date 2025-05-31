@@ -9,7 +9,9 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AppRoutePaths } from "@/config/routes-config";
 import { PROJECTS_DATA, type Project } from "@/lib/constants";
+import type { UserRole } from "@/types/auth/auth-types";
 import {
 	ChevronDown,
 	ChevronRight,
@@ -17,6 +19,7 @@ import {
 	LayoutGrid,
 	List,
 } from "lucide-react";
+import { useRouter } from "nextjs-toploader/app";
 import { useMemo, useState } from "react";
 import { ProjectCard } from "./project-card";
 
@@ -28,14 +31,23 @@ type SortOption =
 	| "budget-desc"
 	| "status";
 
-export function ProjectsGrid() {
+interface ProjectGridProps {
+	userRole: UserRole;
+	initialProjects?: Project[];
+}
+
+export function ProjectsGrid({
+	userRole,
+	initialProjects = PROJECTS_DATA,
+}: ProjectGridProps) {
+	const router = useRouter();
 	const [statusFilter, setStatusFilter] = useState<ProjectStatusFilter>("All");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [sortOption, setSortOption] = useState<SortOption>("title-asc");
 	const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
 	const filteredAndSortedProjects = useMemo(() => {
-		let projects = PROJECTS_DATA;
+		let projects = initialProjects;
 
 		if (statusFilter !== "All") {
 			projects = projects.filter((p) => p.status === statusFilter);
@@ -66,8 +78,8 @@ export function ProjectsGrid() {
 				projects.sort((a, b) => a.status.localeCompare(b.status));
 				break;
 		}
-		return projects;
-	}, [statusFilter, searchTerm, sortOption]);
+		return [...projects];
+	}, [statusFilter, searchTerm, sortOption, initialProjects]);
 
 	const projectStatuses: Project["status"][] = [
 		"On Track",
@@ -77,12 +89,30 @@ export function ProjectsGrid() {
 		"Pending",
 	];
 
+	const handleProjectCardClick = (projectTitle: string) => {
+		let path = "";
+
+		if (userRole === "Freelancer") {
+			path = AppRoutePaths.FreelancerDashboard.Projects.Taskboard(projectTitle);
+		} else if (userRole === "Contractor") {
+			path = AppRoutePaths.ContractorDashboard.Projects.Taskboard(projectTitle);
+		}
+		if (path) {
+			router.push(path);
+		} else {
+			console.warn(
+				"Could not determine project taskboard path for role:",
+				userRole,
+			);
+		}
+	};
+
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 				<h2 className="text-xl lg:text-2xl font-semibold text-foreground">
 					Active Projects
-				</h2>{" "}
+				</h2>
 				<div className="flex flex-wrap items-center gap-2">
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -177,20 +207,31 @@ export function ProjectsGrid() {
 			{filteredAndSortedProjects.length > 0 ? (
 				viewMode === "grid" ? (
 					<div className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
-						{" "}
 						{filteredAndSortedProjects.map((project) => (
-							<ProjectCard key={project.id} project={project} />
+							<ProjectCard
+								key={project.id}
+								project={project}
+								onClick={() => handleProjectCardClick(project.title)}
+							/>
 						))}
 					</div>
 				) : (
 					<div className="space-y-4">
-						{" "}
 						{/* Placeholder for List View */}
 						{/* TODO: Implement List View Item Component */}
 						{filteredAndSortedProjects.map((project) => (
 							<div
 								key={project.id}
-								className="p-4 border rounded-md bg-white cursor-pointer hover:bg-background/30"
+								className="p-4 border rounded-md bg-white cursor-pointer hover:bg-background/30 hover:shadow-md transition-all"
+								onClick={() => handleProjectCardClick(project.title)}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" || e.key === " ")
+										handleProjectCardClick(project.title);
+								}}
+								tabIndex={0}
+								// biome-ignore lint/a11y/useSemanticElements: <explanation>
+								role="button"
+								aria-label={`View project: ${project.title}`}
 							>
 								<h3 className="font-semibold">{project.title}</h3>
 								<p className="text-sm text-muted-foreground">
