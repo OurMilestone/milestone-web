@@ -1,5 +1,11 @@
 import type { UserRole } from "@/types/auth/auth-types";
 import type {
+	PaymentInfoCardData,
+	PaymentTransaction,
+	TransactionStatus,
+	TransactionType,
+} from "@/types/dashboard/payments-types";
+import type {
 	ProjectTaskListItem,
 	TaskDetail,
 	UserProfile,
@@ -9,7 +15,13 @@ import type {
 	TaskLabel,
 	TaskPriority,
 } from "@/types/dashboard/taskboard-types";
-import { Briefcase, DollarSign, type LucideIcon } from "lucide-react";
+import {
+	Briefcase,
+	CheckCircle2,
+	Clock4,
+	DollarSign,
+	type LucideIcon,
+} from "lucide-react";
 
 export interface TeamMember {
 	initials: string;
@@ -885,3 +897,94 @@ export const updateIntervals = [
 	"Every 1 month",
 	"None",
 ];
+
+/**---------------------Payments Page----------------------- */
+
+export const freelancerPaymentInfoCards: PaymentInfoCardData[] = [
+	{
+		id: "wallet-balance",
+		title: "Wallet Balance",
+		amount: 33000,
+		icon: DollarSign,
+		iconBgColor: "bg-green-100 dark:bg-green-900/30",
+		iconColor: "text-green-600 dark:text-green-400",
+		percentageChange: 12,
+		changePeriod: "from last month",
+	},
+	{
+		id: "next-payout",
+		title: "Next Payout",
+		amount: 2530.5,
+		icon: CheckCircle2,
+		iconBgColor: "bg-blue-100 dark:bg-blue-900/30",
+		iconColor: "text-blue-600 dark:text-blue-400",
+		footerText: "3 payments this month",
+	},
+];
+
+export const contractorPaymentInfoCards: PaymentInfoCardData[] = [
+	{
+		id: "available-funds",
+		title: "Available Funds",
+		amount: 50000,
+		icon: DollarSign,
+		iconBgColor: "bg-green-100 dark:bg-green-900/30",
+		iconColor: "text-green-600 dark:text-green-400",
+		percentageChange: 5,
+		changePeriod: "from last week",
+	},
+	{
+		id: "pending-payments",
+		title: "Pending Payments",
+		amount: 7500,
+		icon: Clock4,
+		iconBgColor: "bg-yellow-100 dark:bg-yellow-900/30",
+		iconColor: "text-yellow-600 dark:text-yellow-400",
+		footerText: "5 upcoming payments",
+	},
+];
+
+const generateRandomDate = (start: Date, end: Date): string => {
+	return new Date(
+		start.getTime() + Math.random() * (end.getTime() - start.getTime()),
+	).toISOString();
+};
+
+export const transactionTypes: TransactionType[] = [
+	"Deposit",
+	"Withdrawal",
+	"Milestone Release",
+	"Refund",
+];
+export const transactionStatuses: TransactionStatus[] = [
+	"Successful",
+	"Pending",
+	"Failed",
+	"Cancelled",
+];
+
+export const staticPaymentHistory: PaymentTransaction[] = Array.from(
+	{ length: 100 },
+	(_, i) => {
+		const type =
+			transactionTypes[Math.floor(Math.random() * transactionTypes.length)];
+
+		const amount = Math.floor(Math.random() * 5000) + 100;
+
+		if (type === "Withdrawal" || type === "Refund") {
+			// amount = amount;
+		}
+		return {
+			id: `txn-${i + 1}`,
+			date: generateRandomDate(new Date(2023, 10, 1), new Date(2025, 5, 30)),
+			transactionType: type,
+			description: `${type} for Project ${String.fromCharCode(65 + (i % 5))}`,
+			amount: amount,
+			currency: "USD",
+			status:
+				transactionStatuses[
+					Math.floor(Math.random() * transactionStatuses.length)
+				],
+		};
+	},
+).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
