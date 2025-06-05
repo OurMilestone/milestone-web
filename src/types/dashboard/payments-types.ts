@@ -44,3 +44,19 @@ export interface PaginatedPaymentTransactions {
 		totalItems: number;
 	};
 }
+
+export type AddFundsStep =
+	| "NO_CARD_PROMPT"
+	| "ADD_CARD_DETAILS"
+	| "CONFIRM_ADD_FUNDS";
+
+export interface SavedPaymentMethod {
+	id: string;
+	type: "Card" | "BankAccount";
+	displayName: string;
+	isDefault?: boolean;
+	cardBrand?: string;
+	last4?: string;
+	expiryMonth?: string;
+	expiryYear?: string;
+}
