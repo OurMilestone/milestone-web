@@ -1,19 +1,10 @@
 "use client;";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import type { PaymentTransaction } from "@/types/dashboard/payments-types";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import TransactionStatusBadge from "./transaction-status-badge";
 
 export const paymentsTableColumn: ColumnDef<PaymentTransaction>[] = [

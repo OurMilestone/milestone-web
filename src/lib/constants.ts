@@ -988,3 +988,22 @@ export const staticPaymentHistory: PaymentTransaction[] = Array.from(
 		};
 	},
 ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+export const CURRENCIES = ["USD", "EUR", "GBP", "NGN"] as const;
+export type Currency = (typeof CURRENCIES)[number];
+
+export const WITHDRAWAL_DESTINATIONS = [
+	{ id: "gtb-001", name: "GTB Account (...0123)", type: "Bank" },
+	{ id: "zenith-002", name: "Zenith Account (...4567)", type: "Bank" },
+	{ id: "usdt-addr-1", name: "USDT Wallet (TRC20)", type: "Crypto" },
+] as const;
+export type WithdrawalDestination = (typeof WITHDRAWAL_DESTINATIONS)[number];
+
+export interface SavedCard {
+	id: string;
+	cardType: string;
+	last4Digits: string;
+	expiryDate: string;
+	isDefault?: boolean;
+	cardName?: string;
+}
