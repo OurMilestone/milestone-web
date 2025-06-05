@@ -101,11 +101,7 @@ export default function PaymentHistoryTable({
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => {
 									return (
-										<TableHead
-											key={header.id}
-											colSpan={header.colSpan}
-											// data-state={header.getResizeHandler && "selected"}
-										>
+										<TableHead key={header.id} colSpan={header.colSpan}>
 											{header.isPlaceholder
 												? null
 												: flexRender(
