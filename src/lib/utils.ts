@@ -21,3 +21,36 @@ export const nextAuthErrorMessagesMap: Record<string, string> = {
 	Verification: "The verification link is invalid or has expired.",
 	Default: "An unknown error occurred. Please try again.",
 };
+
+export const isValidCardNumber = (cardNumber: string): boolean => {
+	let sum = 0;
+	let shouldDouble = false;
+	for (let i = cardNumber.length - 1; i >= 0; i--) {
+		let digit = Number.parseInt(cardNumber.charAt(i));
+		if (shouldDouble) {
+			digit *= 2;
+			if (digit > 9) {
+				digit -= 9;
+			}
+		}
+		sum += digit;
+		shouldDouble = !shouldDouble;
+	}
+	return sum % 10 === 0;
+};
+
+export const generateMonthOptions = () => {
+	return Array.from({ length: 12 }, (_, i) => {
+		const month = (i + 1).toString().padStart(2, "0");
+		return { value: month, label: month };
+	});
+};
+
+export const generateYearOptions = (startYearOffset = 0, count = 10) => {
+	const currentYear = new Date().getFullYear() + startYearOffset;
+
+	return Array.from({ length: count }, (_, i) => {
+		const year = (currentYear + i).toString();
+		return { value: year, label: year };
+	});
+};

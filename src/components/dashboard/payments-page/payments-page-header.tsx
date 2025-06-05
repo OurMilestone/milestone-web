@@ -1,31 +1,45 @@
-"use client"; // Because of onClick handlers, though they could be links
+"use client";
 
+import AddFundsModal from "@/components/modals/add-funds-modal";
+import WithdrawFundsModal from "@/components/modals/withdraw-funds-modal";
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import type { Currency } from "@/lib/constants";
 import type { UserRole } from "@/types/auth/auth-types";
+import type { SavedPaymentMethod } from "@/types/dashboard/payments-types";
 import { ArrowRight, Plus } from "lucide-react";
-import { useRouter } from "nextjs-toploader/app"; // Or nextjs-toploader/app
+import { useRouter } from "nextjs-toploader/app";
+import { useState } from "react";
 
 interface PaymentsPageHeaderProps {
 	userRole: UserRole;
 }
+
+const MOCK_WALLET_BALANCE = 33000;
+const MOCK_DEFAULT_CURRENCY: Currency = "USD";
+const MOCK_USER_HAS_SAVED_CARDS = false;
+const MOCK_SAVED_PAYMENT_METHODS: SavedPaymentMethod[] =
+	MOCK_USER_HAS_SAVED_CARDS
+		? [
+				{
+					id: "card-initial-123",
+					type: "Card",
+					displayName: "Visa .... 4242",
+					isDefault: true,
+					cardBrand: "Visa",
+					last4: "4242",
+					expiryMonth: "12",
+					expiryYear: "2025",
+				},
+			]
+		: [];
 
 export default function PaymentsPageHeader({
 	userRole,
 }: PaymentsPageHeaderProps) {
 	const router = useRouter();
 
-	const handleAddFunds = () => {
-		// TODO: Implement Add Funds modal or navigation
-		alert(`Add Funds clicked for ${userRole}`);
-		// Example: router.push(AppRoutePaths.SomeDashboard.AddFunds);
-	};
-
-	const handleWithdrawFunds = () => {
-		// TODO: Implement Withdraw Funds modal or navigation
-		alert(`Withdraw Funds clicked for ${userRole}`);
-		// Example: router.push(AppRoutePaths.SomeDashboard.Withdraw);
-	};
+	const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+	const [isAddFundsModalOpen, setIsAddFundsModalOpen] = useState(false);
 
 	return (
 		<div>
@@ -44,20 +58,34 @@ export default function PaymentsPageHeader({
 					<Button
 						variant="outline"
 						className="flex-1 sm:flex-none bg-white py-2 px-3"
-						onClick={handleAddFunds}
+						onClick={() => setIsAddFundsModalOpen(true)}
 					>
 						<Plus size={18} className="mr-2" />
 						Add Funds
 					</Button>
 					<Button
 						className="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 dark:bg-primary dark:hover:bg-primary/90 text-white"
-						onClick={handleWithdrawFunds}
+						onClick={() => setIsWithdrawModalOpen(true)}
 					>
 						Withdraw Funds
 						<ArrowRight size={18} className="ml-2" />
 					</Button>
 				</div>
 			</div>
+
+			<WithdrawFundsModal
+				isOpen={isWithdrawModalOpen}
+				onOpenChange={setIsWithdrawModalOpen}
+				walletBalance={MOCK_WALLET_BALANCE}
+				defaultCurrency={MOCK_DEFAULT_CURRENCY}
+			/>
+
+			<AddFundsModal
+				isOpen={isAddFundsModalOpen}
+				onOpenChange={setIsAddFundsModalOpen}
+				initialHasSavedCards={MOCK_USER_HAS_SAVED_CARDS}
+				initialSavedPaymentMethods={MOCK_SAVED_PAYMENT_METHODS}
+			/>
 		</div>
 	);
 }
