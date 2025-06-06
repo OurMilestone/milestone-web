@@ -1,6 +1,7 @@
 "use server";
 
 import { postRequest } from "@/lib/api/api-client";
+import type { ForgotPasswordFormData } from "@/lib/schemas/auth-schema";
 import type { ActionResult } from "@/types";
 import type {
 	ApiResponse,
@@ -8,6 +9,8 @@ import type {
 	CreateAccountDto,
 	CreateSessionDao,
 	CreateSessionDto,
+	ForgotPasswordDao,
+	ForgotPasswordDto,
 	LoginFormData,
 	RegisterFormData,
 	ResendEmailOTPDao,
@@ -130,5 +133,29 @@ export const resendOtpAction = async (
 		};
 	} catch (error) {
 		return handleApiError(error, "Failed to resend OTP. Please try again.");
+	}
+};
+
+export const forgotPasswordAction = async (
+	formData: ForgotPasswordFormData,
+): Promise<ActionResult<ForgotPasswordDao | null>> => {
+	try {
+		const response = await postRequest<ForgotPasswordDao, ForgotPasswordDto>(
+			"/forgot-password/",
+			{
+				email: formData.email,
+				new_password: formData.password,
+				confirm_password: formData.confirmPassword,
+			},
+		);
+
+		return {
+			success: true,
+			data: response.data.data,
+			status: response.status,
+			message: response.data.data as string,
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to reset password. Please try again.");
 	}
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import { forgotPasswordAction } from "@/actions/auth-actions/auth.actions";
 import SectionHeader from "@/components/typography/section-header";
 import {
 	Form,
@@ -18,8 +19,10 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "nextjs-toploader/app";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import type { z } from "zod";
 
 export default function ForgotPasswordForm() {
@@ -27,6 +30,8 @@ export default function ForgotPasswordForm() {
 	const [parentEmail] = useAutoAnimate();
 	const [parentPassword] = useAutoAnimate();
 	const [parentConfirmPassword] = useAutoAnimate();
+
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof forgotPasswordFormSchema>>({
 		resolver: zodResolver(forgotPasswordFormSchema),
@@ -51,6 +56,29 @@ export default function ForgotPasswordForm() {
 
 	const onSubmit = (data: z.infer<typeof forgotPasswordFormSchema>) => {
 		console.log(data);
+
+		toast.promise(
+			(async () => {
+				const result = await forgotPasswordAction(data);
+
+				if (!result.success) {
+					throw new Error(
+						result.message ??
+							"Failed to reset your password. Please try again.",
+					);
+				}
+
+				form.reset();
+				router.push(AppRoutePaths.SignIn);
+
+				return result.message;
+			})(),
+			{
+				loading: "Resetting your password...",
+				success: (message) => message ?? "Password reset successful!",
+				error: (err) => err.message ?? "Failed to reset your password",
+			},
+		);
 	};
 
 	return (
