@@ -13,6 +13,14 @@ export type ApiResponse<T> = {
 	message: string;
 };
 
+export type ForgotPasswordDao = string | null;
+
+export type ForgotPasswordDto = {
+	email: string;
+	new_password: string;
+	confirm_password: string;
+};
+
 export type CreateAccountDto = {
 	full_name: string;
 	preferred_name: string;
