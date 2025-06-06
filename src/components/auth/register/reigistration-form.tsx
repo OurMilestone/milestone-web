@@ -63,7 +63,6 @@ const RegistrationForm = ({ selectedRole }: RegistrationFormProps) => {
 		toast.promise(
 			(async () => {
 				const result = await registerAction(formData);
-				console.log("Registration result", { result });
 
 				if (!result.success) {
 					throw new Error(result.message || "Registration failed");
