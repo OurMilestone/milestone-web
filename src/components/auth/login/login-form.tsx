@@ -60,7 +60,7 @@ const LoginForm = () => {
 	}, [justVerified, emailFromQuery, form]);
 
 	useEffect(() => {
-		if (Object.keys(form.formState.errors).length > 0) {
+		if (Object.keys(form.formState.errors)?.length > 0) {
 			const firstErrorField = Object.keys(form.formState.errors)[0];
 			form.setFocus(firstErrorField as keyof z.infer<typeof loginFormSchema>, {
 				shouldSelect: true,

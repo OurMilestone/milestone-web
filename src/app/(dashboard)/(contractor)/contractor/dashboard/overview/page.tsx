@@ -4,6 +4,7 @@ import SectionHeader from "@/components/typography/section-header";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { auth } from "../../../../../../../auth";
+import { CreateProjectModal } from "@/components/dashboard/overview/create-project";
 
 const ContractorDashboardOverviewPage = async () => {
 	const session = await auth();
@@ -11,16 +12,19 @@ const ContractorDashboardOverviewPage = async () => {
 
 	return (
 		<div className="space-y-8">
-			<div className="flex items-center justify-between">
+			<div className="flex items-center justify-between pt-4">
 				<SectionHeader
 					title="Overview"
 					caption="Track your active projects, milestones and payments"
 					className="space-y-1"
 				/>
-				<Button variant="ghost" className="gap-1">
-					See Task
-					<ChevronRight className="h-4 w-4" />
-				</Button>
+				<div className="flex items-center gap-3">
+					<CreateProjectModal />
+					<Button variant="ghost" className="gap-1">
+						See Task
+						<ChevronRight className="h-4 w-4" />
+					</Button>
+				</div>
 			</div>
 
 			<StatsCards userRole={userRole} />
