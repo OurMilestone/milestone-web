@@ -1,6 +1,5 @@
 import { auth } from "../../../auth";
 
-// Simple API response type
 export interface ApiResponse<T = any> {
 	success: boolean;
 	data?: T;
