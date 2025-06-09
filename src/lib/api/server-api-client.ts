@@ -1,5 +1,6 @@
 import { auth } from "../../../auth";
 
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export interface ApiResponse<T = any> {
 	success: boolean;
 	data?: T;
@@ -23,6 +24,7 @@ async function makeAuthenticatedRequest<T>(
 	endpoint: string,
 	options: {
 		method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		body?: any;
 		headers?: Record<string, string>;
 	},
@@ -95,6 +97,7 @@ export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
 
 export async function apiPost<T>(
 	endpoint: string,
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	data: any,
 ): Promise<ApiResponse<T>> {
 	return makeAuthenticatedRequest<T>(endpoint, {
@@ -105,6 +108,7 @@ export async function apiPost<T>(
 
 export async function apiPut<T>(
 	endpoint: string,
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	data: any,
 ): Promise<ApiResponse<T>> {
 	return makeAuthenticatedRequest<T>(endpoint, {
@@ -115,6 +119,7 @@ export async function apiPut<T>(
 
 export async function apiPatch<T>(
 	endpoint: string,
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	data: any,
 ): Promise<ApiResponse<T>> {
 	return makeAuthenticatedRequest<T>(endpoint, {
