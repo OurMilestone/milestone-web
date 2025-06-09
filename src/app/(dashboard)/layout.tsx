@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppRoutePaths } from "@/config/routes-config";
 import { redirect } from "next/navigation";
 import { auth } from "../../../auth";
+import { ProjectProvider } from "@/components/providers/project-provider";
 
 export default async function DashboardLayout({
 	children,
@@ -18,20 +19,22 @@ export default async function DashboardLayout({
 	}
 
 	const userRole = session.user.role;
-
+	//console.log('sessionnn', session)
 	return (
 		<div className="flex h-screen">
 			<TooltipProvider delayDuration={200}>
 				<SidebarProvider className="bg-white">
-					<DashboardSidebar userRole={userRole} />
-					<div className="flex-1 overflow-y-auto mb-2">
-						<SidebarInset>
-							<DashboardHeader />
-							<div className="flex flex-1 flex-col gap-4 px-4 bg-white">
-								{children}
-							</div>
-						</SidebarInset>
-					</div>
+					<ProjectProvider>
+						<DashboardSidebar userRole={userRole} />
+						<div className="flex-1 overflow-y-auto mb-2">
+							<SidebarInset>
+								<DashboardHeader />
+								<div className="flex flex-1 flex-col gap-4 px-4 bg-white">
+									{children}
+								</div>
+							</SidebarInset>
+						</div>
+					</ProjectProvider>
 				</SidebarProvider>
 			</TooltipProvider>
 		</div>
