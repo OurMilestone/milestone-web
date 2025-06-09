@@ -1,9 +1,23 @@
-"use server";
-
 import type { AxiosApiResponse } from "@/types";
 import type { ApiResponse } from "@/types/auth/auth-types";
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios from "axios";
+import { auth } from "../../../auth";
 import axiosInstance from "./axios-config";
+
+async function getAuthToken(): Promise<string | null> {
+	if (typeof window === "undefined") {
+		try {
+			const session = await auth();
+			return session?.user?.access || null;
+		} catch (error) {
+			console.error("Failed to get an auth toke on the server: ", error);
+			return null;
+		}
+	} else {
+		return localStorage.getItem("authToken");
+	}
+}
 
 function getClientAuthToken(): string | null {
 	if (typeof window !== "undefined") {
@@ -47,28 +61,26 @@ async function makeRequest<T>(
 	requireAuth = false,
 	data?: unknown,
 	config: AxiosRequestConfig = {},
-	authTokenOverride?: string,
 ): Promise<AxiosApiResponse<T>> {
-	let finalConfig = { ...config };
-	let tokenToUse: string | null = null;
+	const finalConfig: AxiosRequestConfig = { ...config };
 
-	if (authTokenOverride) {
-		tokenToUse = authTokenOverride;
-	} else if (requireAuth && typeof window !== "undefined") {
-		tokenToUse = getClientAuthToken();
+	if (requireAuth) {
+		const token = await getAuthToken();
+		if (!token) {
+			throw new axios.AxiosError(
+				"Authentication required. No token available",
+				"401",
+			);
+		}
+
+		finalConfig.headers = {
+			...finalConfig.headers,
+			Authorization: `Bearer ${token}`,
+		};
 	}
-
-	if (requireAuth && !tokenToUse && typeof window === "undefined") {
-		throw new Error(
-			`API Client: 'requireAuth' is true for URL "${url}" on the server, but no 'authTokenOverride' was provided`,
-		);
-	}
-
-	finalConfig = applyAuthHeader(finalConfig, tokenToUse);
 
 	try {
 		let response: AxiosResponse<T>;
-
 		switch (method) {
 			case "get":
 				response = await axiosInstance.get<T>(url, finalConfig);
@@ -103,16 +115,8 @@ export async function getRequest<T>(
 	url: string,
 	requireAuth = false,
 	config: AxiosRequestConfig = {},
-	authTokenOverride?: string,
 ): Promise<AxiosApiResponse<T>> {
-	return makeRequest<T>(
-		"get",
-		url,
-		requireAuth,
-		undefined,
-		config,
-		authTokenOverride,
-	);
+	return makeRequest<T>("get", url, requireAuth, undefined, config);
 }
 
 export async function postRequest<T, D>(
@@ -120,16 +124,8 @@ export async function postRequest<T, D>(
 	data: D,
 	requireAuth = false,
 	config: AxiosRequestConfig = {},
-	authTokenOverride?: string,
 ): Promise<AxiosApiResponse<T>> {
-	return makeRequest<T>(
-		"post",
-		url,
-		requireAuth,
-		data,
-		config,
-		authTokenOverride,
-	);
+	return makeRequest<T>("post", url, requireAuth, data, config);
 }
 
 export async function putRequest<T, D>(
@@ -137,16 +133,8 @@ export async function putRequest<T, D>(
 	data: D,
 	requireAuth = false,
 	config: AxiosRequestConfig = {},
-	authTokenOverride?: string,
 ): Promise<AxiosApiResponse<T>> {
-	return makeRequest<T>(
-		"put",
-		url,
-		requireAuth,
-		data,
-		config,
-		authTokenOverride,
-	);
+	return makeRequest<T>("put", url, requireAuth, data, config);
 }
 
 export async function patchRequest<T, D>(
@@ -154,30 +142,14 @@ export async function patchRequest<T, D>(
 	data: D,
 	requireAuth = false,
 	config: AxiosRequestConfig = {},
-	authTokenOverride?: string,
 ): Promise<AxiosApiResponse<T>> {
-	return makeRequest<T>(
-		"patch",
-		url,
-		requireAuth,
-		data,
-		config,
-		authTokenOverride,
-	);
+	return makeRequest<T>("patch", url, requireAuth, data, config);
 }
 
 export async function deleteRequest<T>(
 	url: string,
 	requireAuth = false,
 	config: AxiosRequestConfig = {},
-	authTokenOverride?: string,
 ): Promise<AxiosApiResponse<T>> {
-	return makeRequest<T>(
-		"delete",
-		url,
-		requireAuth,
-		undefined,
-		config,
-		authTokenOverride,
-	);
+	return makeRequest<T>("delete", url, requireAuth, undefined, config);
 }
