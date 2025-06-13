@@ -13,9 +13,6 @@ async function getProjectTaskBoardDetails(
 	userRole?: UserRole,
 ) {
 	// SIMULATE API CALL
-	console.log(
-		`Fetching task board data for project: ${projectSlug}, user: ${userId}, role: ${userRole}`,
-	);
 
 	return Promise.resolve({
 		...staticTaskBoardData,

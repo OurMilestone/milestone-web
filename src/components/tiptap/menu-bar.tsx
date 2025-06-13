@@ -189,7 +189,6 @@ export default function MenuBar({ editor }: MenuBarProps) {
 		return null;
 	}
 
-	console.log("Emoji Picker - isEmojiPickerOpen:", isEmojiPickerOpen);
 	return (
 		<div className="flex flex-wrap items-center gap-0.5 border-b border-border p-1.5 bg-[#F8FAFC] top-0 sticky z-10">
 			{/* Font Picker Dropdown */}
@@ -251,7 +250,6 @@ export default function MenuBar({ editor }: MenuBarProps) {
 						<DropdownMenuItem
 							key={`h${level}`}
 							onClick={() => {
-								console.log("Toggling Heading ");
 								editor
 									.chain()
 									.focus()
@@ -344,7 +342,6 @@ export default function MenuBar({ editor }: MenuBarProps) {
 					<MenuButton
 						title="Insert Emoji"
 						onClick={() => {
-							console.log("Emoji MenuButton clicked, toggling picker");
 							setIsEmojiPickerOpen((prev) => !prev);
 						}}
 					>

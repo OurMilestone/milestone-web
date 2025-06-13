@@ -1,12 +1,16 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
 
+import {
+	type CreateProjectData,
+	createProject,
+} from "@/actions/dashboard/projects.actions";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -26,7 +30,6 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
 	Select,
 	SelectContent,
@@ -34,11 +37,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import {
-	createProject,
-	CreateProjectData,
-} from "@/actions/dashboard/projects.actions";
 
 const formSchema = z.object({
 	title: z.string().min(3, "Title must be at least 3 characters"),

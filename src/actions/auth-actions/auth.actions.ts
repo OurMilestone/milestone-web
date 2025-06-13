@@ -1,6 +1,6 @@
 "use server";
 
-import { postRequest } from "@/lib/api/api-client";
+import { postRequest } from "@/lib/api/server/api-client";
 import type { ForgotPasswordFormData } from "@/lib/schemas/auth-schema";
 import type { ActionResult } from "@/types";
 import type {

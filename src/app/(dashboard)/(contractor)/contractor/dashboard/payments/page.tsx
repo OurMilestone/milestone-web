@@ -29,8 +29,6 @@ async function getPaymentInfoCardsData(
 async function getPaymentHistoryData(
 	userRole: UserRole,
 ): Promise<{ data: PaymentTransaction[]; totalItems: number }> {
-	console.log(`API: Fetching payment history for ${userRole}`);
-
 	await new Promise((resolve) => setTimeout(resolve, 500));
 
 	return {
