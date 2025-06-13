@@ -1,8 +1,9 @@
-import type { AxiosApiResponse } from "@/types";
+// import "server-only";
+import type { ActionResult, AxiosApiResponse } from "@/types";
 import type { ApiResponse } from "@/types/auth/auth-types";
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import axios from "axios";
-import { auth } from "../../../auth";
+import { auth } from "../../../../auth";
 import axiosInstance from "./axios-config";
 
 async function getAuthToken(): Promise<string | null> {
@@ -52,6 +53,17 @@ const handleError = (error: AxiosError): never => {
 		method: error.config?.method,
 	});
 
+	if (typeof window !== "undefined" && error.response?.status) {
+		// Create a more specific error for React Query to handle
+		const apiError = new Error(`API Error: ${error.response.status}`);
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		(apiError as any).status = error.response.status;
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		(apiError as any).isCorsError =
+			error.message.includes("CORS") || error.code === "ERR_NETWORK";
+		throw apiError;
+	}
+
 	throw error;
 };
 
@@ -62,7 +74,13 @@ async function makeRequest<T>(
 	data?: unknown,
 	config: AxiosRequestConfig = {},
 ): Promise<AxiosApiResponse<T>> {
-	const finalConfig: AxiosRequestConfig = { ...config };
+	const finalConfig: AxiosRequestConfig = {
+		...config,
+		headers: {
+			"Content-Type": "application/json",
+			...config.headers,
+		},
+	};
 
 	if (requireAuth) {
 		const token = await getAuthToken();

@@ -1,11 +1,11 @@
 import { DashboardHeader } from "@/components/dashboard/overview/dashboard-header";
 import { DashboardSidebar } from "@/components/dashboard/overview/dashboard-sidebar";
+import { ProjectProvider } from "@/components/providers/project-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppRoutePaths } from "@/config/routes-config";
 import { redirect } from "next/navigation";
 import { auth } from "../../../auth";
-import { ProjectProvider } from "@/components/providers/project-provider";
 
 export default async function DashboardLayout({
 	children,
@@ -19,7 +19,7 @@ export default async function DashboardLayout({
 	}
 
 	const userRole = session.user.role;
-	//console.log('sessionnn', session)
+
 	return (
 		<div className="flex h-screen">
 			<TooltipProvider delayDuration={200}>

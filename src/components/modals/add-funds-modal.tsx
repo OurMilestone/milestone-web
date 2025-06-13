@@ -42,8 +42,6 @@ interface AddFundsFlowModalProps {
 async function simulateSaveCardAPI(
 	cardDetails: AddCardFormData,
 ): Promise<SavedPaymentMethod> {
-	console.log("API: Saving card", cardDetails);
-
 	await new Promise((resolve) => setTimeout(resolve, 1500));
 	if (cardDetails.cardNumber.endsWith("1111")) {
 		throw new Error("Card validation failed by bank.");
@@ -64,8 +62,6 @@ async function simulateSaveCardAPI(
 async function simulateAddFundsAPI(
 	data: AddFundsFormValidatedData,
 ): Promise<{ success: boolean; message: string }> {
-	console.log("API: Adding funds", data);
-
 	await new Promise((resolve) => setTimeout(resolve, 2000));
 	if (data.transactionPin === "0000") {
 		throw new Error("Incorrect transaction PIN.");

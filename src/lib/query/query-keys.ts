@@ -1,0 +1,15 @@
+import type { UserRole } from "@/types/auth/auth-types";
+
+export const queryKeys = {
+	projects: {
+		all: ["projects"] as const,
+		active: ["projects", "active"] as const,
+		activeWithMembers: ["projects", "active", "with-members"] as const,
+		byRole: (role: UserRole) => ["projects", "role", role] as const,
+		byProjectId: (projectId: number) => ["projects", projectId] as const,
+	},
+
+	projectMembers: {
+		byProjectId: (projectId: number) => ["project-members", projectId] as const,
+	},
+} as const;

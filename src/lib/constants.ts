@@ -26,8 +26,9 @@ import {
 export interface TeamMember {
 	initials: string;
 	color: string;
-	// name?: string;
-	// avatarUrl?: string;
+	name?: string;
+	isOwner?: boolean;
+	role?: string;
 }
 
 export interface Project {

@@ -16,9 +16,6 @@ async function getTaskDetails(
 	_userId?: string,
 	_userRole?: UserRole,
 ): Promise<TaskDetail | null> {
-	console.log(
-		`Fetching details for task: ${taskId} in project: ${_projectSlug}`,
-	);
 	// Fetch from our API based on taskId and projectSlug
 	return Promise.resolve(staticTaskDetailData[taskId] || null);
 }
@@ -28,8 +25,6 @@ async function getProjectTasks(
 	_userId?: string,
 	_userRole?: UserRole,
 ): Promise<ProjectTaskListItem[]> {
-	console.log(`Fetching tasks for project sidebar: ${projectSlug}`);
-
 	return Promise.resolve(staticProjectTaskList);
 }
 

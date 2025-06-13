@@ -157,7 +157,7 @@ const authOptions: NextAuthConfig = {
 		},
 	},
 	debug: isDevelopment,
-	secret: env.AUTH_SECRET,
+	secret: process.env.AUTH_SECRET,
 	trustHost: true,
 	pages: {
 		signIn: "/login",
