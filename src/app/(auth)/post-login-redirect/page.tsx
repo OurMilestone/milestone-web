@@ -40,10 +40,6 @@ const PostLoginRedirect = () => {
 						isFreelancerPath(callbackUrlFromQuery)) ||
 					(user.role === "Contractor" && isContractorPath(callbackUrlFromQuery))
 				) {
-					console.log(
-						"PostLoginRedirect: Valid callbackUrl for role, redirecting to:",
-						callbackUrlFromQuery,
-					);
 					router.replace(callbackUrlFromQuery);
 					return;
 					// biome-ignore lint/style/noUselessElse: <explanation>
@@ -55,10 +51,8 @@ const PostLoginRedirect = () => {
 			}
 
 			if (user.role === "Freelancer") {
-				console.log("PostLoginRedirect: Redirecting Freelancer to dashboard.");
 				router.replace(AppRoutePaths.FreelancerDashboard.Home);
 			} else if (user.role === "Contractor") {
-				console.log("PostLoginRedirect: Redirecting Contractor to dashboard.");
 				router.replace(AppRoutePaths.ContractorDashboard.Home);
 			} else {
 				console.warn(

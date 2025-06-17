@@ -17,6 +17,7 @@ export interface TaskAssignee {
 	name: string;
 	avatarUrl?: string;
 	initials: string;
+	email?: string;
 }
 
 export interface TaskLabel {
@@ -30,6 +31,7 @@ export type TaskPriority = "low" | "medium" | "high" | "urgent";
 export interface Task {
 	id: string;
 	title: string;
+	description?: string;
 	columnId: KanbanColumnId;
 	code: string;
 	labels?: TaskLabel[];
@@ -39,8 +41,15 @@ export interface Task {
 }
 
 export interface ProjectTaskBoardData {
-	projectId: string;
+	projectId: number;
 	projectName: string;
 	columns: KanbanColumnType[];
 	tasks: Task[];
+}
+
+export interface TaskFilters {
+	searchTerm: string;
+	assigneeIds: string[];
+	labels: string[];
+	priority: TaskPriority | null;
 }

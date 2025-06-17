@@ -1,5 +1,15 @@
+import type { ActionResult } from "@/types";
+import type {
+	KanbanColumnId,
+	Task,
+	TaskPriority,
+} from "@/types/dashboard/taskboard-types";
+import axios from "axios";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { ApiResponse } from "./api/server/server-api-client";
+
+import type { TaskDTO } from "./data-access-layer/DTOs/task.dto";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -54,3 +64,125 @@ export const generateYearOptions = (startYearOffset = 0, count = 10) => {
 		return { value: year, label: year };
 	});
 };
+
+export const getInitials = (name: string): string => {
+	return name
+		.split(" ")
+		.map((n) => n[0])
+		.filter(Boolean)
+		.slice(0, 2)
+		.join("")
+		.toUpperCase();
+};
+
+export const getUserColor = (userId: string): string => {
+	const colors = [
+		"bg-blue-200",
+		"bg-green-200",
+		"bg-purple-200",
+		"bg-pink-200",
+		"bg-yellow-200",
+		"bg-indigo-200",
+		"bg-red-200",
+		"bg-cyan-200",
+	];
+
+	let hash = 0;
+
+	for (let i = 0; i < userId?.length; i++) {
+		hash = ((hash << 5) - hash + userId.charCodeAt(i)) & 0xffffffff;
+	}
+	return colors[Math.abs(hash) % colors.length];
+};
+
+export const formatCurrency = (
+	amount: number,
+	currency = "USD",
+	locale = "en-US",
+): string => {
+	return new Intl.NumberFormat(locale, {
+		style: "currency",
+		currency,
+	}).format(amount);
+};
+
+export function handleApiError(
+	error: unknown,
+	defaultMsg: string,
+): ActionResult<null> {
+	console.warn("Auth Action Error:", error);
+
+	if (axios.isAxiosError(error)) {
+		const apiResponse = error.response?.data as ApiResponse<null>;
+
+		return {
+			success: false,
+			data: null,
+			status: error.response?.status ?? 500,
+			message: apiResponse?.message ?? defaultMsg,
+		};
+	}
+	return {
+		success: false,
+		data: null,
+		status: 500,
+		message:
+			error instanceof Error
+				? error.message
+				: "An unexpected error occurred. Please try again later.",
+	};
+}
+
+const mapApiStatusToColumnId = (status: string): KanbanColumnId => {
+	const lowerStatus = status.toLowerCase();
+
+	const normalizedStatus = lowerStatus.replace("-", "_");
+
+	const validColumns: KanbanColumnId[] = [
+		"backlog",
+		"in_progress",
+		"in_review",
+		"done",
+	];
+
+	if (validColumns.includes(normalizedStatus as KanbanColumnId)) {
+		return normalizedStatus as KanbanColumnId;
+	}
+	return "backlog";
+};
+
+export function transformApiTaskToUiTask(
+	apiTask: TaskDTO,
+	index: number,
+): Task {
+	return {
+		id: apiTask.uuid,
+		title: apiTask.title,
+		description: apiTask.description ?? "",
+		columnId: mapApiStatusToColumnId(apiTask.status),
+		code: apiTask.task_code,
+		priority: apiTask.priority.toLowerCase() as TaskPriority,
+		assignees: apiTask.assignee
+			? [
+					{
+						id: apiTask.assignee.id,
+						name: apiTask.assignee.name,
+						initials: getInitials(apiTask.assignee.name),
+						email: apiTask.assignee.email,
+					},
+				]
+			: [],
+		labels: apiTask.label
+			? [
+					{
+						id: apiTask.label,
+						name: apiTask.label,
+						// TODO: This can be expanded to a map for different colors based on label name
+						colorClasses:
+							"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300",
+					},
+				]
+			: [],
+		order: apiTask.order ?? index,
+	};
+}

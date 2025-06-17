@@ -62,8 +62,10 @@
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-hook-form": "^7.56.3",
+		"server-only": "^0.0.1",
 		"sonner": "^2.0.3",
 		"tailwind-merge": "^3.3.0",
+		"use-debounce": "^10.0.5",
 		"usehooks-ts": "^3.1.1",
 		"vaul": "^1.1.2",
 		"zod": "^3.24.4"
@@ -72,6 +74,8 @@
 		"@biomejs/biome": "1.9.4",
 		"@flydotio/dockerfile": "^0.7.10",
 		"@tailwindcss/postcss": "^4",
+		"@tanstack/eslint-plugin-query": "^5.78.0",
+		"@tanstack/react-query-devtools": "^5.80.6",
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
@@ -81,7 +85,9 @@
 		"tw-animate-css": "^1.3.0",
 		"typescript": "^5"
 	},
-	"trustedDependencies": ["@biomejs/biome"],
+	"trustedDependencies": [
+		"@biomejs/biome"
+	],
 	"lint-staged": {
 		"*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx}": [
 			"biome check --write --organize-imports-enabled=true --no-errors-on-unmatched"

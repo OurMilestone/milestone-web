@@ -11,12 +11,18 @@ import type { UserRole } from "@/types/auth/auth-types";
 
 interface StatsCardsProps {
 	userRole: UserRole;
+	activeProjectsCount?: number;
+	completedProjectsCount?: number;
 }
 
-export function StatsCards({ userRole }: StatsCardsProps) {
-	const roleSpecificStats = DASHBOARD_STATS[userRole];
+export function StatsCards({
+	userRole,
+	activeProjectsCount,
+	completedProjectsCount,
+}: StatsCardsProps) {
+	const staticRoleStats = DASHBOARD_STATS[userRole];
 
-	if (!roleSpecificStats) {
+	if (!staticRoleStats) {
 		return (
 			<div className="text-center text-muted-foreground p-8">
 				Stats data not available for this role.
@@ -24,7 +30,19 @@ export function StatsCards({ userRole }: StatsCardsProps) {
 		);
 	}
 
-	const cards: StatCardData[] = getStatCardsConfig(userRole, roleSpecificStats);
+	const mergedStats = {
+		...staticRoleStats,
+		activeProjects:
+			activeProjectsCount !== undefined
+				? activeProjectsCount
+				: staticRoleStats.activeProjects,
+		completedProjects:
+			completedProjectsCount !== undefined
+				? completedProjectsCount
+				: staticRoleStats.completedProjects,
+	};
+
+	const cards: StatCardData[] = getStatCardsConfig(userRole, mergedStats);
 
 	return (
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

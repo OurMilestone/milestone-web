@@ -26,8 +26,9 @@ import {
 export interface TeamMember {
 	initials: string;
 	color: string;
-	// name?: string;
-	// avatarUrl?: string;
+	name?: string;
+	isOwner?: boolean;
+	role?: string;
 }
 
 export interface Project {
@@ -359,7 +360,7 @@ export const USER_PROFILE = {
 export const DEFAULT_ASSIGNEE_AVATAR = "/assets/svgs/default-avatar.svg";
 
 export const staticTaskBoardData: ProjectTaskBoardData = {
-	projectId: "mobile-app-redesign",
+	projectId: 1,
 	projectName: "Mobile App Redesign",
 	columns: [
 		{ id: "backlog", title: "Backlog" },

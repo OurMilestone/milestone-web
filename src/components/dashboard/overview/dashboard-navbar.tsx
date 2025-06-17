@@ -143,33 +143,4 @@ export function DashboardNavbar({ userRole }: DashboardNavbarProps) {
 			})}
 		</SidebarMenu>
 	);
-
-	// return (
-	// 	<SidebarMenu className="bg-white">
-	// 		{navigation.map((item) => {
-	// 			const Icon = iconMap[item.icon as keyof typeof iconMap];
-	// 			const isActive = pathname === item.href;
-
-	// 			return (
-	// 				<SidebarMenuItem key={item.href} className="mb-2">
-	// 					<SidebarMenuButton asChild isActive={isActive} className="p-5">
-	// 						<Link href={item.href}>
-	// 							<Icon
-	// 								className={cn("h-4 w-4", !isActive && "text-[#808aa3]")}
-	// 							/>
-	// 							<span className={cn(!isActive && "2")}>
-	// 								{item.title}
-	// 							</span>
-	// 							{item.badge && (
-	// 								<SidebarMenuBadge className="p-2 rounded-full bg-[#aab1c2]">
-	// 									{item.badge}
-	// 								</SidebarMenuBadge>
-	// 							)}
-	// 						</Link>
-	// 					</SidebarMenuButton>
-	// 				</SidebarMenuItem>
-	// 			);
-	// 		})}
-	// 	</SidebarMenu>
-	// );
 }
