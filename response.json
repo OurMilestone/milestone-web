@@ -1,0 +1,22 @@
+{
+	"json": [
+		{
+			"id": 49,
+			"title": "Project XLiOa",
+			"members": [
+				{
+					"id": "a3d74537-632a-488d-a7c7-1634fd69d895",
+					"email": "aishaagunbiade05@gmail.com",
+					"role": "Freelancer",
+					"full_name": "Aisha",
+					"preferred_name": "Aisha",
+					"is_verified": true,
+					"paystack_customer_id": "CUS_2bs3ru98umeh33p",
+					"stripe_customer_id": null,
+					"username": "Aisha",
+					"project_role": "Member"
+				}
+			]
+		}
+	]
+}

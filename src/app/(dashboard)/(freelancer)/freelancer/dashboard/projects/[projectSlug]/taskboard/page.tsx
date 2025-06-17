@@ -1,84 +1,42 @@
-import KanbanBoard from "@/components/dashboard/taskboard/kanban-board";
-import TaskBoardFilterBar from "@/components/dashboard/taskboard/taskboard-filter-bar";
-import TaskBoardHeader from "@/components/dashboard/taskboard/taskboard-header";
+import { TaskBoardClient } from "@/components/dashboard/taskboard/taskboard-client";
 import { AppRoutePaths } from "@/config/routes-config";
-import { staticTaskBoardData } from "@/lib/constants";
+import { getTaskBoardPageData } from "@/lib/data-access-layer/tasks.dal";
+import { getQueryClient } from "@/lib/query/query-client";
+import { queryKeys } from "@/lib/query/query-keys";
 import type { UserRole } from "@/types/auth/auth-types";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 import { auth } from "../../../../../../../../../auth";
 
-async function getProjectTaskBoardDetails(
-	projectSlug: string,
-	userId?: string,
-	userRole?: UserRole,
-) {
-	// SIMULATE API CALL
-	console.log(
-		`Fetching task board data for project: ${projectSlug}, user: ${userId}, role: ${userRole}`,
-	);
-
-	return Promise.resolve({
-		...staticTaskBoardData,
-		projectName:
-			staticTaskBoardData.tasks.length > 0
-				? `Project for ${staticTaskBoardData.tasks[0].code.split("-")[0]}`
-				: "Sample Project",
-	});
-}
-
-export default async function FreelancerTaskBoardPage(props: {
-	params: Promise<{ projectSlug: string }>;
+export default async function ContractorTaskBoardPage(props: {
+	params: Promise<{ projectSlug: string; userRole: UserRole }>;
 }) {
 	const session = await auth();
-	const userRole: UserRole = "Freelancer";
-	const params = await props.params;
-	const projectSlug = params.projectSlug;
+	const { projectSlug, userRole } = await props.params;
+	const projectId = Number.parseInt(projectSlug, 10);
+
+	if (Number.isNaN(projectId)) {
+		redirect(AppRoutePaths.ContractorDashboard.Projects.Home);
+	}
 
 	if (!session?.user) {
 		redirect(AppRoutePaths.SignIn);
 	}
 
-	if (session.user.role !== userRole) {
-		console.warn(
-			`Role mismatch: User role ${session.user.role} on Freelancer taskboard.`,
-		);
+	const queryClient = getQueryClient();
 
-		redirect(AppRoutePaths.ContractorDashboard.Home);
-	}
-
-	const taskBoardDetails = await getProjectTaskBoardDetails(
-		projectSlug,
-		session.user.id,
-		userRole,
-	);
-
-	if (!taskBoardDetails) {
-		return (
-			<div className="flex items-center justify-center h-full">
-				Project task board not found.
-			</div>
-		);
-	}
+	queryClient.prefetchQuery({
+		queryKey: queryKeys.tasks.byProjectId(projectId),
+		queryFn: () => getTaskBoardPageData(projectId),
+	});
 
 	return (
-		<div className="flex flex-col h-full max-h-full overflow-hidden bg-transparent dark:bg-slate-900">
-			<div className="p-4 flex-shrink-0">
-				<TaskBoardHeader
-					projectName={taskBoardDetails.projectName}
-					projectSlug={projectSlug}
-					userRole={userRole}
-				/>
-				<TaskBoardFilterBar />
-			</div>
-			<div className="flex-grow overflow-x-auto custom-scrollbar">
-				<div className="h-full min-w-max flex">
-					<KanbanBoard
-						initialData={taskBoardDetails}
-						userRole={userRole}
-						projectSlug={projectSlug}
-					/>
-				</div>
-			</div>
-		</div>
+		<HydrationBoundary state={dehydrate(queryClient)}>
+			<TaskBoardClient
+				userRole={userRole}
+				projectId={projectId}
+				projectSlug={projectSlug}
+			/>
+		</HydrationBoundary>
 	);
 }

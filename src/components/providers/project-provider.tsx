@@ -1,18 +1,18 @@
 "use client";
 
 import {
+	type Project,
+	type ProjectMember,
+	getProjectMembers,
+	getProjects,
+} from "@/actions/dashboard/projects.actions";
+import {
+	type ReactNode,
 	createContext,
 	useContext,
 	useEffect,
 	useState,
-	type ReactNode,
 } from "react";
-import {
-	getProjects,
-	getProjectMembers,
-	type Project,
-	type ProjectMember,
-} from "@/actions/dashboard/projects.actions";
 
 interface ProjectContextType {
 	projects: Project[];
@@ -91,10 +91,11 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 		await fetchProjectMembers(projectId);
 	};
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		fetchProjects();
 	}, []);
-	console.log("projects", projects);
+
 	const value: ProjectContextType = {
 		projects,
 		projectMembers,

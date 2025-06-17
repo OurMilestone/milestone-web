@@ -63,7 +63,7 @@ const authOptions: NextAuthConfig = {
 
 	session: {
 		strategy: "jwt",
-		maxAge: 7 * 24 * 60 * 60,
+		maxAge: 24 * 60 * 60,
 	},
 	callbacks: {
 		async signIn({ user, account }) {
@@ -157,7 +157,7 @@ const authOptions: NextAuthConfig = {
 		},
 	},
 	debug: isDevelopment,
-	secret: env.AUTH_SECRET,
+	secret: process.env.AUTH_SECRET,
 	trustHost: true,
 	pages: {
 		signIn: "/login",

@@ -1,7 +1,7 @@
 "use server";
 
+import { apiGet, apiPatch, apiPost } from "@/lib/api/server/server-api-client";
 import { revalidatePath } from "next/cache";
-import { apiGet, apiPost, apiPatch } from "@/lib/api/server-api-client";
 
 export interface ProjectMember {
 	id: string;
@@ -202,47 +202,3 @@ export async function updateProjectStatus(id: string, status: string) {
 		};
 	}
 }
-
-// export async function testProjectEndpoints() {
-//   try {
-//     const endpoints = [
-//       "/project/all-projects/",
-//       "/projects/",
-//       "/project/",
-//       "/api/projects/",
-//       "/contractor/projects/",
-//       "/user/projects/",
-//     ]
-
-//     const results = []
-
-//     for (const endpoint of endpoints) {
-//       console.log(`Testing endpoint: ${endpoint}`)
-//       const response = await apiGet(endpoint)
-//       results.push({
-//         endpoint,
-//         success: response.success,
-//         error: response.error,
-//         dataType: typeof response.data,
-//         hasData: !!response.data,
-//         statusHint: response.error?.includes("404")
-//           ? "Not Found"
-//           : response.error?.includes("403")
-//             ? "Forbidden"
-//             : response.error?.includes("401")
-//               ? "Unauthorized"
-//               : "Other",
-//       })
-//     }
-
-//     return {
-//       success: true,
-//       results,
-//     }
-//   } catch (error) {
-//     return {
-//       success: false,
-//       error: error instanceof Error ? error.message : "Unknown error",
-//     }
-//   }
-// }

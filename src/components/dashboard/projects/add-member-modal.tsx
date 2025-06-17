@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, UserPlus } from "lucide-react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Loader2, UserPlus } from "lucide-react";
 
 import {
-	addProjectMember,
 	type AddMemberData,
+	addProjectMember,
 } from "@/actions/dashboard/projects.actions";
 
+import { useProjects } from "@/components/providers/project-provider";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -38,7 +39,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { useProjects } from "@/components/providers/project-provider";
 
 const formSchema = z.object({
 	user_email: z.string().email("Please enter a valid email address"),
@@ -104,7 +104,11 @@ export function AddMemberModal({
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button variant="outline" size="sm" className="gap-2">
+				<Button
+					variant="outline"
+					size="sm"
+					className="gap-2 bg-white shadow-none"
+				>
 					<UserPlus className="h-4 w-4" />
 					Add Member
 				</Button>

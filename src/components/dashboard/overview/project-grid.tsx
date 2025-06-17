@@ -1,5 +1,6 @@
-"use client"; // This component has interactive elements (buttons)
+"use client";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -10,20 +11,31 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AppRoutePaths } from "@/config/routes-config";
-import { PROJECTS_DATA, type Project } from "@/lib/constants";
+import { useActiveProjectsWithMembers } from "@/hooks/queries/use-projects";
+import type {
+	ProjectDTO,
+	ProjectMemberDTO,
+} from "@/lib/data-access-layer/DTOs/project.dto";
+import { queryKeys } from "@/lib/query/query-keys";
+import { getInitials, getUserColor } from "@/lib/utils";
 import type { UserRole } from "@/types/auth/auth-types";
+import { useQueryClient } from "@tanstack/react-query";
 import {
+	AlertCircle,
 	ChevronDown,
 	ChevronRight,
 	Filter,
 	LayoutGrid,
 	List,
+	RefreshCw,
 } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import { useMemo, useState } from "react";
 import { ProjectCard } from "./project-card";
+import { ProjectGridSkeleton } from "./project-grid-skeleton";
 
-type ProjectStatusFilter = "All" | Project["status"];
+type ProjectStatusFilter = "All" | string;
+
 type SortOption =
 	| "title-asc"
 	| "title-desc"
@@ -33,55 +45,152 @@ type SortOption =
 
 interface ProjectGridProps {
 	userRole: UserRole;
-	initialProjects?: Project[];
 }
 
-export function ProjectsGrid({
-	userRole,
-	initialProjects = PROJECTS_DATA,
-}: ProjectGridProps) {
+interface ProjectWithMembers extends ProjectDTO {
+	members: ProjectMemberDTO[];
+}
+
+const mapProjectStatus = (status: string): string => {
+	switch (status.toLowerCase()) {
+		case "pending":
+			return "Pending";
+		case "in_progress":
+		case "in-progress":
+		case "active":
+			return "On Track";
+		case "completed":
+			return "Completed";
+		case "cancelled":
+		case "canceled":
+			return "Off Track";
+		case "on_hold":
+		case "on-hold":
+			return "At Risk";
+		default:
+			return "On Track";
+	}
+};
+
+const transformProject = (apiProject: ProjectWithMembers) => {
+	const teamMembers = [];
+
+	teamMembers.push({
+		initials:
+			apiProject.owner &&
+			(apiProject.owner.preferred_name || apiProject.owner.full_name)
+				? getInitials(
+						apiProject.owner.preferred_name || apiProject.owner.full_name,
+					)
+				: getInitials(""),
+		color: getUserColor(apiProject.owner.id),
+		name:
+			apiProject.owner &&
+			(apiProject.owner.preferred_name || apiProject.owner.full_name)
+				? apiProject.owner.preferred_name || apiProject.owner.full_name
+				: "Owner",
+		isOwner: true,
+	});
+
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	apiProject.members
+		.filter((member) => member.id !== apiProject.owner.id)
+		.forEach((member) => {
+			teamMembers.push({
+				initials: getInitials(member.preferred_name || member.full_name),
+				color: getUserColor(member.id),
+				name: member.preferred_name || member.full_name,
+				isOwner: false,
+				role: member.project_role,
+			});
+		});
+
+	return {
+		id: apiProject.id.toString(),
+		title: apiProject.title,
+		company: apiProject.owner.full_name || apiProject.owner.preferred_name,
+		status: mapProjectStatus(apiProject.status),
+		budget: Number.parseFloat(apiProject.budget),
+		duration: `${apiProject.duration} ${apiProject.duration_type}`,
+		teamMembers: teamMembers,
+		image: "", // * Empty string for now as we do not have image upload functionality
+		comments: 0, // * Using zero for now as API doesn't provide comments count
+		totalMembers: teamMembers.length,
+	};
+};
+
+export function ProjectsGrid({ userRole }: ProjectGridProps) {
 	const router = useRouter();
+
+	const queryClient = useQueryClient();
+
+	const {
+		data: apiProjectsWithMembers,
+		isLoading,
+		error,
+	} = useActiveProjectsWithMembers();
+
+	const handleRefresh = () => {
+		queryClient.invalidateQueries({
+			queryKey: queryKeys.projects.activeWithMembers,
+		});
+	};
+
 	const [statusFilter, setStatusFilter] = useState<ProjectStatusFilter>("All");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [sortOption, setSortOption] = useState<SortOption>("title-asc");
 	const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+	const projects = useMemo(() => {
+		if (!apiProjectsWithMembers) return [];
+
+		return apiProjectsWithMembers.map(transformProject).filter(Boolean);
+	}, [apiProjectsWithMembers]);
+
 	const filteredAndSortedProjects = useMemo(() => {
-		let projects = initialProjects;
+		let filteredProjects = projects;
 
 		if (statusFilter !== "All") {
-			projects = projects.filter((p) => p.status === statusFilter);
+			filteredProjects = filteredProjects.filter(
+				(p) => p.status === statusFilter,
+			);
 		}
 
 		if (searchTerm) {
-			projects = projects.filter(
+			filteredProjects = filteredProjects.filter(
 				(p) =>
-					p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-					p.company.toLowerCase().includes(searchTerm.toLowerCase()),
+					p?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					p?.company.toLowerCase().includes(searchTerm.toLowerCase()),
 			);
 		}
 
 		switch (sortOption) {
 			case "title-asc":
-				projects.sort((a, b) => a.title.localeCompare(b.title));
+				filteredProjects.sort((a, b) =>
+					(a?.title ?? "").localeCompare(b?.title ?? ""),
+				);
 				break;
 			case "title-desc":
-				projects.sort((a, b) => b.title.localeCompare(a.title));
+				filteredProjects.sort((a, b) =>
+					(b?.title ?? "").localeCompare(a?.title ?? ""),
+				);
 				break;
 			case "budget-asc":
-				projects.sort((a, b) => a.budget - b.budget);
+				filteredProjects.sort((a, b) => (a?.budget ?? 0) - (b?.budget ?? 0));
 				break;
 			case "budget-desc":
-				projects.sort((a, b) => b.budget - a.budget);
+				filteredProjects.sort((a, b) => (b?.budget ?? 0) - (a?.budget ?? 0));
 				break;
 			case "status":
-				projects.sort((a, b) => a.status.localeCompare(b.status));
+				filteredProjects.sort((a, b) =>
+					(a?.status ?? "").localeCompare(b?.status ?? ""),
+				);
 				break;
 		}
-		return [...projects];
-	}, [statusFilter, searchTerm, sortOption, initialProjects]);
+		return [...filteredProjects];
+	}, [projects, statusFilter, searchTerm, sortOption]);
 
-	const projectStatuses: Project["status"][] = [
+	const projectStatuses = [
 		"On Track",
 		"Completed",
 		"At Risk",
@@ -99,126 +208,173 @@ export function ProjectsGrid({
 		}
 		if (path) {
 			router.push(path);
-		} else {
-			console.warn(
-				"Could not determine project taskboard path for role:",
-				userRole,
-			);
 		}
 	};
 
+	const handleViewAllProjects = () => {
+		const path =
+			userRole === "Freelancer"
+				? AppRoutePaths.FreelancerDashboard.Projects.Home
+				: AppRoutePaths.ContractorDashboard.Projects.Home;
+		router.push(path);
+	};
+
+	if (isLoading && !apiProjectsWithMembers) {
+		return <ProjectGridSkeleton />;
+	}
+
+	const shouldShowError =
+		error && (!apiProjectsWithMembers || apiProjectsWithMembers.length === 0);
+
 	return (
 		<div className="space-y-6">
+			{error && apiProjectsWithMembers && apiProjectsWithMembers.length > 0 && (
+				<Alert className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
+					<AlertCircle className="h-4 w-4 text-orange-600" />
+					<AlertDescription className="text-orange-800 dark:text-orange-200">
+						<div className="flex items-center justify-between">
+							<span>Unable to fetch latest updates. Showing cached data.</span>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleRefresh}
+								className="ml-2 h-7"
+							>
+								<RefreshCw className="h-3 w-3 mr-1" />
+								Retry
+							</Button>
+						</div>
+					</AlertDescription>
+				</Alert>
+			)}
+
 			<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 				<h2 className="text-xl lg:text-2xl font-semibold text-foreground">
 					Active Projects
 				</h2>
-				<div className="flex flex-wrap items-center gap-2">
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="outline" size="sm" className="gap-1.5 h-9">
-								<Filter className="h-3.5 w-3.5" />
-								{statusFilter === "All"
-									? "Status: All"
-									: `Status: ${statusFilter}`}
-								<ChevronDown className="h-3.5 w-3.5 opacity-70" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => setStatusFilter("All")}>
-								All
-							</DropdownMenuItem>
-							{projectStatuses.map((status) => (
-								<DropdownMenuItem
-									key={status}
-									onClick={() => setStatusFilter(status)}
-								>
-									{status}
+
+				{projects.length > 0 && (
+					<div className="flex flex-wrap items-center gap-2">
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="outline" size="sm" className="gap-1.5 h-9">
+									<Filter className="h-3.5 w-3.5" />
+									{statusFilter === "All"
+										? "Status: All"
+										: `Status: ${statusFilter}`}
+									<ChevronDown className="h-3.5 w-3.5 opacity-70" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end">
+								<DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem onClick={() => setStatusFilter("All")}>
+									All
 								</DropdownMenuItem>
-							))}
-						</DropdownMenuContent>
-					</DropdownMenu>
+								{projectStatuses.map((status) => (
+									<DropdownMenuItem
+										key={status}
+										onClick={() => setStatusFilter(status)}
+									>
+										{status}
+									</DropdownMenuItem>
+								))}
+							</DropdownMenuContent>
+						</DropdownMenu>
 
-					{/* Sort By Dropdown */}
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="outline" size="sm" className="gap-1.5 h-9">
-								Sort by
-								<ChevronDown className="h-3.5 w-3.5 opacity-70" />
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="outline" size="sm" className="gap-1.5 h-9">
+									Sort by
+									<ChevronDown className="h-3.5 w-3.5 opacity-70" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end">
+								<DropdownMenuLabel>Sort Options</DropdownMenuLabel>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem onClick={() => setSortOption("title-asc")}>
+									Title (A-Z)
+								</DropdownMenuItem>
+								<DropdownMenuItem onClick={() => setSortOption("title-desc")}>
+									Title (Z-A)
+								</DropdownMenuItem>
+								<DropdownMenuItem onClick={() => setSortOption("budget-asc")}>
+									Budget (Low-High)
+								</DropdownMenuItem>
+								<DropdownMenuItem onClick={() => setSortOption("budget-desc")}>
+									Budget (High-Low)
+								</DropdownMenuItem>
+								<DropdownMenuItem onClick={() => setSortOption("status")}>
+									Status
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+
+						<div className="flex items-center rounded-md border bg-background p-0.5">
+							<Button
+								variant={viewMode === "grid" ? "secondary" : "ghost"}
+								size="sm"
+								className="h-8 px-2.5"
+								onClick={() => setViewMode("grid")}
+								aria-label="Grid view"
+							>
+								<LayoutGrid className="h-4 w-4" />
 							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Sort Options</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => setSortOption("title-asc")}>
-								Title (A-Z)
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setSortOption("title-desc")}>
-								Title (Z-A)
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setSortOption("budget-asc")}>
-								Budget (Low-High)
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setSortOption("budget-desc")}>
-								Budget (High-Low)
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setSortOption("status")}>
-								Status
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
+							<Button
+								variant={viewMode === "list" ? "secondary" : "ghost"}
+								size="sm"
+								className="h-8 px-2.5"
+								onClick={() => setViewMode("list")}
+								aria-label="List view"
+							>
+								<List className="h-4 w-4" />
+							</Button>
+						</div>
 
-					{/* View Mode Toggle */}
-					<div className="flex items-center rounded-md border bg-background p-0.5">
 						<Button
-							variant={viewMode === "grid" ? "secondary" : "ghost"}
+							variant="ghost"
 							size="sm"
-							className="h-8 px-2.5"
-							onClick={() => setViewMode("grid")}
-							aria-label="Grid view"
+							className="gap-1 h-9 hidden sm:inline-flex"
+							onClick={handleViewAllProjects}
 						>
-							<LayoutGrid className="h-4 w-4" />
-						</Button>
-						<Button
-							variant={viewMode === "list" ? "secondary" : "ghost"}
-							size="sm"
-							className="h-8 px-2.5"
-							onClick={() => setViewMode("list")}
-							aria-label="List view"
-						>
-							<List className="h-4 w-4" />
+							View All
+							<ChevronRight className="h-4 w-4" />
 						</Button>
 					</div>
-
-					{/* View All Button - consider if this navigates to a dedicated projects page */}
-					<Button
-						variant="ghost"
-						size="sm"
-						className="gap-1 h-9 hidden sm:inline-flex"
-					>
-						View All
-						<ChevronRight className="h-4 w-4" />
-					</Button>
-				</div>
+				)}
 			</div>
 
-			{filteredAndSortedProjects.length > 0 ? (
+			{shouldShowError ? (
+				<div className="text-center py-12">
+					<h3 className="text-xl font-medium text-destructive">
+						Failed to load projects
+					</h3>
+					<p className="text-sm text-muted-foreground mt-1">
+						Please check your connection and try again.
+					</p>
+					<Button
+						variant="outline"
+						size="sm"
+						className="mt-4"
+						onClick={handleRefresh}
+					>
+						<RefreshCw className="h-4 w-4 mr-2" />
+						Try Again
+					</Button>
+				</div>
+			) : filteredAndSortedProjects.length > 0 ? (
 				viewMode === "grid" ? (
 					<div className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
 						{filteredAndSortedProjects.map((project) => (
 							<ProjectCard
-								key={project.id}
+								key={project?.id}
 								project={project}
-								onClick={() => handleProjectCardClick(project.title)}
+								userRole={userRole}
 							/>
 						))}
 					</div>
 				) : (
 					<div className="space-y-4">
-						{/* Placeholder for List View */}
-						{/* TODO: Implement List View Item Component */}
 						{filteredAndSortedProjects.map((project) => (
 							<div
 								key={project.id}
@@ -235,7 +391,8 @@ export function ProjectsGrid({
 							>
 								<h3 className="font-semibold">{project.title}</h3>
 								<p className="text-sm text-muted-foreground">
-									{project.company} - {project.status}
+									{project.company} - {project.status} - {project.totalMembers}{" "}
+									member{project.totalMembers !== 1 ? "s" : ""}
 								</p>
 							</div>
 						))}
@@ -244,25 +401,22 @@ export function ProjectsGrid({
 			) : (
 				<div className="text-center py-12">
 					<h3 className="text-xl font-medium text-muted-foreground">
-						No projects found.
+						No projects match your filters
 					</h3>
 					<p className="text-sm text-muted-foreground mt-1">
 						Try adjusting your filters or search term.
 					</p>
-					{/* Optional: Button to clear filters */}
-					{(statusFilter !== "All" || searchTerm) && (
-						<Button
-							variant="outline"
-							size="sm"
-							className="mt-4"
-							onClick={() => {
-								setStatusFilter("All");
-								setSearchTerm("");
-							}}
-						>
-							Clear Filters
-						</Button>
-					)}
+					<Button
+						variant="outline"
+						size="sm"
+						className="mt-4"
+						onClick={() => {
+							setStatusFilter("All");
+							setSearchTerm("");
+						}}
+					>
+						Clear Filters
+					</Button>
 				</div>
 			)}
 		</div>
