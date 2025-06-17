@@ -75,8 +75,6 @@ const mapProjectStatus = (status: string): string => {
 const transformProject = (apiProject: ProjectWithMembers) => {
 	const teamMembers = [];
 
-	console.log("Transforming project:", apiProject);
-
 	teamMembers.push({
 		initials:
 			apiProject.owner &&
@@ -371,7 +369,7 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 							<ProjectCard
 								key={project?.id}
 								project={project}
-								onClick={() => handleProjectCardClick(project.title)}
+								userRole={userRole}
 							/>
 						))}
 					</div>

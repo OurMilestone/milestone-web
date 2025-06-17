@@ -55,8 +55,6 @@ export default function ForgotPasswordForm() {
 	}, [form.formState.errors, form]);
 
 	const onSubmit = (data: z.infer<typeof forgotPasswordFormSchema>) => {
-		console.log(data);
-
 		toast.promise(
 			(async () => {
 				const result = await forgotPasswordAction(data);

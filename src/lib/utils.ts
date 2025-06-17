@@ -1,9 +1,15 @@
 import type { ActionResult } from "@/types";
+import type {
+	KanbanColumnId,
+	Task,
+	TaskPriority,
+} from "@/types/dashboard/taskboard-types";
 import axios from "axios";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { ApiResponse } from "./api/server/server-api-client";
-import { Currency } from "./constants";
+
+import type { TaskDTO } from "./data-access-layer/DTOs/task.dto";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -124,5 +130,59 @@ export function handleApiError(
 			error instanceof Error
 				? error.message
 				: "An unexpected error occurred. Please try again later.",
+	};
+}
+
+const mapApiStatusToColumnId = (status: string): KanbanColumnId => {
+	const lowerStatus = status.toLowerCase();
+
+	const normalizedStatus = lowerStatus.replace("-", "_");
+
+	const validColumns: KanbanColumnId[] = [
+		"backlog",
+		"in_progress",
+		"in_review",
+		"done",
+	];
+
+	if (validColumns.includes(normalizedStatus as KanbanColumnId)) {
+		return normalizedStatus as KanbanColumnId;
+	}
+	return "backlog";
+};
+
+export function transformApiTaskToUiTask(
+	apiTask: TaskDTO,
+	index: number,
+): Task {
+	return {
+		id: apiTask.uuid,
+		title: apiTask.title,
+		description: apiTask.description ?? "",
+		columnId: mapApiStatusToColumnId(apiTask.status),
+		code: apiTask.task_code,
+		priority: apiTask.priority.toLowerCase() as TaskPriority,
+		assignees: apiTask.assignee
+			? [
+					{
+						id: apiTask.assignee.id,
+						name: apiTask.assignee.name,
+						initials: getInitials(apiTask.assignee.name),
+						email: apiTask.assignee.email,
+					},
+				]
+			: [],
+		labels: apiTask.label
+			? [
+					{
+						id: apiTask.label,
+						name: apiTask.label,
+						// TODO: This can be expanded to a map for different colors based on label name
+						colorClasses:
+							"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300",
+					},
+				]
+			: [],
+		order: apiTask.order ?? index,
 	};
 }

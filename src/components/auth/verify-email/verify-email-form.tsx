@@ -105,9 +105,6 @@ export default function VerifyEmailForm() {
 			callbackUrlFromQuery &&
 			!initialOtpResendDone.current
 		) {
-			console.log(
-				"VerifyEmailForm: Logged-in, unverified user from banner. Resending OTP.",
-			);
 			doResendOtp(emailToVerify, false);
 			initialOtpResendDone.current = true;
 			setTimerRunning(true);

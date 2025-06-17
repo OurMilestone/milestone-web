@@ -10,7 +10,9 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { AppRoutePaths } from "@/config/routes-config";
 import { cn } from "@/lib/utils";
+import type { UserRole } from "@/types/auth/auth-types";
 import {
 	AlertTriangle,
 	CheckCircle,
@@ -23,7 +25,7 @@ import {
 	XCircle,
 } from "lucide-react";
 import Image from "next/image";
-// import type { TransformedProject } from "./project-grid";
+import { useRouter } from "nextjs-toploader/app";
 
 interface TeamMember {
 	initials: string;
@@ -48,7 +50,7 @@ interface Project {
 
 interface ProjectCardProps {
 	project: Project;
-	onClick?: () => void;
+	userRole: UserRole;
 }
 
 export const getStatusBadgeVariant = (
@@ -103,19 +105,40 @@ export const getStatusBadgeVariant = (
 	}
 };
 
-export function ProjectCard({ project, onClick }: ProjectCardProps) {
+export function ProjectCard({ project, userRole }: ProjectCardProps) {
+	const router = useRouter();
+
 	const statusInfo = getStatusBadgeVariant(project.status);
 	const StatusIcon = statusInfo.icon;
 
-	const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+	const handleCardClick = () => {
+		let path = "";
+
+		const projectSlug = project.id;
+
+		if (userRole === "Freelancer") {
+			path = AppRoutePaths.FreelancerDashboard.Projects.Taskboard(projectSlug);
+		} else if (userRole === "Contractor") {
+			path = AppRoutePaths.ContractorDashboard.Projects.Taskboard(projectSlug);
+		}
+
+		if (path) {
+			router.push(path);
+		} else {
+			console.warn(
+				"Could not determine project taskboard path for role:",
+				userRole,
+			);
+		}
+	};
+
+	const handleRootClick = (e: React.MouseEvent<HTMLDivElement>) => {
 		if (
 			(e.target as HTMLElement).closest("button[aria-label='More options']")
 		) {
 			return;
 		}
-		if (onClick) {
-			onClick();
-		}
+		handleCardClick();
 	};
 
 	const maxVisibleMembers = 4;
@@ -129,22 +152,16 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
 		<TooltipProvider>
 			<Card
 				className={cn(
-					"overflow-hidden !shadow-none duration-300 ease-in-out h-full flex flex-col bg-white hover:bg-background/30 hover:shadow-md transition-all",
-					onClick ? "cursor-pointer" : "cursor-default",
+					"overflow-hidden !shadow-none duration-300 ease-in-out h-full flex flex-col bg-white hover:bg-background/30 hover:shadow-md transition-all cursor-pointer",
 				)}
-				onClick={onClick ? handleCardClick : undefined}
-				onKeyDown={
-					onClick
-						? (e) => {
-								if (e.key === "Enter" || e.key === " ")
-									// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-									handleCardClick(e as any);
-							}
-						: undefined
-				}
-				tabIndex={onClick ? 0 : undefined}
-				role={onClick ? "button" : undefined}
-				aria-label={onClick ? `View project: ${project.title}` : undefined}
+				onClick={handleCardClick}
+				onKeyDown={(e) => {
+					if (e.key === "Enter" || e.key === " ") handleCardClick();
+				}}
+				tabIndex={0}
+				// biome-ignore lint/a11y/useSemanticElements: <explanation>
+				role="button"
+				aria-label={`View project: ${project.title}`}
 			>
 				<CardContent className="p-1.5 flex flex-col flex-grow">
 					{project.image && (

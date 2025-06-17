@@ -48,12 +48,12 @@ export function useProjects() {
 	});
 }
 
-export function useProject(projectId: number) {
+export function useProjectById(projectId: number) {
 	return useQuery({
 		queryKey: queryKeys.projects.byProjectId(projectId),
 		queryFn: async () => {
 			const response = await getRequest<SingleProjectDTO>(
-				`/project/${projectId}/get-project`,
+				`/project/${projectId}/get-project/`,
 				true,
 			);
 

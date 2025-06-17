@@ -2,14 +2,14 @@ import { getProjectMembers } from "@/lib/data-access-layer/projects.dal";
 import { type NextRequest, NextResponse } from "next/server";
 
 interface RouteContext {
-	params: {
+	params: Promise<{
 		projectId: string;
-	};
+	}>;
 }
 
 export async function GET(request: NextRequest, { params }: RouteContext) {
 	try {
-		const projectId = Number.parseInt(params.projectId);
+		const projectId = Number.parseInt((await params).projectId);
 
 		if (Number.isNaN(projectId)) {
 			return NextResponse.json(
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 		return NextResponse.json(projectMembers);
 	} catch (error) {
 		console.error(
-			`API Error in /api/projects/${params.projectId}/members:`,
+			`API Error in /api/projects/${(await params).projectId}/members:`,
 			error,
 		);
 
