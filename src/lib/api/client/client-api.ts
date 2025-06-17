@@ -3,6 +3,10 @@ import type {
 	ProjectMembersDTO,
 	ProjectWithMembers,
 } from "@/lib/data-access-layer/DTOs/project.dto";
+import type {
+	TaskBoardPageData,
+	TaskDTO,
+} from "@/lib/data-access-layer/DTOs/task.dto";
 
 class ClientApiError extends Error {
 	constructor(
@@ -87,5 +91,35 @@ export const clientApi = {
 		return callApi<ProjectWithMembers[]>(
 			"/api/projects?type=activeWithMembers",
 		);
+	},
+
+	/**
+	 * Retrieves tasks associated with a specific project.
+	 *
+	 * @param projectId - The unique identifier of the project for which tasks are to be fetched.
+	 * @returns A promise that resolves to an array of TaskDTO objects representing the tasks of the specified project.
+	 */
+	getTasksByProjectId: (projectId: number): Promise<TaskDTO[]> => {
+		return callApi<TaskDTO[]>(`/api/tasks?projectId=${projectId}`);
+	},
+
+	/**
+	 * Retrieves a single task using its unique UUID.
+	 *
+	 * @param taskUuid - The unique identifier (UUID) of the task to be fetched.
+	 * @returns A promise that resolves to a TaskDTO object if the task is found; otherwise, null.
+	 */
+	getTaskById: (taskUuid: string): Promise<TaskDTO | null> => {
+		return callApi<TaskDTO | null>(`/api/tasks/${taskUuid}`);
+	},
+
+	/**
+	 * Retrieves data for the task board of a specific project.
+	 *
+	 * @param projectId - The unique identifier of the project for which the task board data is to be fetched.
+	 * @returns A promise that resolves to TaskBoardPageData containing the project, tasks, and members.
+	 */
+	getTaskBoardData: (projectId: number): Promise<TaskBoardPageData> => {
+		return callApi<TaskBoardPageData>(`/api/taskboard/${projectId}`);
 	},
 };

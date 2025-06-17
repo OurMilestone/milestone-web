@@ -116,13 +116,13 @@ export const getActiveProjectsWithMembers = cache(
 	},
 );
 
-export const getProject = cache(
+export const getProjectById = cache(
 	async (projectId: number): Promise<ActionResult<SingleProjectDTO | null>> => {
 		await checkUserSession();
 
 		try {
 			const response = await getRequest<SingleProjectDTO>(
-				`/project/${projectId}/get-project`,
+				`/project/${projectId}/get-project/`,
 				true,
 			);
 
@@ -151,7 +151,6 @@ export const getProjectMembers = cache(
 				true,
 			);
 
-			console.log("Project Members Response: ", response);
 			const responseData = response.data.data;
 
 			if (

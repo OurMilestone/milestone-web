@@ -155,11 +155,23 @@ export default function TaskCard({
 							</p>
 							<button
 								{...listeners}
-								className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded flex-shrink-0"
+								className={cn(
+									"p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-grab active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded flex-shrink-0",
+									"min-w-[24px] min-h-[24px] flex items-center justify-center",
+								)}
 								aria-label="Drag task to re-order or move"
 								onClick={(e) => e.stopPropagation()}
 								onKeyDown={(e) => e.stopPropagation()}
+								onTouchStart={(e) => {
+									e.stopPropagation();
+								}}
 								tabIndex={isDraggingOverlay ? -1 : 0}
+								style={{
+									touchAction: "none",
+									WebkitTouchCallout: "none",
+									WebkitUserSelect: "none",
+									userSelect: "none",
+								}}
 							>
 								<GripVertical size={16} />
 							</button>

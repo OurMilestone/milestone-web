@@ -1,11 +1,11 @@
 "use client";
 
+import { CreateProjectModal } from "@/components/dashboard/overview/create-project";
+import { ProjectCard } from "@/components/dashboard/projects/project-card";
+import { useProjects } from "@/components/providers/project-provider";
+import SectionHeader from "@/components/typography/section-header";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import SectionHeader from "@/components/typography/section-header";
-import { ProjectCard } from "@/components/dashboard/projects/project-card";
-import { CreateProjectModal } from "@/components/dashboard/overview/create-project";
-import { useProjects } from "@/components/providers/project-provider";
 
 export default function ContractorDashboardProjectsPage() {
 	const { projects, isLoading, isError, error } = useProjects();
@@ -14,6 +14,7 @@ export default function ContractorDashboardProjectsPage() {
 		return (
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-5">
 				{Array.from({ length: 6 }).map((_, i) => (
+					// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 					<Card key={i}>
 						<CardHeader>
 							<Skeleton className="h-4 w-3/4" />
