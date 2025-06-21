@@ -70,6 +70,37 @@ export const getAllProjects = cache(
 	},
 );
 
+export const getAllProjectsWithMembers = cache(
+	async (): Promise<ProjectWithMembers[]> => {
+		const allProjects = await getAllProjects();
+
+		if (!allProjects || !allProjects.data || allProjects.data?.length === 0) {
+			return [];
+		}
+
+		const memberPromises = allProjects.data.map((project) =>
+			getProjectMembers(project.id),
+		);
+
+		const memberResults = await Promise.all(memberPromises);
+
+		const memberMap = new Map<number, ProjectMemberDTO[]>();
+
+		for (const result of memberResults) {
+			if (result?.success && result.data) {
+				memberMap.set(result.data.id, result.data.members);
+			}
+		}
+
+		const projectsWithMembers = allProjects.data.map((project) => ({
+			...project,
+			members: memberMap.get(project.id) || [],
+		}));
+
+		return projectsWithMembers;
+	},
+);
+
 export const getActiveProjects = cache(async (): Promise<ProjectDTO[]> => {
 	const response = await getAllProjects();
 

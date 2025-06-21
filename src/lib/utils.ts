@@ -9,6 +9,16 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { ApiResponse } from "./api/server/server-api-client";
 
+import type { UiProject } from "@/types/dashboard/projects-types";
+import {
+	AlertTriangle,
+	CheckCircle,
+	Clock,
+	Loader2,
+	XCircle,
+} from "lucide-react";
+import type { Project } from "./constants";
+import type { ProjectWithMembers } from "./data-access-layer/DTOs/project.dto";
 import type { TaskDTO } from "./data-access-layer/DTOs/task.dto";
 
 export function cn(...inputs: ClassValue[]) {
@@ -133,7 +143,7 @@ export function handleApiError(
 	};
 }
 
-const mapApiStatusToColumnId = (status: string): KanbanColumnId => {
+export const mapApiStatusToColumnId = (status: string): KanbanColumnId => {
 	const lowerStatus = status.toLowerCase();
 
 	const normalizedStatus = lowerStatus.replace("-", "_");
@@ -149,6 +159,17 @@ const mapApiStatusToColumnId = (status: string): KanbanColumnId => {
 		return normalizedStatus as KanbanColumnId;
 	}
 	return "backlog";
+};
+
+export const mapColumnIdToApiStatus = (columnId: KanbanColumnId): string => {
+	const statusMap: Record<KanbanColumnId, string> = {
+		backlog: "BACKLOG",
+		in_progress: "IN_PROGRESS",
+		in_review: "IN_REVIEW",
+		done: "DONE",
+	};
+
+	return statusMap[columnId] || "BACKLOG";
 };
 
 export function transformApiTaskToUiTask(
@@ -184,5 +205,130 @@ export function transformApiTaskToUiTask(
 				]
 			: [],
 		order: apiTask.order ?? index,
+	};
+}
+
+export const getStatusBadgeVariant = (
+	status: Project["status"],
+): {
+	variant: "default" | "secondary" | "destructive" | "outline";
+	className: string;
+	icon?: React.ElementType;
+} => {
+	switch (status) {
+		case "Completed":
+			return {
+				variant: "default",
+				className:
+					"bg-green-100 text-green-700 dark:bg-green-700/30 dark:text-green-300 border-green-300 dark:border-green-600",
+				icon: CheckCircle,
+			};
+		case "On Track":
+			return {
+				variant: "secondary",
+				className:
+					"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300 border-blue-300 dark:border-blue-600",
+				icon: Loader2,
+			};
+		case "Pending":
+			return {
+				variant: "outline",
+				className:
+					"bg-yellow-100 text-yellow-700 dark:bg-yellow-700/30 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600",
+				icon: Clock,
+			};
+		case "At Risk":
+			return {
+				variant: "destructive",
+				className:
+					"bg-orange-100 text-orange-700 dark:bg-orange-700/30 dark:text-orange-300 border-orange-300 dark:border-orange-600",
+				icon: AlertTriangle,
+			};
+		case "Off Track":
+			return {
+				variant: "destructive",
+				className:
+					"bg-red-100 text-red-700 dark:bg-red-700/30 dark:text-red-300 border-red-300 dark:border-red-600",
+				icon: XCircle,
+			};
+		default:
+			return {
+				variant: "secondary",
+				className:
+					"bg-gray-100 text-gray-700 dark:bg-gray-700/30 dark:text-gray-300 border-gray-300 dark:border-gray-600",
+			};
+	}
+};
+
+export const mapProjectStatus = (status: string): string => {
+	switch (status.toLowerCase()) {
+		case "pending":
+			return "Pending";
+		case "in_progress":
+		case "in-progress":
+		case "active":
+			return "On Track";
+		case "completed":
+			return "Completed";
+		case "cancelled":
+		case "canceled":
+			return "Off Track";
+		case "on_hold":
+		case "on-hold":
+			return "At Risk";
+		default:
+			return "On Track";
+	}
+};
+
+export function transformApiProjectToUiProject(
+	apiProject: ProjectWithMembers,
+): UiProject {
+	const teamMembers = [];
+
+	teamMembers.push({
+		initials:
+			apiProject.owner &&
+			(apiProject.owner.preferred_name || apiProject.owner.full_name)
+				? getInitials(
+						apiProject.owner.preferred_name || apiProject.owner.full_name,
+					)
+				: getInitials(""),
+		color: getUserColor(apiProject.owner.id),
+		name:
+			apiProject.owner &&
+			(apiProject.owner.preferred_name || apiProject.owner.full_name)
+				? apiProject.owner.preferred_name || apiProject.owner.full_name
+				: "Owner",
+		isOwner: true,
+	});
+
+	// biome-ignore lint/complexity/noForEach: <explanation>
+	apiProject.members
+		.filter((member) => member.id !== apiProject.owner.id)
+		.forEach((member) => {
+			teamMembers.push({
+				initials: getInitials(member.preferred_name || member.full_name),
+				color: getUserColor(member.id),
+				name: member.preferred_name || member.full_name,
+				isOwner: false,
+				role: member.project_role,
+			});
+		});
+
+	return {
+		id: apiProject.id.toString(),
+		title: apiProject.title,
+		description: apiProject.description,
+		company: apiProject.owner.full_name || apiProject.owner.preferred_name,
+		status: mapProjectStatus(apiProject.status),
+		budget: Number.parseFloat(apiProject.budget),
+		duration: `${apiProject.duration} ${apiProject.duration_type.slice(0, apiProject.duration_type.length - 1)}${apiProject.duration !== 1 ? "s" : ""}`,
+		durationValue: apiProject.duration,
+		durationUnit: apiProject.duration_type,
+		teamMembers: teamMembers,
+		image: "", // * Empty string for now as we do not have image upload functionality
+		comments: 0, // * Using zero for now as API doesn't provide comments count
+		totalMembers: teamMembers.length,
 	};
 }

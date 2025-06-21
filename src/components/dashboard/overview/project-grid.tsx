@@ -17,7 +17,7 @@ import type {
 	ProjectMemberDTO,
 } from "@/lib/data-access-layer/DTOs/project.dto";
 import { queryKeys } from "@/lib/query/query-keys";
-import { getInitials, getUserColor } from "@/lib/utils";
+import { transformApiProjectToUiProject } from "@/lib/utils";
 import type { UserRole } from "@/types/auth/auth-types";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import { useMemo, useState } from "react";
-import { ProjectCard } from "./project-card";
+import { ProjectCard } from "../projects/project-card";
 import { ProjectGridSkeleton } from "./project-grid-skeleton";
 
 type ProjectStatusFilter = "All" | string;
@@ -50,74 +50,6 @@ interface ProjectGridProps {
 interface ProjectWithMembers extends ProjectDTO {
 	members: ProjectMemberDTO[];
 }
-
-const mapProjectStatus = (status: string): string => {
-	switch (status.toLowerCase()) {
-		case "pending":
-			return "Pending";
-		case "in_progress":
-		case "in-progress":
-		case "active":
-			return "On Track";
-		case "completed":
-			return "Completed";
-		case "cancelled":
-		case "canceled":
-			return "Off Track";
-		case "on_hold":
-		case "on-hold":
-			return "At Risk";
-		default:
-			return "On Track";
-	}
-};
-
-const transformProject = (apiProject: ProjectWithMembers) => {
-	const teamMembers = [];
-
-	teamMembers.push({
-		initials:
-			apiProject.owner &&
-			(apiProject.owner.preferred_name || apiProject.owner.full_name)
-				? getInitials(
-						apiProject.owner.preferred_name || apiProject.owner.full_name,
-					)
-				: getInitials(""),
-		color: getUserColor(apiProject.owner.id),
-		name:
-			apiProject.owner &&
-			(apiProject.owner.preferred_name || apiProject.owner.full_name)
-				? apiProject.owner.preferred_name || apiProject.owner.full_name
-				: "Owner",
-		isOwner: true,
-	});
-
-	// biome-ignore lint/complexity/noForEach: <explanation>
-	apiProject.members
-		.filter((member) => member.id !== apiProject.owner.id)
-		.forEach((member) => {
-			teamMembers.push({
-				initials: getInitials(member.preferred_name || member.full_name),
-				color: getUserColor(member.id),
-				name: member.preferred_name || member.full_name,
-				isOwner: false,
-				role: member.project_role,
-			});
-		});
-
-	return {
-		id: apiProject.id.toString(),
-		title: apiProject.title,
-		company: apiProject.owner.full_name || apiProject.owner.preferred_name,
-		status: mapProjectStatus(apiProject.status),
-		budget: Number.parseFloat(apiProject.budget),
-		duration: `${apiProject.duration} ${apiProject.duration_type}`,
-		teamMembers: teamMembers,
-		image: "", // * Empty string for now as we do not have image upload functionality
-		comments: 0, // * Using zero for now as API doesn't provide comments count
-		totalMembers: teamMembers.length,
-	};
-};
 
 export function ProjectsGrid({ userRole }: ProjectGridProps) {
 	const router = useRouter();
@@ -144,7 +76,7 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 	const projects = useMemo(() => {
 		if (!apiProjectsWithMembers) return [];
 
-		return apiProjectsWithMembers.map(transformProject).filter(Boolean);
+		return apiProjectsWithMembers.map(transformApiProjectToUiProject);
 	}, [apiProjectsWithMembers]);
 
 	const filteredAndSortedProjects = useMemo(() => {
@@ -370,6 +302,7 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 								key={project?.id}
 								project={project}
 								userRole={userRole}
+								view="overview"
 							/>
 						))}
 					</div>

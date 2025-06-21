@@ -75,11 +75,11 @@ export function DashboardNavbar({ userRole }: DashboardNavbarProps) {
 						>
 							{item.title}
 						</span>
-						{item.badge && (
+						{/* {item.badge && (
 							<SidebarMenuBadge className="ml-auto bg-[#aab1c2] rounded-full">
 								{item.badge}
 							</SidebarMenuBadge>
-						)}
+						)} */}
 					</>
 				);
 
