@@ -10,7 +10,7 @@ import { auth } from "../../../../../../../auth";
 export default async function ContractorDashboardProjectsPage() {
 	const session = await auth();
 
-	if (!session || !session.user || session?.user?.role !== "Contractor") {
+	if (!session || !session.user || session?.user?.role !== "Freelancer") {
 		redirect(AppRoutePaths.SignIn);
 	}
 
