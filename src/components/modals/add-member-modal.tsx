@@ -2,16 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, UserPlus } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import {
-	type AddMemberData,
-	addProjectMember,
-} from "@/actions/dashboard/projects.actions";
+import { addProjectMemberAction } from "@/actions/dashboard/projects.actions";
 
-import { useProjects } from "@/components/providers/project-provider";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -38,16 +34,18 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { queryKeys } from "@/lib/query/query-keys";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-const formSchema = z.object({
+export const addMemberSchema = z.object({
 	user_email: z.string().email("Please enter a valid email address"),
 	role: z.enum(["admin", "member"], {
 		required_error: "Please select a role",
 	}),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof addMemberSchema>;
 
 interface AddMemberModalProps {
 	projectId: string;
@@ -59,46 +57,50 @@ export function AddMemberModal({
 	projectTitle,
 }: AddMemberModalProps) {
 	const [open, setOpen] = useState(false);
-	const [isPending, startTransition] = useTransition();
-	const { refetchProjectMembers } = useProjects();
+	const queryClient = useQueryClient();
 
 	const form = useForm<FormValues>({
-		resolver: zodResolver(formSchema),
+		resolver: zodResolver(addMemberSchema),
 		defaultValues: {
 			user_email: "",
 			role: "member",
 		},
 	});
 
-	function onSubmit(values: FormValues) {
-		startTransition(async () => {
-			try {
-				const result = await addProjectMember(
-					projectId,
-					values as AddMemberData,
-				);
+	const { mutate: addMember, isPending } = useMutation({
+		mutationFn: (values: FormValues) =>
+			addProjectMemberAction(Number(projectId), values),
 
-				if (result.success) {
-					toast("Member added", {
-						description: result.message,
-					});
-
-					await refetchProjectMembers(projectId);
-
-					setOpen(false);
-					form.reset();
-				} else {
-					toast("Error", {
-						description: result.message,
-					});
-				}
-			} catch (error) {
-				toast("Error", {
-					description: "An unexpected error occurred. Please try again.",
+		onSuccess: (res) => {
+			if (res.success) {
+				toast.success("Member Added", {
+					description: res.message,
 				});
-				console.error("Error adding member:", error);
+
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.projects.activeWithMembers,
+				});
+
+				queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
+
+				setOpen(false);
+
+				form.reset();
+			} else {
+				toast.error("Failed to Add Member", {
+					description: res.message,
+				});
 			}
-		});
+		},
+		onError: (err) => {
+			toast.error("An Error Occurred", {
+				description: err.message,
+			});
+		},
+	});
+
+	function onSubmit(values: FormValues) {
+		addMember(values);
 	}
 
 	return (
@@ -108,12 +110,16 @@ export function AddMemberModal({
 					variant="outline"
 					size="sm"
 					className="gap-2 bg-white shadow-none"
+					onClick={(e) => e.stopPropagation()}
 				>
 					<UserPlus className="h-4 w-4" />
 					Add Member
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]">
+			<DialogContent
+				className="sm:max-w-[425px]"
+				onInteractOutside={(e) => e.stopPropagation()}
+			>
 				<DialogHeader>
 					<DialogTitle>Add Team Member</DialogTitle>
 					<DialogDescription>

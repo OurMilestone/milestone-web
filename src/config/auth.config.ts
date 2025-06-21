@@ -9,7 +9,6 @@ import type {
 import type { NextAuthConfig, Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
-import { env } from "../../env.mjs";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 

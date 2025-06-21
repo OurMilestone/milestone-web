@@ -1,14 +1,17 @@
 "use server";
 
 import { AppRoutePaths } from "@/config/routes-config";
-import { postRequest } from "@/lib/api/server/api-client";
+import { patchRequest, postRequest } from "@/lib/api/server/api-client";
+import { getTaskById } from "@/lib/data-access-layer/tasks.dal";
 import {
 	type CreateTaskInput,
 	createTaskSchema,
+	updateTaskStatusSchema,
 } from "@/lib/schemas/task-schema";
-import { handleApiError } from "@/lib/utils";
+import { handleApiError, mapColumnIdToApiStatus } from "@/lib/utils";
 import type { ActionResult } from "@/types";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
+import type { KanbanColumnId } from "@/types/dashboard/taskboard-types";
 import { revalidatePath } from "next/cache";
 import { auth } from "../../../auth";
 
@@ -76,11 +79,7 @@ export async function updateTaskStatusAction(input: {
 	taskId: string;
 	newStatus: string;
 	projectId: number;
-	projectSlug: string;
-	// TODO: Add ordering information if the API supports it
 }): Promise<ActionResult<null>> {
-	// TODO: Add Zod validation for the input
-
 	const session = await auth();
 
 	if (!session?.user) {
@@ -95,20 +94,52 @@ export async function updateTaskStatusAction(input: {
 	const role = session.user.role;
 
 	try {
-		console.log(
-			`Simulating API call: Update task ${input.taskId} to status ${input.newStatus}`,
-		);
+		const validatedInput = updateTaskStatusSchema.parse({
+			taskUuid: input.taskId,
+			newStatus: input.newStatus,
+			projectId: input.projectId,
+		});
 
-		if (Math.random() > 0.5) {
+		const currentTask = await getTaskById(validatedInput.taskUuid);
+
+		if (!currentTask) {
 			return {
 				success: false,
-				status: 500,
+				status: 404,
 				data: null,
-				message: "Simulated server failure!",
+				message: "Task not found.",
 			};
 		}
 
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		const apiStatus = mapColumnIdToApiStatus(
+			validatedInput.newStatus as KanbanColumnId,
+		);
+
+		const payload = {
+			project: currentTask.project.id,
+			title: currentTask.title,
+			description: currentTask.description,
+			status: apiStatus,
+			label: currentTask.label,
+			assignee: currentTask.assignee.id,
+			priority: currentTask.priority,
+		};
+
+		const url = `/task/${validatedInput.taskUuid}/update-task/`;
+		const response = await patchRequest<TaskDetail, typeof payload>(
+			url,
+			payload,
+			true,
+		);
+
+		if (!response.data.status) {
+			return {
+				success: false,
+				status: 400,
+				data: null,
+				message: response.data.message || "Failed to update task status.",
+			};
+		}
 
 		role === "Contractor"
 			? revalidatePath(

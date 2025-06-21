@@ -123,7 +123,7 @@ export function CreateTaskModal({
 	if (isDesktop) {
 		return (
 			<Dialog open={isOpen} onOpenChange={setIsOpen}>
-				<DialogContent className="sm:max-w-[425px]">
+				<DialogContent className="sm:max-w-[625px]">
 					<DialogHeader>
 						<DialogTitle>Create New Task</DialogTitle>
 						<DialogDescription>

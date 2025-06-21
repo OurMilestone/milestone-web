@@ -286,23 +286,23 @@ export const SIDEBAR_NAVIGATION = {
 			href: "/freelancer/dashboard/projects",
 			badge: "10",
 		},
-		{
-			title: "Messages",
-			icon: "MessageSquare",
-			href: "/freelancer/dashboard/messages",
-			badge: "10",
-		},
-		{
-			title: "Profile",
-			icon: "User",
-			href: "/freelancer/dashboard/profile",
-		},
-		{
-			title: "Reviews",
-			icon: "Star",
-			href: "/freelancer/dashboard/reviews",
-			badge: "10",
-		},
+		// {
+		// 	title: "Messages",
+		// 	icon: "MessageSquare",
+		// 	href: "/freelancer/dashboard/messages",
+		// 	badge: "10",
+		// },
+		// {
+		// 	title: "Profile",
+		// 	icon: "User",
+		// 	href: "/freelancer/dashboard/profile",
+		// },
+		// {
+		// 	title: "Reviews",
+		// 	icon: "Star",
+		// 	href: "/freelancer/dashboard/reviews",
+		// 	badge: "10",
+		// },
 		{
 			title: "Payments",
 			icon: "DollarSign",
@@ -323,23 +323,23 @@ export const SIDEBAR_NAVIGATION = {
 			href: "/contractor/dashboard/projects",
 			badge: "8",
 		},
-		{
-			title: "Workers",
-			icon: "Users",
-			href: "/contractor/dashboard/workers",
-			badge: "12",
-		},
-		{
-			title: "Messages",
-			icon: "MessageSquare",
-			href: "/contractor/dashboard/messages",
-			badge: "15",
-		},
-		{
-			title: "Profile",
-			icon: "User",
-			href: "/contractor/dashboard/profile",
-		},
+		// {
+		// 	title: "Workers",
+		// 	icon: "Users",
+		// 	href: "/contractor/dashboard/workers",
+		// 	badge: "12",
+		// },
+		// {
+		// 	title: "Messages",
+		// 	icon: "MessageSquare",
+		// 	href: "/contractor/dashboard/messages",
+		// 	badge: "15",
+		// },
+		// {
+		// 	title: "Profile",
+		// 	icon: "User",
+		// 	href: "/contractor/dashboard/profile",
+		// },
 		{
 			title: "Payments",
 			icon: "DollarSign",
