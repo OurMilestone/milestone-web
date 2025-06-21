@@ -1,7 +1,22 @@
 "use server";
 
-import { apiGet, apiPatch, apiPost } from "@/lib/api/server/server-api-client";
+import { addMemberSchema } from "@/components/modals/add-member-modal";
+import {
+	deleteRequest,
+	postRequest,
+	putRequest,
+} from "@/lib/api/server/api-client";
+import { apiGet, apiPost } from "@/lib/api/server/server-api-client";
+import type { ProjectDTO } from "@/lib/data-access-layer/DTOs/project.dto";
+import { getProjectById } from "@/lib/data-access-layer/projects.dal";
+import {
+	type UpdateProjectInput,
+	updateProjectSchema,
+} from "@/lib/schemas/project-schema";
+import { handleApiError } from "@/lib/utils";
+import type { ActionResult } from "@/types";
 import { revalidatePath } from "next/cache";
+import { auth } from "../../../auth";
 
 export interface ProjectMember {
 	id: string;
@@ -138,67 +153,112 @@ export async function getProjectMembers(projectId: string) {
 	}
 }
 
-export async function addProjectMember(
-	projectId: string,
-	memberData: AddMemberData,
-) {
+export async function addProjectMemberAction(
+	projectId: number,
+	input: AddMemberData,
+): Promise<ActionResult<null>> {
+	const session = await auth();
+
+	if (session?.user?.role !== "Contractor") {
+		return { success: false, status: 403, message: "Forbidden", data: null };
+	}
+
 	try {
-		const response = await apiPost(
-			`/add-member/?project_id=${projectId}`,
-			memberData,
-		);
+		await postRequest(`/add-member/?project_id=${projectId}`, input, true);
 
-		if (response.success) {
-			revalidatePath("/dashboard/contractor/overview");
-			revalidatePath("/dashboard/contractor/projects");
-			revalidatePath(`/dashboard/contractor/projects/${projectId}`);
-
-			return {
-				success: true,
-				message: "Member added successfully",
-				data: response.data,
-			};
-		}
+		revalidatePath("/(dashboard)", "layout");
 
 		return {
-			success: false,
-			message: response.error || "Failed to add member",
+			success: true,
+			data: null,
+			status: 200,
+			message: "Member invited successfully.",
 		};
 	} catch (error) {
-		console.error("Error in addProjectMember:", error);
-		return {
-			success: false,
-			message: "An unexpected error occurred",
-		};
+		return handleApiError(error, "Failed to add member.");
 	}
 }
 
-export async function updateProjectStatus(id: string, status: string) {
+export async function updateProjectAction(
+	projectId: number,
+	payload: Partial<UpdateProjectInput & { status: string }>,
+): Promise<ActionResult<ProjectDTO | null>> {
+	const session = await auth();
+
+	if (session?.user?.role !== "Contractor") {
+		return {
+			success: false,
+			status: 403,
+			message: "Forbidden",
+			data: null,
+		};
+	}
+
 	try {
-		const response = await apiPatch(`/project/${id}/update-project`, {
-			status,
-		});
+		const currentProject = await getProjectById(projectId);
 
-		if (response.success) {
-			revalidatePath("/dashboard/contractor/overview");
-			revalidatePath("/dashboard/contractor/projects");
-
+		if (!currentProject) {
 			return {
-				success: true,
-				message: "Project status updated successfully",
-				data: response.data,
+				success: false,
+				status: 404,
+				message: "Project not found",
+				data: null,
 			};
 		}
 
+		if (!payload.status) {
+			updateProjectSchema.parse(payload);
+		}
+
+		const finalApiPayload = {
+			title: payload.title ?? currentProject.data?.title,
+			description: payload.description ?? currentProject.data?.description,
+			duration: payload.duration ?? currentProject.data?.duration,
+			duration_type:
+				payload.duration_type ?? currentProject.data?.duration_type,
+			status: payload.status ?? currentProject.data?.status,
+			budget: payload.budget ?? Number(currentProject.data?.budget),
+		};
+
+		const response = await putRequest<ProjectDTO, typeof payload>(
+			`/project/${projectId}/update-project/`,
+			finalApiPayload,
+			true,
+		);
+
+		revalidatePath("/(dashboard)", "layout");
+
 		return {
-			success: false,
-			message: response.error || "Failed to update project status",
+			success: true,
+			data: response.data.data,
+			status: 200,
+			message: "Project updated successfully.",
 		};
 	} catch (error) {
-		console.error("Error in updateProjectStatus:", error);
+		return handleApiError(error, "Failed to update project");
+	}
+}
+
+export async function deleteProjectAction(
+	projectId: number,
+): Promise<ActionResult<null>> {
+	const session = await auth();
+	if (session?.user?.role !== "Contractor") {
+		return { success: false, status: 403, message: "Forbidden", data: null };
+	}
+
+	try {
+		await deleteRequest(`/project/${projectId}/delete-project/`, true);
+
+		revalidatePath("/(dashboard)", "layout");
+
 		return {
-			success: false,
-			message: "An unexpected error occurred",
+			success: true,
+			data: null,
+			status: 200,
+			message: "Project deleted successfully.",
 		};
+	} catch (error) {
+		return handleApiError(error, "Failed to delete project.");
 	}
 }

@@ -1,6 +1,6 @@
 import { DashboardHeader } from "@/components/dashboard/overview/dashboard-header";
 import { DashboardSidebar } from "@/components/dashboard/overview/dashboard-sidebar";
-import { ProjectProvider } from "@/components/providers/project-provider";
+
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppRoutePaths } from "@/config/routes-config";
@@ -24,17 +24,15 @@ export default async function DashboardLayout({
 		<div className="flex h-screen">
 			<TooltipProvider delayDuration={200}>
 				<SidebarProvider className="bg-white">
-					<ProjectProvider>
-						<DashboardSidebar userRole={userRole} />
-						<div className="flex-1 overflow-y-auto mb-2">
-							<SidebarInset>
-								<DashboardHeader />
-								<div className="flex flex-1 flex-col gap-4 px-4 bg-white">
-									{children}
-								</div>
-							</SidebarInset>
-						</div>
-					</ProjectProvider>
+					<DashboardSidebar userRole={userRole} />
+					<div className="flex-1 overflow-y-auto mb-2">
+						<SidebarInset>
+							<DashboardHeader />
+							<div className="flex flex-1 flex-col gap-4 px-4 bg-white">
+								{children}
+							</div>
+						</SidebarInset>
+					</div>
 				</SidebarProvider>
 			</TooltipProvider>
 		</div>

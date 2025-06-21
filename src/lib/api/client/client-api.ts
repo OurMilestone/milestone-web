@@ -58,10 +58,18 @@ async function callApi<T>(
 export const clientApi = {
 	/**
 	 * Fetches all projects.
-	 * Corresponds to `getAllProjects` in the DAL.
+	 * Corresponds to `getAllProjects` in the DAL (Data Access Layer).
 	 */
 	getProjects: (): Promise<ProjectDTO[]> => {
 		return callApi<ProjectDTO[]>("/api/projects");
+	},
+
+	/**
+	 * Fetches all projects with their members.
+	 * Corresponds to `getAllProjectsWithMembers` in the DAL.
+	 */
+	getAllProjectsWithMembers: (): Promise<ProjectWithMembers[]> => {
+		return callApi<ProjectWithMembers[]>("/api/projects?type=allWithMembers");
 	},
 
 	/**

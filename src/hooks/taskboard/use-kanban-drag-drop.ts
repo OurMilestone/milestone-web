@@ -65,7 +65,6 @@ export function useKanbanDragDrop({
 			taskId: string;
 			newStatus: string;
 			projectId: number;
-			projectSlug: string;
 		}) => {
 			await queryClient.cancelQueries({
 				queryKey: queryKeys.tasks.byProjectId(projectId),
@@ -207,11 +206,9 @@ export function useKanbanDragDrop({
 					taskId: active.id as string,
 					newStatus: finalColumnId,
 					projectId,
-					projectSlug,
 				});
 			}
 
-			// Final reordering
 			onVisualTasksChange((currentTasks) => {
 				const finalTasks: Task[] = [];
 				for (const column of columns) {
@@ -226,7 +223,6 @@ export function useKanbanDragDrop({
 		[
 			dragStartColumnId,
 			projectId,
-			projectSlug,
 			updateTaskStatus,
 			onVisualTasksChange,
 			columns,

@@ -2,6 +2,7 @@ import {
 	getActiveProjects,
 	getActiveProjectsWithMembers,
 	getAllProjects,
+	getAllProjectsWithMembers,
 } from "@/lib/data-access-layer/projects.dal";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -12,8 +13,9 @@ export async function GET(request: NextRequest) {
 
 		// biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
 		let data;
-
-		if (type === "activeWithMembers") {
+		if (type === "allWithMembers") {
+			data = await getAllProjectsWithMembers();
+		} else if (type === "activeWithMembers") {
 			data = await getActiveProjectsWithMembers();
 		} else if (type === "active") {
 			data = await getActiveProjects();
