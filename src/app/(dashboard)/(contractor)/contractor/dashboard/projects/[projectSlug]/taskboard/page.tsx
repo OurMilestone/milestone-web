@@ -12,7 +12,7 @@ export default async function ContractorTaskBoardPage(props: {
 	params: Promise<{ projectSlug: string; userRole: UserRole }>;
 }) {
 	const session = await auth();
-	const { projectSlug, userRole } = await props.params;
+	const { projectSlug } = await props.params;
 	const projectId = Number.parseInt(projectSlug, 10);
 
 	if (Number.isNaN(projectId)) {
@@ -22,6 +22,8 @@ export default async function ContractorTaskBoardPage(props: {
 	if (!session?.user) {
 		redirect(AppRoutePaths.SignIn);
 	}
+
+	const userRole = session.user.role;
 
 	const queryClient = getQueryClient();
 
