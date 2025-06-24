@@ -2,22 +2,13 @@
 
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
-import { useUpdateTaskField } from "@/hooks/mutations/use-update-task";
-import { mapColumnIdToApiStatus } from "@/lib/utils";
 import type { UserRole } from "@/types/auth/auth-types";
 import type {
 	ProjectTaskListItem,
 	TaskDetail,
 } from "@/types/dashboard/task-details-types";
-import type {
-	KanbanColumnId,
-	TaskPriority,
-} from "@/types/dashboard/taskboard-types";
-import { useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import ProjectTaskList from "./project-task-list";
 import TaskDetailSidebar from "./task-detail-sidebar";
 import TaskDetailView from "./task-detail-view";
@@ -45,49 +36,13 @@ export default function TaskDetailLayout({
 	isPinnedFieldsDrawerOpen,
 	onPinnedFieldsDrawerOpenChange,
 }: TaskDetailLayoutProps) {
-	// const [ searchTerm, setSearchTerm ] = useState("");
+	const [searchTerm, setSearchTerm] = useState("");
 
-	const [filters, setFilters] = useState<{
-		searchTerm: string;
-		assigneeIds: string[];
-		labels: string[];
-		priority: TaskPriority | null;
-	}>({
-		searchTerm: "",
-		assigneeIds: [],
-		labels: [],
-		priority: null,
-	});
-
-	const filteredProjectTasks = useMemo(() => {
-		let filtered = projectTasks;
-
-		if (filters.searchTerm) {
-			filtered = filtered.filter(
-				(task) =>
-					task.title.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-					task.code.toLowerCase().includes(filters.searchTerm.toLowerCase()),
-			);
-		}
-
-		if (filters.priority) {
-			filtered = filtered.filter((task) => task.priority === filters.priority);
-		}
-
-		return filtered;
-	}, [projectTasks, filters]);
-
-	const { mutate: updateTaskField, isPending: isUpdatingTask } =
-		useUpdateTaskField(currentTaskId);
-
-	const handleSubtaskToggleComplete = (
-		subtaskId: string,
-		_originalIsCompleted: boolean,
-		newColumnIdIfRelevant?: KanbanColumnId,
-	) => {
-		//Todo: This is where we will implement or call the mutation function
-		toast.info("Subtask completion status updated (simulated).");
-	};
+	const filteredTasks = projectTasks.filter(
+		(task) =>
+			task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			task.code.toLowerCase().includes(searchTerm.toLowerCase()),
+	);
 
 	return (
 		<div className="flex h-full min-h-screen  dark:bg-slate-900">
@@ -101,17 +56,15 @@ export default function TaskDetailLayout({
 						<Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 						<Input
 							type="search"
-							placeholder="Search tasks in project..."
+							placeholder="Search board"
 							className="pl-8 h-9 text-sm"
-							value={filters.searchTerm}
-							onChange={(e) =>
-								setFilters({ ...filters, searchTerm: e.target.value })
-							}
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
 						/>
 					</div>
 				</div>
 				<ProjectTaskList
-					tasks={filteredProjectTasks}
+					tasks={filteredTasks}
 					currentRole={currentRole}
 					currentProjectSlug={currentProjectSlug}
 					activeTaskId={currentTaskId}
@@ -133,17 +86,15 @@ export default function TaskDetailLayout({
 								<Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 								<Input
 									type="search"
-									placeholder="Search tasks in project..."
+									placeholder="Search board"
 									className="pl-8 h-9 text-sm"
-									value={filters.searchTerm}
-									onChange={(e) =>
-										setFilters({ ...filters, searchTerm: e.target.value })
-									}
+									value={searchTerm}
+									onChange={(e) => setSearchTerm(e.target.value)}
 								/>
 							</div>
 						</div>
 						<ProjectTaskList
-							tasks={filteredProjectTasks}
+							tasks={projectTasks}
 							currentRole={currentRole}
 							currentProjectSlug={currentProjectSlug}
 							activeTaskId={currentTaskId}
@@ -154,22 +105,12 @@ export default function TaskDetailLayout({
 
 			{/* Column 2: Center - Main Task Details (Description, Subtasks, etc.) */}
 			<main className="flex-1 overflow-y-auto custom-scrollbar p-4 min-w-0">
-				<TaskDetailView
-					task={task}
-					updateTaskField={updateTaskField}
-					isUpdatingTask={isUpdatingTask}
-				/>
+				<TaskDetailView task={task} />
 			</main>
 
 			{/* Column 3: Far Right - Pinned Fields / Task Properties Sidebar */}
 			<aside className="w-72 md:w-80 lg:w-[300px] flex-shrink-0 p-1 hidden lg:block lg:mt-20">
-				{/* <TaskDetailSidebar task={task} userRole={currentRole} /> */}
-				<TaskDetailSidebar
-					task={task}
-					userRole={currentRole}
-					updateTaskField={updateTaskField}
-					isUpdatingTask={isUpdatingTask}
-				/>
+				<TaskDetailSidebar task={task} userRole={currentRole} />
 			</aside>
 			<Drawer
 				direction="right"
@@ -178,13 +119,7 @@ export default function TaskDetailLayout({
 			>
 				<DrawerContent className="lg:hidden w-[340px] p-0 h-full">
 					<div className="flex flex-col h-full p-3">
-						{/* <TaskDetailSidebar task={task} userRole={currentRole} /> */}
-						<TaskDetailSidebar
-							task={task}
-							userRole={currentRole}
-							updateTaskField={updateTaskField}
-							isUpdatingTask={isUpdatingTask}
-						/>
+						<TaskDetailSidebar task={task} userRole={currentRole} />
 					</div>
 				</DrawerContent>
 			</Drawer>

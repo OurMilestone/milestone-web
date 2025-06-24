@@ -1,17 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AppRoutePaths } from "@/config/routes-config";
 import type { UserRole } from "@/types/auth/auth-types";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import {
-	Award,
 	Check,
 	ChevronRight,
-	CircleCheck,
+	ExternalLink,
 	ListChecks,
-	Loader2,
+	MoreHorizontal,
 	Share2,
 	SlidersHorizontal,
 } from "lucide-react";
@@ -20,16 +25,11 @@ import { useState } from "react";
 import MarkAsDoneModal from "../../modals/mark-as-done-modal";
 import SharePopover from "./share-popover";
 
-import { Badge } from "@/components/ui/badge";
-import type { useUpdateTaskStatus } from "@/hooks/mutations/use-update-task-status";
-
 interface TaskDetailHeaderGlobalProps {
 	task: TaskDetail;
 	userRole: UserRole;
 	onToggleProjectList?: () => void;
 	onTogglePinnedFields?: () => void;
-	updateTaskStatus: ReturnType<typeof useUpdateTaskStatus>["mutate"];
-	isUpdatingTaskStatus: boolean;
 }
 
 export default function TaskDetailHeaderGlobal({
@@ -37,8 +37,6 @@ export default function TaskDetailHeaderGlobal({
 	userRole,
 	onToggleProjectList,
 	onTogglePinnedFields,
-	updateTaskStatus,
-	isUpdatingTaskStatus,
 }: TaskDetailHeaderGlobalProps) {
 	const [isMarkAsDoneModalOpen, setIsMarkAsDoneModalOpen] = useState(false);
 
@@ -52,23 +50,10 @@ export default function TaskDetailHeaderGlobal({
 			? AppRoutePaths.FreelancerDashboard.Projects.Taskboard(task.project.slug)
 			: AppRoutePaths.ContractorDashboard.Projects.Taskboard(task.project.slug);
 
-	const handleMarkAsDone = () => {
-		updateTaskStatus(
-			{
-				taskId: task.id,
-				newStatus: "done",
-				projectId: Number.parseInt(task.project.id, 10),
-			},
-			{
-				onSuccess: () => {
-					setIsMarkAsDoneModalOpen(true);
-				},
-			},
-		);
-	};
-
 	return (
 		<div className="mb-4">
+			{/* Overall container for the header sections */}
+			{/* Section 1: Main Page Title, Description, and "Mark as Done" button */}
 			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
 				<div className="flex items-center">
 					<div>
@@ -105,29 +90,13 @@ export default function TaskDetailHeaderGlobal({
 							<SlidersHorizontal size={18} />
 						</Button>
 					)}
-
-					{task.columnId === "done" ? (
-						<Badge
-							variant="outline"
-							className="bg-green-100 text-green-700 border-green-300 text-sm px-3 py-1.5 font-medium"
-						>
-							<Award className="mr-2 h-4 w-4" />
-							Completed
-						</Badge>
-					) : (
-						<Button
-							className="flex-grow sm:flex-grow-0 bg-slate-800 hover:bg-slate-700 dark:bg-primary dark:hover:bg-primary/90 text-white"
-							onClick={handleMarkAsDone}
-							disabled={isUpdatingTaskStatus}
-						>
-							{isUpdatingTaskStatus ? (
-								<Loader2 className="mr-2 h-4 w-4 animate-spin bg-primary" />
-							) : (
-								<Check size={16} className="mr-2" />
-							)}
-							Mark as Done
-						</Button>
-					)}
+					<Button
+						className="flex-grow sm:flex-grow-0 bg-slate-800 hover:bg-slate-700 dark:bg-primary dark:hover:bg-primary/90 text-white"
+						onClick={() => setIsMarkAsDoneModalOpen(true)}
+					>
+						<Check size={16} className="mr-2" />
+						Mark as Done
+					</Button>
 				</div>
 			</div>
 			{/* Section 2: Breadcrumbs and Task-Specific Actions (Share, More) */}
@@ -163,7 +132,7 @@ export default function TaskDetailHeaderGlobal({
 							<Share2 size={16} /> Share
 						</Button>
 					</SharePopover>
-					{/* <DropdownMenu>
+					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button
 								variant="ghost"
@@ -187,7 +156,7 @@ export default function TaskDetailHeaderGlobal({
 								</Link>
 							</DropdownMenuItem>
 						</DropdownMenuContent>
-					</DropdownMenu> */}
+					</DropdownMenu>
 				</div>
 			</div>
 			<MarkAsDoneModal
@@ -195,8 +164,6 @@ export default function TaskDetailHeaderGlobal({
 				onOpenChange={setIsMarkAsDoneModalOpen}
 				taskName={task.title}
 				projectName={task.project.name}
-				projectId={task.project.id}
-				userRole={userRole}
 			/>
 		</div>
 	);

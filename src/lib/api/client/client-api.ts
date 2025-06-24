@@ -6,7 +6,6 @@ import type {
 import type {
 	TaskBoardPageData,
 	TaskDTO,
-	TaskDetailPageData,
 } from "@/lib/data-access-layer/DTOs/task.dto";
 
 class ClientApiError extends Error {
@@ -130,26 +129,5 @@ export const clientApi = {
 	 */
 	getTaskBoardData: (projectId: number): Promise<TaskBoardPageData> => {
 		return callApi<TaskBoardPageData>(`/api/taskboard/${projectId}`);
-	},
-
-	/**
-	 * Retrieves detailed data for a specific task within a project.
-	 * @param projectId The unique identifier of the project to which the task belongs.
-	 * @param taskId 	The unique identifier of the task for which details are to be fetched.
-	 * @returns A promise that resolves to TaskDetailPageData containing the main task and related tasks.
-	 * Corresponds to `getTaskDetailPageData` in the DAL.
-	 * @throws ClientApiError if the API request fails or returns an error.
-	 * @example
-	 * ```typescript
-	 * const taskDetail = await clientApi.getTaskDetailPageData(1, "task-uuid-123");
-	 * ```
-	 */
-	getTaskDetailPageData: (
-		projectId: number,
-		taskId: string,
-	): Promise<TaskDetailPageData> => {
-		return callApi<TaskDetailPageData>(
-			`/api/tasks/${taskId}/details?projectId=${projectId}`,
-		);
 	},
 };
