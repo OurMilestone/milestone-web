@@ -80,7 +80,7 @@ export default function ForgotPasswordForm() {
 	};
 
 	return (
-		<div className="flex flex-col items-center bg-white">
+		<div className="flex flex-col items-center">
 			<SectionHeader
 				title="Reset your password"
 				caption="Enter your email and create a new password"
