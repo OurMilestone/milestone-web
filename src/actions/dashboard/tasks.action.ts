@@ -245,8 +245,8 @@ export async function updateTaskFieldAction(
 
 // TODO: Implement create, update, delete subtask server actions
 // For now, we will mock them to keep the focus on the main task mutations.
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export async function createSubtaskAction(
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	input: any,
 ): Promise<ActionResult<null>> {
 	console.log("Simulating create subtask:", input);
@@ -259,8 +259,8 @@ export async function createSubtaskAction(
 	};
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export async function updateSubtaskAction(
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	input: any,
 ): Promise<ActionResult<null>> {
 	console.log("Simulating update subtask:", input);
