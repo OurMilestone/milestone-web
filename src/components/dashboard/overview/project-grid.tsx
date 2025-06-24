@@ -299,8 +299,6 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 					<div
 						className={cn(
 							"grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4",
-							filteredAndSortedProjects.length === 1 &&
-								"md:grid-cols-1 md:max-w-sm md:mx-auto",
 						)}
 					>
 						{filteredAndSortedProjects.map((project) => (

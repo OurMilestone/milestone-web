@@ -3,7 +3,9 @@
 import { Button } from "@/components/ui/button";
 import type { useUpdateTaskField } from "@/hooks/mutations/use-update-task";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import TaskDescription from "./task-description";
 import TaskSubtasks from "./task-subtask";
 
@@ -18,11 +20,75 @@ export default function TaskDetailView({
 	updateTaskField,
 	isUpdatingTask,
 }: TaskDetailViewProps) {
+	const [isEditingTitle, setIsEditingTitle] = useState(false);
+	const [title, setTitle] = useState(task.title);
+	const [parent] = useAutoAnimate<HTMLDivElement>();
+
+	useEffect(() => {
+		setTitle(task.title);
+	}, [task.title]);
+
+	const handleTitleSave = () => {
+		if (title.trim() === "" || title === task.title) {
+			setIsEditingTitle(false);
+			return;
+		}
+		updateTaskField({
+			taskId: task.id,
+			fields: { title },
+		});
+		setIsEditingTitle(false);
+	};
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			handleTitleSave();
+		} else if (e.key === "Escape") {
+			setTitle(task.title);
+			setIsEditingTitle(false);
+		}
+	};
+
 	return (
 		<div className="space-y-4 mt-18">
-			<div className="flex flex-col justify-between  gap-2 items-start pt-2">
+			<div
+				className="flex flex-col justify-between  gap-2 items-start pt-2"
+				ref={parent}
+			>
 				<div className="w-full p-4 rounded-sm bg-background">
-					<p className="text-foreground flex-1 truncate pr-4">{task.title}</p>
+					{!isEditingTitle ? (
+						<p
+							className="text-foreground flex-1 truncate pr-4 cursor-text"
+							onClick={() => setIsEditingTitle(true)}
+							tabIndex={0}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault();
+									setIsEditingTitle(true);
+								}
+							}}
+							// biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: <explanation>
+							// biome-ignore lint/a11y/useSemanticElements: <explanation>
+							role="button"
+							aria-label="Edit task title"
+							title="Click to edit task title"
+						>
+							{title}
+						</p>
+					) : (
+						<input
+							type="text"
+							className="w-full p-2 border-none rounded-md"
+							value={title}
+							onChange={(e) => setTitle(e.target.value)}
+							onBlur={handleTitleSave}
+							onKeyDown={handleKeyDown}
+							// biome-ignore lint/a11y/noAutofocus: <explanation>
+							autoFocus
+							aria-label="Task title input"
+						/>
+					)}
 				</div>
 				{!task.description && (
 					<Button

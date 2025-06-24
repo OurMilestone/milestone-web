@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Edit3, Loader2, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import "@/components/tiptap/tiptap-styles.css";
-import { useSession } from "next-auth/react";
 
 interface TaskDescriptionProps {
 	initialDescription?: string;
@@ -23,9 +22,6 @@ export default function TaskDescription({
 	updateTaskField,
 	isUpdatingTask,
 }: TaskDescriptionProps) {
-	const { data: session } = useSession();
-	const isContractor = session?.user.role === "Contractor";
-
 	const [isEditing, setIsEditing] = useState(false);
 	const [tempDescription, setTempDescription] = useState(initialDescription);
 
@@ -58,7 +54,7 @@ export default function TaskDescription({
 		<div className="space-y-3 py-3">
 			<div className="flex justify-between items-center">
 				<p className="text-black text-lg">Description</p>
-				{!isEditing && isContractor && (
+				{!isEditing && (
 					<Button
 						variant="ghost"
 						size="sm"

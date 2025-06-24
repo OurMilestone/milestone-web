@@ -3,7 +3,6 @@
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { useUpdateTaskField } from "@/hooks/mutations/use-update-task";
-import { mapColumnIdToApiStatus } from "@/lib/utils";
 import type { UserRole } from "@/types/auth/auth-types";
 import type {
 	ProjectTaskListItem,
@@ -13,9 +12,7 @@ import type {
 	KanbanColumnId,
 	TaskPriority,
 } from "@/types/dashboard/taskboard-types";
-import { useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import ProjectTaskList from "./project-task-list";
@@ -45,8 +42,6 @@ export default function TaskDetailLayout({
 	isPinnedFieldsDrawerOpen,
 	onPinnedFieldsDrawerOpenChange,
 }: TaskDetailLayoutProps) {
-	// const [ searchTerm, setSearchTerm ] = useState("");
-
 	const [filters, setFilters] = useState<{
 		searchTerm: string;
 		assigneeIds: string[];

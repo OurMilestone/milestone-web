@@ -63,14 +63,14 @@ export function DashboardNavbar({ userRole }: DashboardNavbarProps) {
 							<IconComponent
 								className={cn(
 									"h-5 w-5 flex-shrink-0",
-									isActive ? "text-primary" : "text-[#808AA3]",
+									isActive ? "text-primary font-bold" : "text-primary",
 								)}
 							/>
 						)}
 						<span
 							className={cn(
 								"truncate",
-								isActive ? "font-semibold text-primary" : "text-[#808AA3]",
+								isActive ? "font-semibold text-primary" : "text-primary",
 							)}
 						>
 							{item.title}
@@ -94,7 +94,7 @@ export function DashboardNavbar({ userRole }: DashboardNavbarProps) {
 										className={cn(
 											"p-3 justify-center",
 											isActive
-												? "bg-primary/10 dark:bg-primary/20"
+												? "bg-primary/10 dark:bg-primary/20 "
 												: "hover:bg-muted/50 dark:hover:bg-muted/30",
 										)}
 										aria-label={item.title}
@@ -105,8 +105,8 @@ export function DashboardNavbar({ userRole }: DashboardNavbarProps) {
 													className={cn(
 														"h-5 w-5",
 														isActive
-															? "text-primary"
-															: "text-slate-500 group-hover:text-primary dark:text-slate-400 dark:group-hover:text-primary",
+															? "text-[#051840] font-extrabold"
+															: "text-[#051840] group-hover:text-primary dark:text-slate-400 dark:group-hover:text-primary",
 													)}
 												/>
 											)}
@@ -129,7 +129,7 @@ export function DashboardNavbar({ userRole }: DashboardNavbarProps) {
 								className={cn(
 									"group p-3",
 									isActive
-										? "bg-primary/10 text-primary dark:bg-primary/20"
+										? "bg-primary/10 text-primary dark:bg-primary/20 font-bold"
 										: "hover:bg-muted/50 dark:hover:bg-muted/30",
 								)}
 							>
