@@ -10,6 +10,11 @@ import { twMerge } from "tailwind-merge";
 import type { ApiResponse } from "./api/server/server-api-client";
 
 import type { UiProject } from "@/types/dashboard/projects-types";
+import type {
+	ProjectTaskListItem,
+	Subtask,
+	TaskDetail,
+} from "@/types/dashboard/task-details-types";
 import {
 	AlertTriangle,
 	CheckCircle,
@@ -143,6 +148,60 @@ export function handleApiError(
 	};
 }
 
+export const getStatusBadgeVariant = (
+	status: Project["status"],
+): {
+	variant: "default" | "secondary" | "destructive" | "outline";
+	className: string;
+	icon?: React.ElementType;
+} => {
+	switch (status) {
+		case "Completed":
+			return {
+				variant: "default",
+				className:
+					"bg-green-100 text-green-700 dark:bg-green-700/30 dark:text-green-300 border-green-300 dark:border-green-600",
+				icon: CheckCircle,
+			};
+		case "On Track":
+			return {
+				variant: "secondary",
+				className:
+					"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300 border-blue-300 dark:border-blue-600",
+				icon: Loader2,
+			};
+		case "Pending":
+			return {
+				variant: "outline",
+				className:
+					"bg-yellow-100 text-yellow-700 dark:bg-yellow-700/30 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600",
+				icon: Clock,
+			};
+		case "At Risk":
+			return {
+				variant: "destructive",
+				className:
+					"bg-orange-100 text-orange-700 dark:bg-orange-700/30 dark:text-orange-300 border-orange-300 dark:border-orange-600",
+				icon: AlertTriangle,
+			};
+		case "Off Track":
+			return {
+				variant: "destructive",
+				className:
+					"bg-red-100 text-red-700 dark:bg-red-700/30 dark:text-red-300 border-red-300 dark:border-red-600",
+				icon: XCircle,
+			};
+		default:
+			return {
+				variant: "secondary",
+				className:
+					"bg-gray-100 text-gray-700 dark:bg-gray-700/30 dark:text-gray-300 border-gray-300 dark:border-gray-600",
+			};
+	}
+};
+
+/**Mappers */
+
 export const mapApiStatusToColumnId = (status: string): KanbanColumnId => {
 	const lowerStatus = status.toLowerCase();
 
@@ -207,58 +266,6 @@ export function transformApiTaskToUiTask(
 		order: apiTask.order ?? index,
 	};
 }
-
-export const getStatusBadgeVariant = (
-	status: Project["status"],
-): {
-	variant: "default" | "secondary" | "destructive" | "outline";
-	className: string;
-	icon?: React.ElementType;
-} => {
-	switch (status) {
-		case "Completed":
-			return {
-				variant: "default",
-				className:
-					"bg-green-100 text-green-700 dark:bg-green-700/30 dark:text-green-300 border-green-300 dark:border-green-600",
-				icon: CheckCircle,
-			};
-		case "On Track":
-			return {
-				variant: "secondary",
-				className:
-					"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300 border-blue-300 dark:border-blue-600",
-				icon: Loader2,
-			};
-		case "Pending":
-			return {
-				variant: "outline",
-				className:
-					"bg-yellow-100 text-yellow-700 dark:bg-yellow-700/30 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600",
-				icon: Clock,
-			};
-		case "At Risk":
-			return {
-				variant: "destructive",
-				className:
-					"bg-orange-100 text-orange-700 dark:bg-orange-700/30 dark:text-orange-300 border-orange-300 dark:border-orange-600",
-				icon: AlertTriangle,
-			};
-		case "Off Track":
-			return {
-				variant: "destructive",
-				className:
-					"bg-red-100 text-red-700 dark:bg-red-700/30 dark:text-red-300 border-red-300 dark:border-red-600",
-				icon: XCircle,
-			};
-		default:
-			return {
-				variant: "secondary",
-				className:
-					"bg-gray-100 text-gray-700 dark:bg-gray-700/30 dark:text-gray-300 border-gray-300 dark:border-gray-600",
-			};
-	}
-};
 
 export const mapProjectStatus = (status: string): string => {
 	switch (status.toLowerCase()) {
@@ -330,5 +337,86 @@ export function transformApiProjectToUiProject(
 		image: "", // * Empty string for now as we do not have image upload functionality
 		comments: 0, // * Using zero for now as API doesn't provide comments count
 		totalMembers: teamMembers.length,
+	};
+}
+
+export function transformApiTaskToUiTaskDetail(apiTask: TaskDTO): TaskDetail {
+	return {
+		id: apiTask.uuid,
+		title: apiTask.title,
+		project: {
+			id: apiTask.project.id.toString(),
+			name: apiTask.project.title,
+			slug: apiTask.project.id.toString(),
+		},
+		columnId: mapApiStatusToColumnId(apiTask.status),
+		code: apiTask.task_code,
+		description: apiTask.description,
+		labels: apiTask.label
+			? [
+					{
+						id: apiTask.label,
+						name: apiTask.label,
+						colorClasses:
+							"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300",
+					},
+				]
+			: [],
+		priority: apiTask.priority.toLowerCase() as TaskPriority,
+		assignees: apiTask.assignee
+			? [
+					{
+						id: apiTask.assignee.id,
+						name: apiTask.assignee.name,
+						initials: getInitials(apiTask.assignee.name),
+						email: apiTask.assignee.email,
+					},
+				]
+			: [],
+		// The API doesn't provide a separate reporter, so we default to the assignee or project owner
+		reporter: apiTask.assignee
+			? {
+					id: apiTask.assignee.id,
+					name: apiTask.assignee.name,
+					initials: getInitials(apiTask.assignee.name),
+				}
+			: undefined,
+		subtasks: (apiTask.sub_tasks || []).map(
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			(sub: any, index: number): Subtask => ({
+				id: sub.uuid || `sub-${index}`,
+				title: sub.title,
+				code: sub.task_code,
+				isCompleted: sub.status === "DONE",
+				assignee: sub.assignee
+					? {
+							id: sub.assignee.id,
+							name: sub.assignee.name,
+							initials: getInitials(sub.assignee.name),
+						}
+					: { id: "unassigned", name: "Unassigned", initials: "U" },
+				columnId: mapApiStatusToColumnId(sub.status),
+				priority: sub.priority.toLowerCase() as TaskPriority,
+			}),
+		),
+		createdAt: apiTask.created_at,
+		updatedAt: apiTask.updated_at,
+	};
+}
+
+export function transformApiTaskToUiProjectTaskListItem(
+	apiTask: TaskDTO,
+): ProjectTaskListItem {
+	return {
+		id: apiTask.uuid.toString(),
+		title: apiTask.title,
+		code: apiTask.task_code,
+		columnId: mapApiStatusToColumnId(apiTask.status),
+		priority: apiTask.priority.toLowerCase() as TaskPriority,
+		assignee: apiTask.assignee
+			? {
+					initials: getInitials(apiTask.assignee.name),
+				}
+			: undefined,
 	};
 }
