@@ -17,8 +17,11 @@ import {
 	DrawerHeader,
 	DrawerTitle,
 } from "@/components/ui/drawer";
+import { AppRoutePaths } from "@/config/routes-config";
+import type { UserRole } from "@/types/auth/auth-types";
 import { CircleCheck } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useMediaQuery } from "usehooks-ts";
 import { AwardsIcon } from "../../../public/assets/svgs/__index__";
 
@@ -27,6 +30,8 @@ interface MarkAsDoneModalProps {
 	onOpenChange: (isOpen: boolean) => void;
 	taskName: string;
 	projectName: string;
+	projectId: string;
+	userRole: UserRole;
 }
 
 export default function MarkAsDoneModal({
@@ -34,18 +39,26 @@ export default function MarkAsDoneModal({
 	onOpenChange,
 	taskName,
 	projectName,
+	projectId,
+	userRole,
 }: MarkAsDoneModalProps) {
 	const isDesktop = useMediaQuery("(min-width: 768px)");
+	const router = useRouter();
 
 	const handleViewProject = () => {
-		alert(`View Project: ${projectName}`);
+		const taskboardPath =
+			userRole === "Freelancer"
+				? AppRoutePaths.FreelancerDashboard.Projects.Taskboard(projectId)
+				: AppRoutePaths.ContractorDashboard.Projects.Taskboard(projectId);
+
+		router.push(taskboardPath);
 		onOpenChange(false);
 	};
 
-	const handleWorkflow = () => {
-		alert("Workflow button clicked");
-		onOpenChange(false);
-	};
+	// const handleWorkflow = () => {
+	// 	alert("Workflow button clicked");
+	// 	onOpenChange(false);
+	// };
 
 	const content = (
 		<div className="text-center p-2 sm:p-4">
@@ -87,9 +100,9 @@ export default function MarkAsDoneModal({
 						>
 							View Project
 						</Button>
-						<Button onClick={handleWorkflow} variant="outline" className="">
+						{/* <Button onClick={handleWorkflow} variant="outline" className="">
 							Workflow
-						</Button>
+						</Button> */}
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
@@ -111,9 +124,9 @@ export default function MarkAsDoneModal({
 					>
 						View Project
 					</Button>
-					<Button onClick={handleWorkflow} variant="outline" className="w-full">
+					{/* <Button onClick={handleWorkflow} variant="outline" className="w-full">
 						Workflow
-					</Button>
+					</Button> */}
 					<DrawerClose asChild>
 						<Button variant="ghost" className="w-full">
 							Close
