@@ -36,3 +36,26 @@ export const updateTaskStatusSchema = z.object({
 	newStatus: z.string(),
 	projectId: z.number(),
 });
+
+export const updateTaskFieldSchema = z.object({
+	taskId: z.string().uuid(),
+	fields: z
+		.object({
+			title: z.string().min(3).optional(),
+			description: z.string().optional(),
+			priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
+			label: z.enum(["FEATURE", "BUG", "DOCUMENTATION", "OTHER"]).optional(),
+			assignee: z.string().uuid().optional(),
+			status: z
+				.enum([
+					"BACKLOG",
+					"IN_PROGRESS",
+					"IN_REVIEW",
+					"DONE",
+					"PENDING",
+					"CANCELLED",
+				])
+				.optional(),
+		})
+		.partial(),
+});

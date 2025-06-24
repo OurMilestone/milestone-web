@@ -29,7 +29,7 @@ export interface TaskDTO {
 		id: string;
 		name: string;
 		email: string;
-	};
+	} | null;
 	// biome-ignore lint/suspicious/noExplicitAny: Would be defined more strictly in the future when the API is stable
 	sub_tasks: any[]; // Todo: Define more strictly when API is stable
 	created_at: string;
@@ -41,4 +41,9 @@ export interface TaskBoardPageData {
 	project: SingleProjectDTO;
 	tasks: TaskDTO[];
 	members: ProjectMemberDTO[];
+}
+
+export interface TaskDetailPageData {
+	mainTask: TaskDTO;
+	projectTasks: TaskDTO[];
 }
