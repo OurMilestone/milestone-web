@@ -2,12 +2,6 @@
 
 import { CreateTaskModal } from "@/components/modals/create-task-modal";
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { AppRoutePaths } from "@/config/routes-config";
 import type { ProjectMemberDTO } from "@/lib/data-access-layer/DTOs/project.dto";
@@ -15,12 +9,7 @@ import { queryKeys } from "@/lib/query/query-keys";
 import type { UserRole } from "@/types/auth/auth-types";
 import type { KanbanColumnId } from "@/types/dashboard/taskboard-types";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-	ChevronDown,
-	ChevronRight,
-	MoreHorizontal,
-	PlusCircle,
-} from "lucide-react";
+import { ChevronRight, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -82,25 +71,6 @@ export default function TaskBoardHeader({
 						>
 							<PlusCircle size={16} className="mr-2" />
 							Add Task
-						</Button>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant="outline" className="gap-1.5">
-									Share <ChevronDown size={16} className="-mr-1 opacity-70" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end">
-								<DropdownMenuItem>Copy Link</DropdownMenuItem>
-								<DropdownMenuItem>Share via Email</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
-						<Button
-							variant="ghost"
-							size="icon"
-							className="text-slate-500 hover:text-slate-700"
-						>
-							<MoreHorizontal size={20} />
-							<span className="sr-only">More options</span>
 						</Button>
 					</div>
 				</div>
