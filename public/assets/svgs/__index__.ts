@@ -4,3 +4,4 @@ export {default as GmailIcon} from "./Gmail Icon.svg";
 export {default as FacebookIcon} from "./facebook-Icon.svg";
 export {default as AwardsIcon} from "./awards-icon.svg";
 export {default as CardIcon} from "./cards.svg";
+export {default as MilestoneLargeIcon} from "./mc.svg"

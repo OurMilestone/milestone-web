@@ -4,85 +4,51 @@ import RichTextEditor from "@/components/tiptap/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Edit3, Loader2, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import "@/components/tiptap/tiptap-styles.css";
-import { useRouter } from "nextjs-toploader/app";
-
-// Mock API call
-async function updateTaskDescriptionAPI(
-	taskId: string,
-	newDescription: string,
-): Promise<{ success: boolean; description: string }> {
-	console.log(
-		`API CALL: Updating description for task ${taskId} to:`,
-		newDescription,
-	);
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			if (Math.random() > 0.1) {
-				// 90% success rate
-				resolve({ success: true, description: newDescription });
-			} else {
-				reject(
-					new Error("Failed to save description due to a mock API error."),
-				);
-			}
-		}, 1500);
-	});
-}
 
 interface TaskDescriptionProps {
 	initialDescription?: string;
 	taskId: string;
+	updateTaskField: (variables: {
+		taskId: string;
+		fields: { description: string };
+	}) => void;
+	isUpdatingTask: boolean;
 }
 
 export default function TaskDescription({
 	initialDescription = "",
 	taskId,
+	updateTaskField,
+	isUpdatingTask,
 }: TaskDescriptionProps) {
 	const [isEditing, setIsEditing] = useState(false);
-	const [description, setDescription] = useState(initialDescription);
 	const [tempDescription, setTempDescription] = useState(initialDescription);
-	const [isLoading, setIsLoading] = useState(false);
-
-	const router = useRouter();
 
 	useEffect(() => {
-		setDescription(initialDescription);
-		setTempDescription(initialDescription);
-	}, [initialDescription]);
+		if (!isEditing) {
+			setTempDescription(initialDescription);
+		}
+	}, [initialDescription, isEditing]);
 
 	const handleEdit = () => {
-		setTempDescription(description);
+		setTempDescription(initialDescription);
 		setIsEditing(true);
 	};
 
 	const handleCancel = () => {
-		setTempDescription(description);
 		setIsEditing(false);
 	};
 
-	const handleSave = async () => {
-		// TODO: I would call the API to save the description here
-		setIsLoading(true);
-
-		toast.promise(updateTaskDescriptionAPI(taskId, tempDescription), {
-			loading: "Saving description...",
-			success: (data) => {
-				setDescription(data.description);
-				setIsEditing(false);
-				router.refresh();
-
-				return "Description saved successfully!";
-			},
-			error: (err) => {
-				return err.message || "Failed to save description.";
-			},
-			finally: () => {
-				setIsLoading(false);
-			},
+	const handleSave = () => {
+		updateTaskField({
+			taskId,
+			fields: { description: tempDescription },
 		});
+		setIsEditing(false);
 	};
+
+	const description = initialDescription;
 
 	return (
 		<div className="space-y-3 py-3">
@@ -93,7 +59,7 @@ export default function TaskDescription({
 						variant="ghost"
 						size="sm"
 						onClick={handleEdit}
-						disabled={isLoading}
+						disabled={isUpdatingTask}
 					>
 						<Edit3 size={16} className="mr-2" />
 						Edit
@@ -113,7 +79,7 @@ export default function TaskDescription({
 							variant="outline"
 							size="sm"
 							onClick={handleCancel}
-							disabled={isLoading}
+							disabled={isUpdatingTask}
 							className="bg-white"
 						>
 							<X size={16} className="mr-2" />
@@ -122,10 +88,10 @@ export default function TaskDescription({
 						<Button
 							size="sm"
 							onClick={handleSave}
-							disabled={isLoading}
+							disabled={isUpdatingTask}
 							className="bg-primary"
 						>
-							{isLoading ? (
+							{isUpdatingTask ? (
 								<Loader2 size={16} className="mr-2 animate-spin" />
 							) : (
 								<Save size={16} className="mr-2" />

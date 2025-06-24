@@ -7,96 +7,67 @@ import {
 	assignableUsers,
 	availableLabels,
 	priorities,
-	staticTaskBoardData, // For column/status options
 	updateIntervals,
 } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/auth/auth-types";
+import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import type {
-	Subtask,
-	TaskDetail,
-	UserProfile as TaskUserProfile,
-} from "@/types/dashboard/task-details-types";
-import type {
-	KanbanColumnId,
 	TaskAssignee,
 	TaskLabel,
 	TaskPriority,
 } from "@/types/dashboard/taskboard-types";
-import { CalendarClock, ListChecks, Tag, Users } from "lucide-react";
+import { CalendarClock, Tag, Users } from "lucide-react";
 import EditableField, { type EditableFieldOption } from "./editable-field";
 import PinnedFieldSection from "./pinned-field-section";
 
-//* Mock API function for now.
-// ! I must ensure it returns the updated value of the correct type
-async function updateTaskFieldAPI<TFieldValue>(
-	_taskId: string,
-	_fieldName: string,
-	newValue: TFieldValue,
-): Promise<TFieldValue> {
-	console.log(
-		`API CALL: Updating task ${_taskId}, field ${_fieldName} to:`,
-		newValue,
-	);
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			if (Math.random() > 0.05) {
-				resolve(newValue); // Return the new value as if from backend
-			} else {
-				reject(new Error(`Mock API error updating ${_fieldName}.`));
-			}
-		}, 1000);
-	});
-}
+export type UpdateTaskFieldFn = (variables: {
+	taskId: string;
+	fields: Partial<
+		Omit<TaskDetail, "id" | "project"> & {
+			priority?: Uppercase<TaskDetail["priority"]>;
+		}
+	>;
+}) => void;
 
 interface TaskDetailSidebarProps {
 	task: TaskDetail;
 	userRole: UserRole;
+	updateTaskField: UpdateTaskFieldFn;
+	isUpdatingTask: boolean;
 }
 
 export default function TaskDetailSidebar({
 	task,
 	userRole,
+	updateTaskField,
+	isUpdatingTask,
 }: TaskDetailSidebarProps) {
-	const currentStatusInfo = staticTaskBoardData.columns.find(
-		(col) => col.id === task.columnId,
-	);
-
-	const statusOptions: EditableFieldOption<KanbanColumnId>[] =
-		staticTaskBoardData.columns.map((col) => ({
-			value: col.id,
-			label: col.title,
-			icon: ListChecks,
+	const optionsForPriority: EditableFieldOption<TaskPriority>[] =
+		priorities.map((p) => ({
+			value: p.value,
+			label: p.label,
+			icon: p.icon,
 		}));
 
-	const assigneeOptions: EditableFieldOption<string>[] = assignableUsers.map(
-		(u) => ({
-			value: u.id,
-			label: u.name,
-			avatarUrl: u.avatarUrl,
-			initials: u.initials,
+	const optionsForAssignee: EditableFieldOption<string>[] =
+		task.assignees?.map((a) => ({
+			value: a.id,
+			label: a.name,
+			avatarUrl: a.avatarUrl,
+			initials: a.initials,
 			icon: Users,
-		}),
-	);
+		})) || [];
 
-	const labelOptions: EditableFieldOption<string>[] = availableLabels.map(
-		(l) => ({
+	const optionsForLabels: EditableFieldOption<string>[] =
+		task.labels?.map((l) => ({
 			value: l.id,
 			label: l.name,
 			colorClasses: l.colorClasses,
 			icon: Tag,
-		}),
-	);
+		})) || [];
 
-	const priorityOptions: EditableFieldOption<TaskPriority>[] = priorities.map(
-		(p) => ({
-			value: p.value,
-			label: p.label,
-			// icon: p.icon, // You can add icons to your priority data
-		}),
-	);
-
-	const updateIntervalOptions: EditableFieldOption<string>[] =
+	const optionsForUpdateInterval: EditableFieldOption<string>[] =
 		updateIntervals.map((interval) => ({
 			value: interval,
 			label: interval,
@@ -107,16 +78,17 @@ export default function TaskDetailSidebar({
 		<div className="space-y-6">
 			<PinnedFieldSection title="Details">
 				{/* Assignees Field */}
-				<EditableField<TaskAssignee[], string[]>
-					taskId={task.id}
-					fieldName="assignees"
+				<EditableField<TaskDetail["assignees"], string[]>
 					label="Assignee"
 					currentValue={task.assignees || []}
-					options={assigneeOptions}
-					fieldType="multi-select-command"
-					updateTaskFieldAPI={updateTaskFieldAPI}
+					options={optionsForAssignee}
+					fieldType="select"
+					isEditable={false}
+					isLoading={isUpdatingTask}
+					onSave={() => {}}
 					valueTransformer={{
-						toComponent: (apiValue) => apiValue.map((a) => a.id),
+						toComponent: (apiValue) =>
+							apiValue ? apiValue.map((a) => a.id) : [],
 						fromComponent: (componentValue) =>
 							componentValue
 								.map((id) => assignableUsers.find((u) => u.id === id))
@@ -130,7 +102,7 @@ export default function TaskDetailSidebar({
 										key={assignee.id}
 										className="flex items-center gap-2 justify-end"
 									>
-										<Avatar key={assignee.id} className="h-6 w-6">
+										<Avatar className="h-6 w-6">
 											<AvatarImage src={assignee.avatarUrl} />
 											<AvatarFallback className="text-xs">
 												{assignee.initials}
@@ -141,14 +113,10 @@ export default function TaskDetailSidebar({
 										</span>
 									</div>
 								))}
-
 								{currentAssignees.length > 3 && (
-									<Badge
-										variant="secondary"
-										className="rounded-full h-6 px-1.5 text-xs"
-									>
+									<div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-card dark:border-background bg-gray-200 dark:bg-gray-700 text-slate-700 dark:text-slate-200 text-xs font-medium">
 										+{currentAssignees.length - 3}
-									</Badge>
+									</div>
 								)}
 							</div>
 						) : (
@@ -158,18 +126,21 @@ export default function TaskDetailSidebar({
 				/>
 
 				{/* Reporter Field */}
-				<EditableField<TaskUserProfile | undefined, string>
-					taskId={task.id}
-					fieldName="reporter"
+				<EditableField<TaskDetail["reporter"], string>
 					label="Reporter"
 					currentValue={task.reporter}
-					options={assigneeOptions} //* I am assuming reporters are also users
+					options={optionsForAssignee}
 					fieldType="select"
-					updateTaskFieldAPI={updateTaskFieldAPI}
+					isEditable={false}
+					isLoading={isUpdatingTask}
+					onSave={() => {}}
 					valueTransformer={{
 						toComponent: (apiValue) => (apiValue ? apiValue.id : ""),
 						fromComponent: (componentValue) =>
-							assignableUsers.find((u) => u.id === componentValue) || undefined,
+							componentValue
+								? assignableUsers.find((u) => u.id === componentValue) ||
+									undefined
+								: undefined,
 					}}
 					renderDisplayValue={(currentReporter) =>
 						currentReporter ? (
@@ -192,20 +163,19 @@ export default function TaskDetailSidebar({
 
 				{/* Parent Task */}
 				<EditableField<TaskDetail["parentTask"], string>
-					taskId={task.id}
-					fieldName="parentTask"
 					label="Parent Task"
 					currentValue={task.parentTask}
 					fieldType="select"
 					isEditable={false}
-					updateTaskFieldAPI={updateTaskFieldAPI}
+					isLoading={isUpdatingTask}
+					onSave={() => {}}
 					valueTransformer={{
 						toComponent: (apiVal) => (apiVal ? apiVal.id : ""),
 						fromComponent: (compVal) =>
 							compVal ? { id: compVal, title: "", code: "" } : undefined,
 					}}
 					renderDisplayValue={(currentParentTask) => (
-						<span className="text-xs text-primary ">
+						<span className="text-sm text-primary">
 							{currentParentTask
 								? `${currentParentTask.code} - ${currentParentTask.title}`
 								: "---"}
@@ -215,13 +185,13 @@ export default function TaskDetailSidebar({
 
 				{/* Labels Field */}
 				<EditableField<TaskLabel[], string[]>
-					taskId={task.id}
-					fieldName="labels"
 					label="Labels"
 					currentValue={task.labels || []}
-					options={labelOptions}
+					options={optionsForLabels}
 					fieldType="multi-select-command"
-					updateTaskFieldAPI={updateTaskFieldAPI}
+					isEditable={false}
+					isLoading={isUpdatingTask}
+					onSave={() => {}}
 					valueTransformer={{
 						toComponent: (apiValue) => apiValue.map((l) => l.id),
 						fromComponent: (componentValue) =>
@@ -253,16 +223,17 @@ export default function TaskDetailSidebar({
 
 				{/* Priority Field */}
 				<EditableField<TaskPriority, TaskPriority>
-					taskId={task.id}
-					fieldName="priority"
 					label="Priority"
 					currentValue={task.priority}
-					options={priorityOptions}
+					options={optionsForPriority}
 					fieldType="select"
-					updateTaskFieldAPI={updateTaskFieldAPI}
+					isEditable={false}
+					isLoading={isUpdatingTask}
+					onSave={() => {}}
 					valueTransformer={{
-						toComponent: (apiValue) => apiValue,
-						fromComponent: (componentValue) => componentValue,
+						toComponent: (apiValue) => apiValue.toLowerCase() as TaskPriority,
+						fromComponent: (componentValue) =>
+							componentValue.toUpperCase() as TaskPriority,
 					}}
 					renderDisplayValue={(currentPriority) => (
 						<div className="flex items-center gap-1.5 justify-end">
@@ -278,13 +249,13 @@ export default function TaskDetailSidebar({
 			<PinnedFieldSection title="Other Fields">
 				{/* Update Interval Field */}
 				<EditableField<string | undefined, string>
-					taskId={task.id}
-					fieldName="updateInterval"
 					label="Update Interval"
 					currentValue={task.updateInterval}
-					options={updateIntervalOptions}
+					options={optionsForUpdateInterval}
 					fieldType="select"
-					updateTaskFieldAPI={updateTaskFieldAPI}
+					isLoading={isUpdatingTask}
+					isEditable={false}
+					onSave={() => {}}
 					valueTransformer={{
 						toComponent: (apiValue) => apiValue || "None",
 						fromComponent: (componentValue) =>
@@ -296,16 +267,14 @@ export default function TaskDetailSidebar({
 						</span>
 					)}
 				/>
-
 				{/* Client */}
 				<EditableField<TaskDetail["client"], string>
-					taskId={task.id}
-					fieldName="client"
 					label="Client"
 					currentValue={task.client}
 					fieldType="select"
+					isLoading={isUpdatingTask}
 					isEditable={false}
-					updateTaskFieldAPI={updateTaskFieldAPI}
+					onSave={() => {}}
 					valueTransformer={{
 						toComponent: (apiVal) => (apiVal ? apiVal.id : ""),
 						fromComponent: (compVal) =>
