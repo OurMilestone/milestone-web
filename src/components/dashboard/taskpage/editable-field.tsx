@@ -28,7 +28,6 @@ import { Check, Loader2, Tag, Users, X } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import React from "react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 export interface EditableFieldOption<TValue = string> {
 	value: TValue;
@@ -42,19 +41,14 @@ export interface EditableFieldOption<TValue = string> {
 type EditableFieldType = "select" | "multi-select-command" | "text-input";
 
 interface EditableFieldProps<V, CV extends string | string[]> {
-	taskId: string;
-	fieldName: string;
 	label: string;
 	currentValue: V;
 	options?: EditableFieldOption<CV extends string[] ? CV[number] : CV>[];
 	fieldType: EditableFieldType;
 	isEditable?: boolean;
 	renderDisplayValue: (value: V) => React.ReactNode;
-	updateTaskFieldAPI: (
-		taskId: string,
-		fieldName: string,
-		newValue: V,
-	) => Promise<V>;
+	onSave: (newValue: V) => void;
+	isLoading: boolean;
 	valueTransformer: {
 		toComponent: (apiValue: V) => CV;
 		fromComponent: (componentValue: CV) => V;
@@ -63,56 +57,33 @@ interface EditableFieldProps<V, CV extends string | string[]> {
 }
 
 export default function EditableField<V, CV extends string | string[]>({
-	taskId,
-	fieldName,
 	label,
 	currentValue,
 	options = [],
 	fieldType,
 	isEditable = true,
 	renderDisplayValue,
-	updateTaskFieldAPI,
+	onSave,
+	isLoading,
 	valueTransformer,
 	placeholder = `Select ${label}`,
 }: EditableFieldProps<V, CV>) {
-	const router = useRouter();
 	const [isEditingPopoverOpen, setIsEditingPopoverOpen] = useState(false);
 
 	// * This state holds the value during editing (e.g., selected ID for select, array of IDs for multi-select)
 	const [editStateValue, setEditStateValue] = useState<CV>(() =>
 		valueTransformer.toComponent(currentValue),
 	);
-	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		setEditStateValue(valueTransformer.toComponent(currentValue));
 	}, [currentValue, valueTransformer]);
 
-	const handleSave = async () => {
-		if (!isEditable) return;
-		setIsLoading(true);
-
+	const handleSave = () => {
+		if (!isEditable || isLoading) return;
 		const apiValueToSave = valueTransformer.fromComponent(editStateValue);
-
-		toast.promise(updateTaskFieldAPI(taskId, fieldName, apiValueToSave), {
-			loading: `Updating ${label}...`,
-			success: (updatedApiValue) => {
-				// If API returns the updated value, we could use it directly
-				// For now, we rely on router.refresh()
-				setIsEditingPopoverOpen(false);
-				// router.refresh();
-				return `${label} updated successfully!`;
-			},
-			error: (err) => {
-				return (
-					(err as Error).message ||
-					`Failed to update ${label}. Please try again.`
-				);
-			},
-			finally: () => {
-				setIsLoading(false);
-			},
-		});
+		onSave(apiValueToSave);
+		setIsEditingPopoverOpen(false);
 	};
 
 	const renderEditingContent = () => {
@@ -216,7 +187,6 @@ export default function EditableField<V, CV extends string | string[]>({
 					</Command>
 				);
 			}
-			// we can add 'text-input' or other types here
 			default:
 				return <p>Unsupported field type for editing.</p>;
 		}
