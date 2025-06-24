@@ -33,7 +33,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
 				</section>
 			</aside>
 
-			<section className="m-auto rounded-xl px-8 pb-8 pt-10 relative z-10 h-min w-full max-w-lg bg-white">
+			<section className="m-auto rounded-xl px-8 pb-8 pt-10 relative z-10 h-min w-full max-w-lg">
 				<Image
 					src={ImFullTextLogo}
 					alt="milestone.com"

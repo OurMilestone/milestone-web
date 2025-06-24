@@ -2,11 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 import { getRequest } from "../api/server/api-client";
-import type {
-	TaskBoardPageData,
-	TaskDTO,
-	TaskDetailPageData,
-} from "./DTOs/task.dto";
+import type { TaskBoardPageData, TaskDTO } from "./DTOs/task.dto";
 import { getProjectById, getProjectMembers } from "./projects.dal";
 import { checkUserSession } from "./user-auth";
 
@@ -66,25 +62,6 @@ export const getTaskBoardPageData = cache(
 			project: project.data,
 			tasks,
 			members: membersResult?.success ? membersResult.data?.members || [] : [],
-		};
-	},
-);
-
-export const getTaskDetailPageData = cache(
-	async (projectId: number, taskUuid: string): Promise<TaskDetailPageData> => {
-		const [mainTask, projectTasks] = await Promise.all([
-			getTaskById(taskUuid),
-			getTasksByProjectId(projectId),
-			// getProjectMembers(projectId),
-		]);
-
-		if (!mainTask) {
-			throw new Error(`Task with UUID ${taskUuid} not found.`);
-		}
-
-		return {
-			mainTask,
-			projectTasks,
 		};
 	},
 );

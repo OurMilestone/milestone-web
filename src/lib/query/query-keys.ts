@@ -18,6 +18,4 @@ export const queryKeys = {
 		byProjectId: (projectId: number) => ["tasks", projectId] as const,
 		byTaskId: (taskUuid: string) => ["tasks", taskUuid] as const,
 	},
-
-	taskDetail: (taskId: string) => ["task", "detail", taskId] as const,
 } as const;
