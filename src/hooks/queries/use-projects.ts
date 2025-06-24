@@ -63,7 +63,7 @@ export function useProjectById(projectId: number) {
 		},
 		placeholderData: keepPreviousData,
 		throwOnError: false,
-		staleTime: 5 * 60 * 1000,
+		staleTime: 10 * 60 * 1000,
 	});
 }
 
@@ -92,7 +92,7 @@ export function useAllProjectsWithMembers() {
 	return useQuery({
 		queryKey: queryKeys.projects.allWithMembers,
 		queryFn: () => clientApi.getAllProjectsWithMembers(),
-		staleTime: 5 * 60 * 1000,
+		staleTime: 10 * 60 * 1000,
 		placeholderData: keepPreviousData,
 	});
 }
