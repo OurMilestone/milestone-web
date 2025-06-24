@@ -14,7 +14,8 @@ import {
 import type { UserRole } from "@/types/auth/auth-types";
 import { Search } from "lucide-react";
 import Image from "next/image";
-import { MilestoneLogo } from "../../../../public/assets/images/__index__";
+import { MilestoneLogoSmall } from "../../../../public/assets/images/__index__";
+import { MilestoneLargeIcon } from "../../../../public/assets/svgs/__index__";
 import { DashboardNavbar } from "./dashboard-navbar";
 import { UserProfile } from "./user-profile";
 
@@ -27,11 +28,11 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
 	return (
 		<Sidebar collapsible="icon" className="bg-white">
 			<SidebarHeader className="p-4 bg-white">
-				{state === "expanded" && (
+				{state === "expanded" ? (
 					<>
 						<div className="flex items-center justify-start mb-4">
 							<Image
-								src={MilestoneLogo}
+								src={MilestoneLargeIcon}
 								alt="Milestone Logo"
 								width={220}
 								height={24}
@@ -48,6 +49,17 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
 							/>
 						</div>
 					</>
+				) : (
+					<div className="h-full w-full">
+						<Image
+							src={MilestoneLogoSmall}
+							alt="Milestone Logo"
+							width={220}
+							height={24}
+							className="h-5 w-auto"
+							priority
+						/>
+					</div>
 				)}
 			</SidebarHeader>
 

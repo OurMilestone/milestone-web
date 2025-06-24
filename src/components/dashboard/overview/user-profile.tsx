@@ -92,7 +92,7 @@ export function UserProfile() {
 		<div className="flex items-center gap-3 w-full p-2 cursor-pointer">
 			<div className="relative flex-shrink-0">
 				<Avatar className="h-8 w-8">
-					<AvatarImage src={USER_PROFILE.avatar} alt={displayName} />
+					<AvatarImage src={""} alt={displayName} />
 					<AvatarFallback>{getInitials(displayName)}</AvatarFallback>
 				</Avatar>
 				{USER_PROFILE.isOnline && (
@@ -125,7 +125,7 @@ export function UserProfile() {
 	const collapsedViewTriggerContent = (
 		<div className="flex items-center justify-center rounded-md cursor-pointer w-full h-full">
 			<Avatar className="h-8 w-8">
-				<AvatarImage src={USER_PROFILE.avatar} alt={displayName} />
+				<AvatarImage src={""} alt={displayName} />
 				<AvatarFallback>{getInitials(displayName)}</AvatarFallback>
 			</Avatar>
 			{USER_PROFILE.isOnline && isSidebarCollapsed && (
@@ -138,7 +138,7 @@ export function UserProfile() {
 		<div className="p-4 space-y-3">
 			<div className="flex items-center gap-3">
 				<Avatar className="h-10 w-10">
-					<AvatarImage src={USER_PROFILE.avatar} alt={displayName} />
+					<AvatarImage src={""} alt={displayName} />
 					<AvatarFallback>{getInitials(displayName)}</AvatarFallback>
 				</Avatar>
 				<div className="flex flex-col text-left min-w-0">
