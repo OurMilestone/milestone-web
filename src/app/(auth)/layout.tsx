@@ -9,7 +9,7 @@ interface AuthLayoutProps {
 }
 export default function AuthLayout({ children }: AuthLayoutProps) {
 	return (
-		<main className="min-h-dvh grid md:grid-cols-2">
+		<main className="min-h-dvh grid md:grid-cols-2 bg-white">
 			<aside className="sticky top-0 h-dvh hidden md:block">
 				<Image
 					src={ImAuthBackground}
@@ -33,7 +33,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
 				</section>
 			</aside>
 
-			<section className="m-auto rounded-xl px-8 pb-8 pt-10 relative z-10 h-min w-full max-w-lg bg-white">
+			<section className="m-auto rounded-xl px-8 pb-8 pt-10 relative z-10 h-min w-full max-w-lg ">
 				<Image
 					src={ImFullTextLogo}
 					alt="milestone.com"
