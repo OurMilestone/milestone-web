@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { useUpdateTaskField } from "@/hooks/mutations/use-update-task";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Plus } from "lucide-react";
@@ -11,8 +10,6 @@ import TaskSubtasks from "./task-subtask";
 
 interface TaskDetailViewProps {
 	task: TaskDetail;
-	updateTaskField: ReturnType<typeof useUpdateTaskField>["mutate"];
-	isUpdatingTask: boolean;
 }
 
 export default function TaskDetailView({
@@ -90,22 +87,15 @@ export default function TaskDetailView({
 						/>
 					)}
 				</div>
-				{!task.description && (
-					<Button
-						variant="outline"
-						size="sm"
-						className="flex-shrink-0 rounded-sm bg-white"
-					>
-						<Plus className="mr-2 h-4 w-4" /> Add
-					</Button>
-				)}
+				<Button
+					variant="outline"
+					size="sm"
+					className="flex-shrink-0 rounded-sm bg-white"
+				>
+					<Plus className="mr-2 h-4 w-4" /> Add
+				</Button>
 			</div>
-			<TaskDescription
-				initialDescription={task.description}
-				taskId={task.id}
-				updateTaskField={updateTaskField}
-				isUpdatingTask={isUpdatingTask}
-			/>
+			<TaskDescription initialDescription={task.description} taskId={task.id} />
 			<TaskSubtasks subtasks={task.subtasks || []} parentTaskCode={task.code} />
 			{/* //* Activity section was here for now. Maybe implemeted after MVP */}
 		</div>

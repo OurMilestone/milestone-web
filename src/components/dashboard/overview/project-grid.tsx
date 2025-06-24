@@ -17,7 +17,7 @@ import type {
 	ProjectMemberDTO,
 } from "@/lib/data-access-layer/DTOs/project.dto";
 import { queryKeys } from "@/lib/query/query-keys";
-import { cn, transformApiProjectToUiProject } from "@/lib/utils";
+import { transformApiProjectToUiProject } from "@/lib/utils";
 import type { UserRole } from "@/types/auth/auth-types";
 import { useQueryClient } from "@tanstack/react-query";
 import {

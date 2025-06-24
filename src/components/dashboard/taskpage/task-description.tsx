@@ -4,51 +4,61 @@ import RichTextEditor from "@/components/tiptap/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Edit3, Loader2, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import "@/components/tiptap/tiptap-styles.css";
 
 interface TaskDescriptionProps {
 	initialDescription?: string;
 	taskId: string;
-	updateTaskField: (variables: {
-		taskId: string;
-		fields: { description: string };
-	}) => void;
-	isUpdatingTask: boolean;
 }
 
 export default function TaskDescription({
 	initialDescription = "",
 	taskId,
-	updateTaskField,
-	isUpdatingTask,
 }: TaskDescriptionProps) {
 	const [isEditing, setIsEditing] = useState(false);
+	const [description, setDescription] = useState(initialDescription);
 	const [tempDescription, setTempDescription] = useState(initialDescription);
+	const [isLoading, setIsLoading] = useState(false);
+
+	const router = useRouter();
 
 	useEffect(() => {
-		if (!isEditing) {
-			setTempDescription(initialDescription);
-		}
-	}, [initialDescription, isEditing]);
+		setDescription(initialDescription);
+		setTempDescription(initialDescription);
+	}, [initialDescription]);
 
 	const handleEdit = () => {
-		setTempDescription(initialDescription);
+		setTempDescription(description);
 		setIsEditing(true);
 	};
 
 	const handleCancel = () => {
+		setTempDescription(description);
 		setIsEditing(false);
 	};
 
-	const handleSave = () => {
-		updateTaskField({
-			taskId,
-			fields: { description: tempDescription },
+	const handleSave = async () => {
+		// TODO: I would call the API to save the description here
+		setIsLoading(true);
+
+		toast.promise(updateTaskDescriptionAPI(taskId, tempDescription), {
+			loading: "Saving description...",
+			success: (data) => {
+				setDescription(data.description);
+				setIsEditing(false);
+				router.refresh();
+
+				return "Description saved successfully!";
+			},
+			error: (err) => {
+				return err.message || "Failed to save description.";
+			},
+			finally: () => {
+				setIsLoading(false);
+			},
 		});
-		setIsEditing(false);
 	};
-
-	const description = initialDescription;
 
 	return (
 		<div className="space-y-3 py-3">
@@ -59,7 +69,7 @@ export default function TaskDescription({
 						variant="ghost"
 						size="sm"
 						onClick={handleEdit}
-						disabled={isUpdatingTask}
+						disabled={isLoading}
 					>
 						<Edit3 size={16} className="mr-2" />
 						Edit
@@ -79,7 +89,7 @@ export default function TaskDescription({
 							variant="outline"
 							size="sm"
 							onClick={handleCancel}
-							disabled={isUpdatingTask}
+							disabled={isLoading}
 							className="bg-white"
 						>
 							<X size={16} className="mr-2" />
@@ -88,10 +98,10 @@ export default function TaskDescription({
 						<Button
 							size="sm"
 							onClick={handleSave}
-							disabled={isUpdatingTask}
+							disabled={isLoading}
 							className="bg-primary"
 						>
-							{isUpdatingTask ? (
+							{isLoading ? (
 								<Loader2 size={16} className="mr-2 animate-spin" />
 							) : (
 								<Save size={16} className="mr-2" />

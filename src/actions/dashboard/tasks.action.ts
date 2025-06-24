@@ -2,12 +2,10 @@
 
 import { AppRoutePaths } from "@/config/routes-config";
 import { patchRequest, postRequest } from "@/lib/api/server/api-client";
-import type { TaskDTO } from "@/lib/data-access-layer/DTOs/task.dto";
 import { getTaskById } from "@/lib/data-access-layer/tasks.dal";
 import {
 	type CreateTaskInput,
 	createTaskSchema,
-	updateTaskFieldSchema,
 	updateTaskStatusSchema,
 } from "@/lib/schemas/task-schema";
 import { handleApiError, mapColumnIdToApiStatus } from "@/lib/utils";
@@ -15,7 +13,6 @@ import type { ActionResult } from "@/types";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import type { KanbanColumnId } from "@/types/dashboard/taskboard-types";
 import { revalidatePath } from "next/cache";
-import type { z } from "zod";
 import { auth } from "../../../auth";
 
 export async function createTaskAction(
@@ -124,7 +121,7 @@ export async function updateTaskStatusAction(input: {
 			description: currentTask.description,
 			status: apiStatus,
 			label: currentTask.label,
-			assignee: currentTask.assignee ? currentTask.assignee.id : null,
+			assignee: currentTask.assignee.id,
 			priority: currentTask.priority,
 		};
 
@@ -140,7 +137,7 @@ export async function updateTaskStatusAction(input: {
 				success: false,
 				status: 400,
 				data: null,
-				message: response.data.message ?? "Failed to update task status.",
+				message: response.data.message || "Failed to update task status.",
 			};
 		}
 
