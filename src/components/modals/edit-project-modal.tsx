@@ -1,9 +1,8 @@
 "use client";
 
-import {
-	type UpdateProjectInput,
-	updateProjectSchema,
-} from "@/lib/schemas/project-schema";
+import type { UpdateProjectInput } from "@/lib/schemas/project-schema";
+import { updateProjectSchema } from "@/lib/schemas/project-schema";
+import type { ProjectStatus } from "@/types/dashboard/projects-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMediaQuery } from "usehooks-ts";
@@ -23,6 +22,7 @@ import {
 	DrawerTitle,
 } from "../ui/drawer";
 import { Form } from "../ui/form";
+
 interface EditProjectModalProps {
 	isOpen: boolean;
 	setIsOpen: (isOpen: boolean) => void;
@@ -33,6 +33,7 @@ interface EditProjectModalProps {
 		duration: number;
 		duration_type: string;
 		budget: number;
+		status: ProjectStatus;
 	};
 	onSubmit: (values: UpdateProjectInput) => void;
 	isSubmitting: boolean;
@@ -55,6 +56,7 @@ export function EditProjectModal({
 			duration: project.duration,
 			duration_type: project.duration_type,
 			budget: project.budget,
+			status: project.status ?? "pending",
 		},
 	});
 

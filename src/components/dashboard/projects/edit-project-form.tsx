@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { UpdateProjectInput } from "@/lib/schemas/project-schema";
+import { projectStatusSchema } from "@/lib/schemas/project-schema";
+import { formatProjectStatus } from "@/lib/utils";
 import type { UseFormReturn } from "react-hook-form";
 
 interface EditProjectFormProps {
@@ -105,6 +107,30 @@ export function EditProjectForm({ form, isSubmitting }: EditProjectFormProps) {
 						<FormControl>
 							<Input type="number" placeholder="e.g., 50000" {...field} />
 						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="status"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel>Status</FormLabel>
+						<Select onValueChange={field.onChange} defaultValue={field.value}>
+							<FormControl>
+								<SelectTrigger>
+									<SelectValue placeholder="Select status" />
+								</SelectTrigger>
+							</FormControl>
+							<SelectContent>
+								{projectStatusSchema.options.map((status) => (
+									<SelectItem key={status} value={status}>
+										{formatProjectStatus(status)}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 						<FormMessage />
 					</FormItem>
 				)}

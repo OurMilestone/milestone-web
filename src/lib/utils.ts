@@ -9,7 +9,10 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { ApiResponse } from "./api/server/server-api-client";
 
-import type { UiProject } from "@/types/dashboard/projects-types";
+import type {
+	ProjectStatus,
+	UiProject,
+} from "@/types/dashboard/projects-types";
 import type {
 	ProjectTaskListItem,
 	Subtask,
@@ -149,42 +152,35 @@ export function handleApiError(
 }
 
 export const getStatusBadgeVariant = (
-	status: Project["status"],
+	status: ProjectStatus,
 ): {
 	variant: "default" | "secondary" | "destructive" | "outline";
 	className: string;
 	icon?: React.ElementType;
 } => {
 	switch (status) {
-		case "Completed":
+		case "completed":
 			return {
 				variant: "default",
 				className:
 					"bg-green-100 text-green-700 dark:bg-green-700/30 dark:text-green-300 border-green-300 dark:border-green-600",
 				icon: CheckCircle,
 			};
-		case "On Track":
+		case "in_progress":
 			return {
 				variant: "secondary",
 				className:
 					"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300 border-blue-300 dark:border-blue-600",
 				icon: Loader2,
 			};
-		case "Pending":
+		case "pending":
 			return {
 				variant: "outline",
 				className:
 					"bg-yellow-100 text-yellow-700 dark:bg-yellow-700/30 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600",
 				icon: Clock,
 			};
-		case "At Risk":
-			return {
-				variant: "destructive",
-				className:
-					"bg-orange-100 text-orange-700 dark:bg-orange-700/30 dark:text-orange-300 border-orange-300 dark:border-orange-600",
-				icon: AlertTriangle,
-			};
-		case "Off Track":
+		case "cancelled":
 			return {
 				variant: "destructive",
 				className:
@@ -267,24 +263,30 @@ export function transformApiTaskToUiTask(
 	};
 }
 
-export const mapProjectStatus = (status: string): string => {
-	switch (status.toLowerCase()) {
+export const mapProjectStatus = (status: string): ProjectStatus => {
+	const lowerCaseStatus = status.toLowerCase();
+	if (
+		["pending", "in_progress", "completed", "cancelled"].includes(
+			lowerCaseStatus,
+		)
+	) {
+		return lowerCaseStatus as ProjectStatus;
+	}
+	return "pending"; // Or a default status
+};
+
+export const formatProjectStatus = (status: ProjectStatus): string => {
+	switch (status) {
 		case "pending":
 			return "Pending";
 		case "in_progress":
-		case "in-progress":
-		case "active":
-			return "On Track";
+			return "In Progress";
 		case "completed":
 			return "Completed";
 		case "cancelled":
-		case "canceled":
-			return "Off Track";
-		case "on_hold":
-		case "on-hold":
-			return "At Risk";
+			return "Cancelled";
 		default:
-			return "On Track";
+			return "Pending";
 	}
 };
 

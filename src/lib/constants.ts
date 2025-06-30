@@ -35,7 +35,7 @@ export interface Project {
 	id: string;
 	title: string;
 	company: string;
-	status: "On Track" | "At Risk" | "Off Track" | "Completed" | "Pending";
+	status: "pending" | "in_progress" | "completed" | "cancelled";
 	budget: number;
 	duration: string;
 	image?: string;
@@ -174,103 +174,6 @@ export function getStatCardsConfig(
 		},
 	];
 }
-
-export const PROJECTS_DATA: Project[] = [
-	{
-		id: "1",
-		title: "Website Design",
-		company: "Acme Inc",
-		status: "On Track",
-		budget: 45000,
-		duration: "2 Months",
-		image: "/assets/images/dashboard-project-image.png",
-
-		teamMembers: [
-			{ initials: "OI", color: "bg-pink-200" },
-			{ initials: "W", color: "bg-green-200" },
-			{ initials: "CI", color: "bg-blue-200" },
-			{ initials: "SD", color: "bg-yellow-200" },
-		],
-		comments: 3,
-	},
-	{
-		id: "2",
-		title: "Website Design",
-		company: "Acme Inc",
-		status: "On Track",
-		budget: 45000,
-		duration: "2 Months",
-		teamMembers: [
-			{ initials: "OI", color: "bg-pink-200" },
-			{ initials: "W", color: "bg-green-200" },
-			{ initials: "CI", color: "bg-blue-200" },
-			{ initials: "SD", color: "bg-yellow-200" },
-		],
-		comments: 2,
-	},
-	{
-		id: "3",
-		title: "Website Design",
-		company: "Acme Inc",
-		status: "On Track",
-		budget: 45000,
-		duration: "2 Months",
-		image: "/assets/images/dashboard-project-image.png",
-		teamMembers: [
-			{ initials: "OI", color: "bg-pink-200" },
-			{ initials: "W", color: "bg-green-200" },
-			{ initials: "CI", color: "bg-blue-200" },
-			{ initials: "SD", color: "bg-yellow-200" },
-		],
-		comments: 4,
-	},
-	{
-		id: "4",
-		title: "Website Design",
-		company: "Acme Inc",
-		status: "On Track",
-		budget: 45000,
-		duration: "2 Months",
-		teamMembers: [
-			{ initials: "OI", color: "bg-pink-200" },
-			{ initials: "W", color: "bg-green-200" },
-			{ initials: "CI", color: "bg-blue-200" },
-			{ initials: "SD", color: "bg-yellow-200" },
-		],
-		comments: 3,
-	},
-	{
-		id: "5",
-		title: "Website Design",
-		company: "Acme Inc",
-		status: "On Track",
-		budget: 45000,
-		duration: "2 Months",
-		image: "/assets/images/dashboard-project-image.png",
-		teamMembers: [
-			{ initials: "OI", color: "bg-pink-200" },
-			{ initials: "W", color: "bg-green-200" },
-			{ initials: "CI", color: "bg-blue-200" },
-			{ initials: "SD", color: "bg-yellow-200" },
-		],
-		comments: 3,
-	},
-	{
-		id: "6",
-		title: "Website Design",
-		company: "Acme Inc",
-		status: "On Track",
-		budget: 45000,
-		duration: "2 Months",
-		teamMembers: [
-			{ initials: "OI", color: "bg-pink-200" },
-			{ initials: "W", color: "bg-green-200" },
-			{ initials: "CI", color: "bg-blue-200" },
-			{ initials: "SD", color: "bg-yellow-200" },
-		],
-		comments: 1,
-	},
-];
 
 export const SIDEBAR_NAVIGATION = {
 	Freelancer: [

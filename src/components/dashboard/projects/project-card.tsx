@@ -35,7 +35,7 @@ import {
 import { AppRoutePaths } from "@/config/routes-config";
 import { queryKeys } from "@/lib/query/query-keys";
 import type { UpdateProjectInput } from "@/lib/schemas/project-schema";
-import { cn, getStatusBadgeVariant } from "@/lib/utils";
+import { cn, formatProjectStatus, getStatusBadgeVariant } from "@/lib/utils";
 import type { UserRole } from "@/types/auth/auth-types";
 import type { UiProject } from "@/types/dashboard/projects-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -69,14 +69,7 @@ export function ProjectCard({ project, userRole, view }: ProjectCardProps) {
 
 	const triggerRef = useRef<HTMLDivElement | null>(null);
 
-	const statusInfo = getStatusBadgeVariant(
-		project.status as
-			| "On Track"
-			| "At Risk"
-			| "Off Track"
-			| "Completed"
-			| "Pending",
-	);
+	const statusInfo = getStatusBadgeVariant(project.status);
 
 	const { mutate: updateProject, isPending: isUpdating } = useMutation({
 		mutationFn: (payload: {
@@ -180,7 +173,7 @@ export function ProjectCard({ project, userRole, view }: ProjectCardProps) {
 									variant={statusInfo.variant}
 									className={cn("text-xs px-2 py-0.5", statusInfo.className)}
 								>
-									{project.status}
+									{formatProjectStatus(project.status)}
 								</Badge>
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>
@@ -355,10 +348,11 @@ export function ProjectCard({ project, userRole, view }: ProjectCardProps) {
 						project={{
 							id: Number(project.id),
 							title: project.title,
-							description: "This should be passed from the project prop",
+							description: project.description,
 							duration: Number.parseInt(durationValue, 10) || 0,
 							duration_type: durationUnit || "months",
 							budget: project.budget,
+							status: project.status,
 						}}
 						onSubmit={handleEditSubmit}
 						isSubmitting={isUpdating}
