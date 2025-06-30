@@ -28,13 +28,15 @@ export interface ProjectMember {
 	project_role: string;
 }
 
+import type { ProjectStatus } from "@/types/dashboard/projects-types";
+
 export interface Project {
 	id: string;
 	title: string;
 	description: string;
 	duration: number;
 	duration_type: "days" | "weeks" | "months";
-	status: string;
+	status: ProjectStatus;
 	budget: number;
 	created_at?: string;
 	updated_at?: string;
@@ -46,7 +48,7 @@ export interface ProjectWithMembers {
 	description: string;
 	duration: number;
 	duration_type: "days" | "weeks" | "months";
-	status: string;
+	status: ProjectStatus;
 	budget: number;
 	created_at?: string;
 	updated_at?: string;
@@ -58,7 +60,7 @@ export interface CreateProjectData {
 	description: string;
 	duration: number;
 	duration_type: "days" | "weeks" | "months";
-	status: string;
+	status: ProjectStatus;
 	budget: number;
 }
 
@@ -181,7 +183,7 @@ export async function addProjectMemberAction(
 
 export async function updateProjectAction(
 	projectId: number,
-	payload: Partial<UpdateProjectInput & { status: string }>,
+	payload: Partial<UpdateProjectInput & { status: ProjectStatus }>,
 ): Promise<ActionResult<ProjectDTO | null>> {
 	const session = await auth();
 

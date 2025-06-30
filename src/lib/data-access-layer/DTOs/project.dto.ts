@@ -1,4 +1,5 @@
 import type { Expand } from "@/types";
+import type { ProjectStatus } from "@/types/dashboard/projects-types";
 import "server-only";
 
 export type ProjectDurationType = "days" | "weeks" | "months";
@@ -22,7 +23,7 @@ export interface ProjectDTO {
 	description: string;
 	duration: number;
 	duration_type: ProjectDurationType;
-	status: string;
+	status: ProjectStatus;
 	budget: string;
 	created_at: string;
 	updated_at: string;
@@ -38,7 +39,7 @@ export interface ProjectMembersDTO {
 }
 
 export type SingleProjectDTO = Expand<
-	Omit<ProjectDTO, "owner"> & { owner: string }
+	Omit<ProjectDTO, "owner"> & { owner: string; status: ProjectStatus }
 >;
 
 export interface ProjectWithMembers extends ProjectDTO {
