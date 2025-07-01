@@ -91,8 +91,8 @@ export function CreateTaskModal({
 	}, [isOpen, initialStatus, form, projectId]);
 
 	const onSubmit = async (values: CreateTaskInput) => {
-		if (values.assignee === "unassigned") {
-			const payload = { ...values, assignee: "" };
+		if (values.assignee === "unassigned" || values.assignee === undefined) {
+			const payload = { ...values, assignee: undefined };
 			toast.promise(createTaskAction(payload), {
 				loading: "Creating task...",
 				success: (res) => {
