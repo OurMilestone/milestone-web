@@ -37,6 +37,8 @@ export async function createTaskAction(
 	try {
 		const validatedInput = createTaskSchema.parse(input);
 
+		console.log("Validated Input: ", validatedInput);
+
 		const apiPayload = {
 			project: validatedInput.projectId,
 			title: validatedInput.title,
