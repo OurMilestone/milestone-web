@@ -91,20 +91,36 @@ export function CreateTaskModal({
 	}, [isOpen, initialStatus, form, projectId]);
 
 	const onSubmit = async (values: CreateTaskInput) => {
-		console.log("Submitting task creation with values:", values);
-		toast.promise(createTaskAction(values), {
-			loading: "Creating task...",
-			success: (res) => {
-				if (res.success) {
-					onSuccess();
-					setIsOpen(false);
-					form.reset();
-					return res.message;
-				}
-				throw new Error(res.message);
-			},
-			error: (err) => err.message || "An unexpected error occurred.",
-		});
+		if (values.assignee === "unassigned") {
+			const payload = { ...values, assignee: "" };
+			toast.promise(createTaskAction(payload), {
+				loading: "Creating task...",
+				success: (res) => {
+					if (res.success) {
+						onSuccess();
+						setIsOpen(false);
+						form.reset();
+						return res.message;
+					}
+					throw new Error(res.message);
+				},
+				error: (err) => err.message || "An unexpected error occurred.",
+			});
+		} else {
+			toast.promise(createTaskAction(values), {
+				loading: "Creating task...",
+				success: (res) => {
+					if (res.success) {
+						onSuccess();
+						setIsOpen(false);
+						form.reset();
+						return res.message;
+					}
+					throw new Error(res.message);
+				},
+				error: (err) => err.message || "An unexpected error occurred.",
+			});
+		}
 	};
 
 	const renderForm = () => (

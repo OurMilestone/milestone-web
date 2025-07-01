@@ -2,7 +2,8 @@
 
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
-import { useUpdateTaskField } from "@/hooks/mutations/use-update-task";
+import type { useUpdateTaskField } from "@/hooks/mutations/use-update-task";
+import type { ProjectMemberDTO } from "@/lib/data-access-layer/DTOs/project.dto";
 import type { UserRole } from "@/types/auth/auth-types";
 import type {
 	ProjectTaskListItem,
@@ -25,6 +26,9 @@ interface TaskDetailLayoutProps {
 	currentRole: UserRole;
 	currentProjectSlug: string;
 	currentTaskId: string;
+	assignableUsers: ProjectMemberDTO[];
+	updateTaskField: ReturnType<typeof useUpdateTaskField>["mutate"];
+	isUpdatingTask: boolean;
 	isProjectListDrawerOpen: boolean;
 	onProjectListDrawerOpenChange: (isOpen: boolean) => void;
 	isPinnedFieldsDrawerOpen: boolean;
@@ -41,6 +45,9 @@ export default function TaskDetailLayout({
 	onProjectListDrawerOpenChange,
 	isPinnedFieldsDrawerOpen,
 	onPinnedFieldsDrawerOpenChange,
+	updateTaskField,
+	isUpdatingTask,
+	assignableUsers,
 }: TaskDetailLayoutProps) {
 	const [filters, setFilters] = useState<{
 		searchTerm: string;
@@ -71,9 +78,6 @@ export default function TaskDetailLayout({
 
 		return filtered;
 	}, [projectTasks, filters]);
-
-	const { mutate: updateTaskField, isPending: isUpdatingTask } =
-		useUpdateTaskField(currentTaskId);
 
 	const handleSubtaskToggleComplete = (
 		subtaskId: string,
@@ -164,6 +168,7 @@ export default function TaskDetailLayout({
 					userRole={currentRole}
 					updateTaskField={updateTaskField}
 					isUpdatingTask={isUpdatingTask}
+					assignableUsers={assignableUsers}
 				/>
 			</aside>
 			<Drawer
@@ -173,12 +178,12 @@ export default function TaskDetailLayout({
 			>
 				<DrawerContent className="lg:hidden w-[340px] p-0 h-full">
 					<div className="flex flex-col h-full p-3">
-						{/* <TaskDetailSidebar task={task} userRole={currentRole} /> */}
 						<TaskDetailSidebar
 							task={task}
 							userRole={currentRole}
 							updateTaskField={updateTaskField}
 							isUpdatingTask={isUpdatingTask}
+							assignableUsers={assignableUsers}
 						/>
 					</div>
 				</DrawerContent>

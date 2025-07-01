@@ -13,7 +13,6 @@ import {
 	DragOverlay,
 	type DropAnimation,
 	MeasuringStrategy,
-	closestCorners,
 	defaultDropAnimationSideEffects,
 } from "@dnd-kit/core";
 import { useMemo, useState } from "react";
@@ -80,7 +79,6 @@ export default function KanbanBoard({
 	return (
 		<DndContext
 			sensors={sensors}
-			collisionDetection={closestCorners}
 			onDragStart={(event) => handleDragStart(event, tasks)}
 			onDragOver={handleDragOver}
 			onDragEnd={handleDragEnd}

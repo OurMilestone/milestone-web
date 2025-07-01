@@ -84,9 +84,10 @@ export function CreateTaskForm({
 								</SelectTrigger>
 							</FormControl>
 							<SelectContent>
+								<SelectItem value="unassigned">Leave Unassigned</SelectItem>
 								{assignees.map((user) => (
 									<SelectItem key={user.id} value={user.id}>
-										{user.full_name || user.preferred_name}
+										{user.full_name ?? user.preferred_name}
 									</SelectItem>
 								))}
 							</SelectContent>
