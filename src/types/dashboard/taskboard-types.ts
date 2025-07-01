@@ -36,7 +36,7 @@ export interface Task {
 	code: string;
 	labels?: TaskLabel[];
 	priority: TaskPriority;
-	assignees?: TaskAssignee[];
+	assignee?: TaskAssignee | null;
 	order: number;
 }
 

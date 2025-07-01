@@ -46,4 +46,5 @@ export interface TaskBoardPageData {
 export interface TaskDetailPageData {
 	mainTask: TaskDTO;
 	projectTasks: TaskDTO[];
+	members: ProjectMemberDTO[];
 }

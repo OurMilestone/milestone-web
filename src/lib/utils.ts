@@ -83,7 +83,9 @@ export const generateYearOptions = (startYearOffset = 0, count = 10) => {
 	});
 };
 
-export const getInitials = (name: string): string => {
+export const getInitials = (name?: string | null): string => {
+	if (!name) return "?";
+
 	return name
 		.split(" ")
 		.map((n) => n[0])
@@ -231,6 +233,7 @@ export function transformApiTaskToUiTask(
 	apiTask: TaskDTO,
 	index: number,
 ): Task {
+	console.log("apiTask: ", apiTask);
 	return {
 		id: apiTask.uuid,
 		title: apiTask.title,
@@ -238,16 +241,14 @@ export function transformApiTaskToUiTask(
 		columnId: mapApiStatusToColumnId(apiTask.status),
 		code: apiTask.task_code,
 		priority: apiTask.priority.toLowerCase() as TaskPriority,
-		assignees: apiTask.assignee
-			? [
-					{
-						id: apiTask.assignee.id,
-						name: apiTask.assignee.name,
-						initials: getInitials(apiTask.assignee.name),
-						email: apiTask.assignee.email,
-					},
-				]
-			: [],
+		assignee: apiTask.assignee
+			? {
+					id: apiTask.assignee.id,
+					name: apiTask.assignee.name,
+					initials: getInitials(apiTask.assignee.name),
+					email: apiTask.assignee.email,
+				}
+			: null,
 		labels: apiTask.label
 			? [
 					{
@@ -272,7 +273,7 @@ export const mapProjectStatus = (status: string): ProjectStatus => {
 	) {
 		return lowerCaseStatus as ProjectStatus;
 	}
-	return "pending"; // Or a default status
+	return "pending";
 };
 
 export const formatProjectStatus = (status: ProjectStatus): string => {
@@ -365,24 +366,23 @@ export function transformApiTaskToUiTaskDetail(apiTask: TaskDTO): TaskDetail {
 				]
 			: [],
 		priority: apiTask.priority.toLowerCase() as TaskPriority,
-		assignees: apiTask.assignee
-			? [
-					{
-						id: apiTask.assignee.id,
-						name: apiTask.assignee.name,
-						initials: getInitials(apiTask.assignee.name),
-						email: apiTask.assignee.email,
-					},
-				]
-			: [],
+		assignee: apiTask.assignee
+			? {
+					id: apiTask.assignee.id,
+					name: apiTask.assignee.name,
+					initials: getInitials(apiTask.assignee.name),
+					email: apiTask.assignee.email,
+				}
+			: null,
 		// The API doesn't provide a separate reporter, so we default to the assignee or project owner
 		reporter: apiTask.assignee
 			? {
 					id: apiTask.assignee.id,
 					name: apiTask.assignee.name,
 					initials: getInitials(apiTask.assignee.name),
+					email: apiTask.assignee.email,
 				}
-			: undefined,
+			: null,
 		subtasks: (apiTask.sub_tasks || []).map(
 			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			(sub: any, index: number): Subtask => ({
@@ -396,7 +396,7 @@ export function transformApiTaskToUiTaskDetail(apiTask: TaskDTO): TaskDetail {
 							name: sub.assignee.name,
 							initials: getInitials(sub.assignee.name),
 						}
-					: { id: "unassigned", name: "Unassigned", initials: "U" },
+					: null,
 				columnId: mapApiStatusToColumnId(sub.status),
 				priority: sub.priority.toLowerCase() as TaskPriority,
 			}),
@@ -415,7 +415,7 @@ export function transformApiTaskToUiProjectTaskListItem(
 		code: apiTask.task_code,
 		columnId: mapApiStatusToColumnId(apiTask.status),
 		priority: apiTask.priority.toLowerCase() as TaskPriority,
-		assignee: apiTask.assignee
+		assignee: apiTask.assignee?.id
 			? {
 					initials: getInitials(apiTask.assignee.name),
 				}

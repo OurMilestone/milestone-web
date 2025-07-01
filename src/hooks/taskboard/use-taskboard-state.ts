@@ -59,11 +59,16 @@ export function useTaskboardState(projectId: number) {
 
 			const assigneeMatch =
 				filters.assigneeIds.length === 0 ||
-				task.assignees?.some((a) => filters.assigneeIds.includes(a.id));
+				(filters.assigneeIds.length > 0 &&
+					(task.assignee
+						? filters.assigneeIds.includes(task.assignee.id)
+						: false));
 
 			const labelMatch =
 				filters.labels.length === 0 ||
-				task.labels?.some((l) => filters.labels.includes(l.name));
+				task.labels?.some((l: { name: string }) =>
+					filters.labels.includes(l.name),
+				);
 
 			const priorityMatch =
 				!filters.priority || task.priority === filters.priority;

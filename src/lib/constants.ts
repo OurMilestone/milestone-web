@@ -289,14 +289,12 @@ export const staticTaskBoardData: ProjectTaskBoardData = {
 				},
 			],
 			priority: "medium",
-			assignees: [
-				{
-					id: "u1",
-					name: "User One",
-					initials: "UO",
-					avatarUrl: "https://i.pravatar.cc/40?u=user1",
-				},
-			],
+			assignee: {
+				id: "u1",
+				name: "User One",
+				initials: "UO",
+				avatarUrl: "https://i.pravatar.cc/40?u=user1",
+			},
 		},
 		{
 			id: "task-2",
@@ -313,14 +311,12 @@ export const staticTaskBoardData: ProjectTaskBoardData = {
 				},
 			],
 			priority: "high",
-			assignees: [
-				{
-					id: "u2",
-					name: "User Two",
-					initials: "UT",
-					avatarUrl: "https://i.pravatar.cc/40?u=user2",
-				},
-			],
+			assignee: {
+				id: "u2",
+				name: "User Two",
+				initials: "UT",
+				avatarUrl: "https://i.pravatar.cc/40?u=user2",
+			},
 		},
 		// Previously "Selected for Development" task, now moved to "Backlog" or "In Progress"
 		// Example: Moving task-3 to "Backlog"
@@ -339,14 +335,12 @@ export const staticTaskBoardData: ProjectTaskBoardData = {
 				},
 			],
 			priority: "high",
-			assignees: [
-				{
-					id: "u3",
-					name: "User Three",
-					initials: "UH",
-					avatarUrl: "https://i.pravatar.cc/40?u=user3",
-				},
-			],
+			assignee: {
+				id: "u3",
+				name: "User Three",
+				initials: "UH",
+				avatarUrl: "https://i.pravatar.cc/40?u=user3",
+			},
 		},
 		// In Progress Tasks
 		{
@@ -364,14 +358,12 @@ export const staticTaskBoardData: ProjectTaskBoardData = {
 				},
 			],
 			priority: "urgent",
-			assignees: [
-				{
-					id: "u1",
-					name: "User One",
-					initials: "UO",
-					avatarUrl: "https://i.pravatar.cc/40?u=user1",
-				},
-			],
+			assignee: {
+				id: "u1",
+				name: "User One",
+				initials: "UO",
+				avatarUrl: "https://i.pravatar.cc/40?u=user1",
+			},
 		},
 		// In Review Tasks
 		{
@@ -389,14 +381,12 @@ export const staticTaskBoardData: ProjectTaskBoardData = {
 				},
 			],
 			priority: "high",
-			assignees: [
-				{
-					id: "u4",
-					name: "User Four",
-					initials: "UF",
-					avatarUrl: "https://i.pravatar.cc/40?u=user4",
-				},
-			],
+			assignee: {
+				id: "u4",
+				name: "User Four",
+				initials: "UF",
+				avatarUrl: "https://i.pravatar.cc/40?u=user4",
+			},
 		},
 		{
 			id: "task-6",
@@ -413,14 +403,12 @@ export const staticTaskBoardData: ProjectTaskBoardData = {
 				},
 			],
 			priority: "medium",
-			assignees: [
-				{
-					id: "u2",
-					name: "User Two",
-					initials: "UT",
-					avatarUrl: "https://i.pravatar.cc/40?u=user2",
-				},
-			],
+			assignee: {
+				id: "u2",
+				name: "User Two",
+				initials: "UT",
+				avatarUrl: "https://i.pravatar.cc/40?u=user2",
+			},
 		},
 		// Done Tasks
 		{
@@ -438,14 +426,12 @@ export const staticTaskBoardData: ProjectTaskBoardData = {
 				},
 			],
 			priority: "low",
-			assignees: [
-				{
-					id: "u3",
-					name: "User Three",
-					initials: "UH",
-					avatarUrl: "https://i.pravatar.cc/40?u=user3",
-				},
-			],
+			assignee: {
+				id: "u3",
+				name: "User Three",
+				initials: "UH",
+				avatarUrl: "https://i.pravatar.cc/40?u=user3",
+			},
 		},
 	],
 };
@@ -480,14 +466,13 @@ export const staticTaskDetailData: Record<string, TaskDetail> = {
 			},
 		],
 		priority: "medium",
-		assignees: [
-			{
-				id: "u1",
-				name: "User One",
-				initials: "UO",
-				avatarUrl: "https://i.pravatar.cc/40?u=user1",
-			},
-		],
+		assignee: {
+			id: "u1",
+			name: "User One",
+			initials: "UO",
+			avatarUrl: "https://i.pravatar.cc/40?u=user1",
+		},
+
 		reporter: {
 			id: "u2",
 			name: "John Obi",
@@ -563,14 +548,13 @@ export const staticTaskDetailData: Record<string, TaskDetail> = {
 			},
 		],
 		priority: "urgent",
-		assignees: [
-			{
-				id: "u1",
-				name: "User One",
-				initials: "UO",
-				avatarUrl: "https://i.pravatar.cc/40?u=user1",
-			},
-		],
+		assignee: {
+			id: "u1",
+			name: "User One",
+			initials: "UO",
+			avatarUrl: "https://i.pravatar.cc/40?u=user1",
+		},
+
 		reporter: {
 			id: "u3",
 			name: "User Three",
@@ -644,14 +628,13 @@ export const staticTaskDetailData: Record<string, TaskDetail> = {
 			},
 		],
 		priority: "urgent",
-		assignees: [
-			{
-				id: "u1",
-				name: "User One",
-				initials: "UO",
-				avatarUrl: "https://i.pravatar.cc/40?u=user1",
-			},
-		],
+		assignee: {
+			id: "u1",
+			name: "User One",
+			initials: "UO",
+			avatarUrl: "https://i.pravatar.cc/40?u=user1",
+		},
+
 		reporter: {
 			id: "u3",
 			name: "User Three",
@@ -713,10 +696,10 @@ export const staticProjectTaskList: ProjectTaskListItem[] =
 		title: task.title,
 		code: task.code,
 		priority: "low",
-		assignee: task.assignees?.[0]
+		assignee: task.assignee
 			? {
-					initials: task.assignees[0].initials,
-					avatarUrl: task.assignees[0].avatarUrl,
+					initials: task.assignee.initials,
+					avatarUrl: task.assignee.avatarUrl,
 				}
 			: undefined,
 		columnId: task.columnId,

@@ -24,7 +24,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Check, Loader2, Tag, Users, X } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import React from "react";
 import { useEffect, useState } from "react";
@@ -70,7 +70,6 @@ export default function EditableField<V, CV extends string | string[]>({
 }: EditableFieldProps<V, CV>) {
 	const [isEditingPopoverOpen, setIsEditingPopoverOpen] = useState(false);
 
-	// * This state holds the value during editing (e.g., selected ID for select, array of IDs for multi-select)
 	const [editStateValue, setEditStateValue] = useState<CV>(() =>
 		valueTransformer.toComponent(currentValue),
 	);
@@ -215,7 +214,6 @@ export default function EditableField<V, CV extends string | string[]>({
 				onOpenChange={(open) => {
 					if (isLoading) return;
 					if (open) {
-						// This will ensure we reset editStateValue to current task value when opening
 						setEditStateValue(valueTransformer.toComponent(currentValue));
 					}
 					setIsEditingPopoverOpen(open);
@@ -224,14 +222,14 @@ export default function EditableField<V, CV extends string | string[]>({
 				<PopoverTrigger asChild>
 					<Button
 						variant="ghost"
-						className="flex-1 justify-end text-right min-w-0 h-auto p-0 hover:scale-95 hover:bg-transparent font-normal group"
+						className="flex-1 justify-end text-right min-w-0 h-auto p-0 transition-all  hover:text-secondary hover:bg-transparent hover:text-sm font-normal group"
 						disabled={isLoading}
 					>
 						<div className="truncate data-[placeholder]:text-muted-foreground">
 							{displayContent}
 						</div>
 						{/* //? Should I add this as an indicator that this field is editable asides the cursor pointer in the parent component? */}
-						{/* <Edit3
+						{/* <Edit
 							size={14}
 							className="ml-2 text-muted-foreground opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity flex-shrink-0"
 						/> */}
