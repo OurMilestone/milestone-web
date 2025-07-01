@@ -201,16 +201,20 @@ export default function TaskCard({
 							</div>
 							<div className="flex items-center gap-2">
 								<PriorityDots priority={task.priority} />
-								{task.assignees && task.assignees.length > 0 && (
+								{task.assignee ? (
 									<Avatar className="h-5 w-5">
 										<AvatarImage
-											src={task.assignees[0].avatarUrl}
-											alt={task.assignees[0].name}
+											src={task.assignee.avatarUrl}
+											alt={task.assignee.name}
 										/>
 										<AvatarFallback className="text-xs">
-											{task.assignees[0].initials}
+											{task.assignee.initials}
 										</AvatarFallback>
 									</Avatar>
+								) : (
+									<span className="text-xs text-slate-500 dark:text-slate-400">
+										Unassigned
+									</span>
 								)}
 							</div>
 						</div>

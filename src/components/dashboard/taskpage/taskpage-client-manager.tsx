@@ -2,6 +2,7 @@
 
 import TaskDetailHeaderGlobal from "@/components/dashboard/taskpage/task-detail-header";
 import TaskDetailLayout from "@/components/dashboard/taskpage/task-detail-layout";
+import { useUpdateTaskField } from "@/hooks/mutations/use-update-task";
 import { useUpdateTaskStatus } from "@/hooks/mutations/use-update-task-status";
 import { useTaskDetailData } from "@/hooks/queries/use-task-detail";
 import { queryKeys } from "@/lib/query/query-keys";
@@ -12,6 +13,7 @@ import {
 import type { UserRole } from "@/types/auth/auth-types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { assignableUsers } from "../../../lib/constants";
 import { TaskBoardErrorState } from "../taskboard/taskboard-error-state";
 import { TaskDetailPageSkeleton } from "./skeletons/task-detail-page-skeleton";
 
@@ -37,6 +39,8 @@ export default function TaskPageClientManager({
 	const { data, isLoading, error } = useTaskDetailData(projectId, taskId);
 	const { mutate: updateTaskStatus, isPending: isUpdatingStatus } =
 		useUpdateTaskStatus();
+	const { mutate: updateTaskField, isPending: isUpdatingTask } =
+		useUpdateTaskField(taskId);
 
 	const toggleProjectListDrawer = () => {
 		setIsProjectListDrawerOpen((prev) => !prev);
@@ -103,6 +107,9 @@ export default function TaskPageClientManager({
 					currentRole={userRole}
 					currentProjectSlug={projectSlug}
 					currentTaskId={taskId}
+					updateTaskField={updateTaskField}
+					isUpdatingTask={isUpdatingTask}
+					assignableUsers={data?.members || []}
 					isProjectListDrawerOpen={isProjectListDrawerOpen}
 					onProjectListDrawerOpenChange={setIsProjectListDrawerOpen}
 					isPinnedFieldsDrawerOpen={isPinnedFieldsDrawerOpen}

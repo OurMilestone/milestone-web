@@ -72,10 +72,10 @@ export const getTaskBoardPageData = cache(
 
 export const getTaskDetailPageData = cache(
 	async (projectId: number, taskUuid: string): Promise<TaskDetailPageData> => {
-		const [mainTask, projectTasks] = await Promise.all([
+		const [mainTask, projectTasks, membersResult] = await Promise.all([
 			getTaskById(taskUuid),
 			getTasksByProjectId(projectId),
-			// getProjectMembers(projectId),
+			getProjectMembers(projectId),
 		]);
 
 		if (!mainTask) {
@@ -85,6 +85,7 @@ export const getTaskDetailPageData = cache(
 		return {
 			mainTask,
 			projectTasks,
+			members: membersResult?.success ? membersResult.data?.members || [] : [],
 		};
 	},
 );

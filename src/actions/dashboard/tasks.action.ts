@@ -124,7 +124,7 @@ export async function updateTaskStatusAction(input: {
 			description: currentTask.description,
 			status: apiStatus,
 			label: currentTask.label,
-			assignee: currentTask.assignee ? currentTask.assignee.id : null,
+			assignee: currentTask.assignee?.id ? currentTask.assignee.id : undefined,
 			priority: currentTask.priority,
 		};
 
@@ -202,9 +202,10 @@ export async function updateTaskFieldAction(
 			project: currentTask.project.id,
 			title: validatedInput.fields.title ?? currentTask.title,
 			description: validatedInput.fields.description ?? currentTask.description,
-			status: currentTask.status,
+			status: validatedInput.fields.status ?? currentTask.status,
 			label: validatedInput.fields.label ?? currentTask.label,
-			assignee: validatedInput.fields.assignee ?? currentTask.assignee?.id,
+			assignee:
+				validatedInput.fields.assignee ?? currentTask.assignee?.id ?? undefined,
 			priority: validatedInput.fields.priority ?? currentTask.priority,
 		};
 

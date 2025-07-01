@@ -1,3 +1,9 @@
+export type ProjectStatus =
+	| "pending"
+	| "in_progress"
+	| "completed"
+	| "cancelled";
+
 export interface TeamMember {
 	initials: string;
 	color: string;
@@ -11,7 +17,7 @@ export interface UiProject {
 	title: string;
 	description: string;
 	company: string;
-	status: string;
+	status: ProjectStatus;
 	budget: number;
 	duration: string;
 	durationValue: number;

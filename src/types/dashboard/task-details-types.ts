@@ -18,7 +18,7 @@ export interface Subtask {
 	title: string;
 	code: string;
 	isCompleted: boolean;
-	assignee: Expand<TaskAssignee>;
+	assignee: Expand<TaskAssignee> | null;
 	columnId: KanbanColumnId;
 	priority: TaskPriority;
 }
@@ -36,14 +36,14 @@ export interface TaskDetail {
 	description?: string;
 	labels?: TaskLabel[];
 	priority: TaskPriority;
-	assignees?: TaskAssignee[];
-	reporter?: UserProfile;
+	assignee: TaskAssignee | null;
+	reporter: TaskAssignee | null;
 	parentTask?: {
 		id: string;
 		title: string;
 		code: string;
 	};
-	subtasks?: Subtask[];
+	subtasks: Subtask[] | [];
 	updateInterval?: string;
 	client?: Expand<Pick<UserProfile, "id" | "name">>;
 	otherCustomFields?: Record<string, unknown>; // *For future extensibility
