@@ -26,7 +26,7 @@ export const createTaskSchema = z.object({
 		},
 	),
 
-	assignee: z.string().uuid({ message: "Please select a valid assignee." }),
+	assignee: z.string({ required_error: "Please select a valid assignee." }),
 });
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;

@@ -54,7 +54,6 @@ const handleError = (error: AxiosError): never => {
 	});
 
 	if (typeof window !== "undefined" && error.response?.status) {
-		// Create a more specific error for React Query to handle
 		const apiError = new Error(`API Error: ${error.response.status}`);
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		(apiError as any).status = error.response.status;
@@ -119,6 +118,7 @@ async function makeRequest<T>(
 				throw new Error(`Unsupported HTTP method: ${method}`);
 		}
 
+		// console.log("response", response.data);
 		return {
 			data: response.data as ApiResponse<T>,
 			status: response.status,

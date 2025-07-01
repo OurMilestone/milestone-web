@@ -24,7 +24,6 @@ import {
 	AlertCircle,
 	ChevronDown,
 	ChevronRight,
-	Filter,
 	LayoutGrid,
 	List,
 	RefreshCw,
@@ -33,8 +32,6 @@ import { useRouter } from "nextjs-toploader/app";
 import { useMemo, useState } from "react";
 import { ProjectCard } from "../projects/project-card";
 import { ProjectGridSkeleton } from "./project-grid-skeleton";
-
-type ProjectStatusFilter = "All" | string;
 
 type SortOption =
 	| "title-asc"
@@ -68,7 +65,6 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 		});
 	};
 
-	const [statusFilter, setStatusFilter] = useState<ProjectStatusFilter>("All");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [sortOption, setSortOption] = useState<SortOption>("title-asc");
 	const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -81,12 +77,6 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 
 	const filteredAndSortedProjects = useMemo(() => {
 		let filteredProjects = projects;
-
-		if (statusFilter !== "All") {
-			filteredProjects = filteredProjects.filter(
-				(p) => p.status === statusFilter,
-			);
-		}
 
 		if (searchTerm) {
 			filteredProjects = filteredProjects.filter(
@@ -120,23 +110,15 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 				break;
 		}
 		return [...filteredProjects];
-	}, [projects, statusFilter, searchTerm, sortOption]);
+	}, [projects, searchTerm, sortOption]);
 
-	const projectStatuses = [
-		"On Track",
-		"Completed",
-		"At Risk",
-		"Off Track",
-		"Pending",
-	];
-
-	const handleProjectCardClick = (projectTitle: string) => {
+	const handleProjectCardClick = (projectId: string) => {
 		let path = "";
 
 		if (userRole === "Freelancer") {
-			path = AppRoutePaths.FreelancerDashboard.Projects.Taskboard(projectTitle);
+			path = AppRoutePaths.FreelancerDashboard.Projects.Taskboard(projectId);
 		} else if (userRole === "Contractor") {
-			path = AppRoutePaths.ContractorDashboard.Projects.Taskboard(projectTitle);
+			path = AppRoutePaths.ContractorDashboard.Projects.Taskboard(projectId);
 		}
 		if (path) {
 			router.push(path);
@@ -157,6 +139,10 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 
 	const shouldShowError =
 		error && (!apiProjectsWithMembers || apiProjectsWithMembers.length === 0);
+
+	const hasProjects = projects && projects.length > 0;
+	const hasFilteredProjects =
+		filteredAndSortedProjects && filteredAndSortedProjects.length > 0;
 
 	return (
 		<div className="space-y-6">
@@ -187,33 +173,6 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 
 				{projects.length > 0 && (
 					<div className="flex flex-wrap items-center gap-2">
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant="outline" size="sm" className="gap-1.5 h-9">
-									<Filter className="h-3.5 w-3.5" />
-									{statusFilter === "All"
-										? "Status: All"
-										: `Status: ${statusFilter}`}
-									<ChevronDown className="h-3.5 w-3.5 opacity-70" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end">
-								<DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
-								<DropdownMenuSeparator />
-								<DropdownMenuItem onClick={() => setStatusFilter("All")}>
-									All
-								</DropdownMenuItem>
-								{projectStatuses.map((status) => (
-									<DropdownMenuItem
-										key={status}
-										onClick={() => setStatusFilter(status)}
-									>
-										{status}
-									</DropdownMenuItem>
-								))}
-							</DropdownMenuContent>
-						</DropdownMenu>
-
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button variant="outline" size="sm" className="gap-1.5 h-9">
@@ -294,7 +253,7 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 						Try Again
 					</Button>
 				</div>
-			) : filteredAndSortedProjects.length > 0 ? (
+			) : hasFilteredProjects ? (
 				viewMode === "grid" ? (
 					<div
 						className={cn(
@@ -316,10 +275,10 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 							<div
 								key={project.id}
 								className="p-4 border rounded-md bg-white cursor-pointer hover:bg-background/30 hover:shadow-md transition-all"
-								onClick={() => handleProjectCardClick(project.title)}
+								onClick={() => handleProjectCardClick(project.id)}
 								onKeyDown={(e) => {
 									if (e.key === "Enter" || e.key === " ")
-										handleProjectCardClick(project.title);
+										handleProjectCardClick(project.id);
 								}}
 								tabIndex={0}
 								// biome-ignore lint/a11y/useSemanticElements: <explanation>
@@ -335,7 +294,7 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 						))}
 					</div>
 				)
-			) : (
+			) : hasProjects && !hasFilteredProjects ? (
 				<div className="text-center py-12">
 					<h3 className="text-xl font-medium text-muted-foreground">
 						No projects match your filters
@@ -348,12 +307,19 @@ export function ProjectsGrid({ userRole }: ProjectGridProps) {
 						size="sm"
 						className="mt-4"
 						onClick={() => {
-							setStatusFilter("All");
 							setSearchTerm("");
 						}}
 					>
 						Clear Filters
 					</Button>
+				</div>
+			) : (
+				<div className="text-center py-12">
+					<h3 className="text-xl font-medium">No active projects</h3>
+					<p className="mb-4 mt-2 text-sm text-muted-foreground">
+						You currently do not have any active projects.
+					</p>
+					<Button onClick={handleViewAllProjects}>View all projects</Button>
 				</div>
 			)}
 		</div>
