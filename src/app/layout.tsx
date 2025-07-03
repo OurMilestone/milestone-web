@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthContextProvider } from "@/components/providers/auth-context-provider";
 import AuthSessionProvider from "@/components/providers/auth-session-provider";
 import { QueryProvider } from "@/components/providers/queryclient-provider";
+import { WalletProvider } from "@/components/providers/wallet-provider";
 import VerificationBanner from "@/components/shared/verification-banner";
 import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
@@ -33,10 +34,10 @@ export default function RootLayout({
 					<AuthSessionProvider>
 						<AuthContextProvider>
 							<VerificationBanner />
-							{children}
+							<WalletProvider>{children}</WalletProvider>
 						</AuthContextProvider>
 					</AuthSessionProvider>
-					<Toaster richColors closeButton position="top-right" />
+					<Toaster position="top-right" />
 				</QueryProvider>
 			</body>
 		</html>

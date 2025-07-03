@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	type ColumnDef,
 	type ColumnFiltersState,
 	type SortingState,
 	type VisibilityState,
@@ -25,36 +24,79 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { transactionStatuses, transactionTypes } from "@/lib/constants";
-import type { Expand } from "@/types";
-import type { PaymentTransaction } from "@/types/dashboard/payments-types";
-import { paymentsTableColumn } from "./payments-table-column";
+import type {
+	Transaction,
+	TransactionDateFilter as TransactionDateFilterType,
+} from "@/types/dashboard/payments-types";
+import { useMemo, useState } from "react";
+import TransactionDateFilter from "./transaction-date-filter";
+import { transactionTableColumns } from "./transaction-table-columns";
 
-interface PaymentColumnFilterConfig {
-	columnId: Expand<keyof PaymentTransaction & string>;
+interface PaymentHistoryTableProps {
+	data: Transaction[];
+}
+
+const transactionTypes = [
+	"credit",
+	"debit",
+	"transfer",
+	"withdrawal",
+	"deposit",
+];
+const transactionStatuses = ["completed", "pending", "failed", "cancelled"];
+
+interface TransactionColumnFilterConfig {
+	columnId: keyof Transaction & string;
 	title: string;
 	options: DataTableFilterOption[];
-}
-interface PaymentHistoryTableProps {
-	data: PaymentTransaction[];
-	totalItems: number;
 }
 
 export default function PaymentHistoryTable({
 	data,
-	totalItems,
 }: PaymentHistoryTableProps) {
-	const [sorting, setSorting] = React.useState<SortingState>([]);
+	const [sorting, setSorting] = React.useState<SortingState>([
+		{ id: "transactionDate", desc: true },
+	]);
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
 		[],
 	);
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = React.useState({});
+	const [dateFilter, setDateFilter] =
+		useState<TransactionDateFilterType>("all");
+
+	const filteredByDate = useMemo(() => {
+		if (dateFilter === "all") return data;
+
+		const now = new Date();
+		const filterDate = new Date();
+
+		switch (dateFilter) {
+			case "24h":
+				filterDate.setHours(now.getHours() - 24);
+				break;
+			case "7d":
+				filterDate.setDate(now.getDate() - 7);
+				break;
+			case "14d":
+				filterDate.setDate(now.getDate() - 14);
+				break;
+			case "30d":
+				filterDate.setDate(now.getDate() - 30);
+				break;
+			default:
+				return data;
+		}
+
+		return data.filter(
+			(transaction) => new Date(transaction.transactionDate) >= filterDate,
+		);
+	}, [data, dateFilter]);
 
 	const table = useReactTable({
-		data,
-		columns: paymentsTableColumn,
+		data: filteredByDate,
+		columns: transactionTableColumns,
 		state: {
 			sorting,
 			columnFilters,
@@ -69,31 +111,43 @@ export default function PaymentHistoryTable({
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
-		debugTable: true,
+		debugTable: false,
 	});
 
-	const paymentColumnFilters: PaymentColumnFilterConfig[] = [
+	const transactionColumnFilters: TransactionColumnFilterConfig[] = [
 		{
 			columnId: "transactionType",
 			title: "Type",
-			options: transactionTypes.map((type) => ({ value: type, label: type })),
+			options: transactionTypes.map((type) => ({
+				value: type,
+				label: type.charAt(0).toUpperCase() + type.slice(1),
+			})),
 		},
 		{
-			columnId: "status",
+			columnId: "transactionStatus",
 			title: "Status",
 			options: transactionStatuses.map((status) => ({
 				value: status,
-				label: status,
+				label: status.charAt(0).toUpperCase() + status.slice(1),
 			})),
 		},
 	];
 
 	return (
 		<div className="space-y-4">
-			{/* Table Toolbar: Filters, Column Visibility */}
-			<DataTableToolbar table={table} columnFilters={paymentColumnFilters} />
+			<TransactionDateFilter
+				selectedFilter={dateFilter}
+				onFilterChange={setDateFilter}
+				totalTransactions={filteredByDate.length}
+			/>
 
-			{/* Table */}
+			<DataTableToolbar
+				table={table}
+				columnFilters={transactionColumnFilters}
+				globalFilterColumnId="transactionDescription"
+				globalFilterPlaceholder="Search transactions..."
+			/>
+
 			<div className="rounded-md border bg-white">
 				<Table>
 					<TableHeader className="h-14">
@@ -120,7 +174,7 @@ export default function PaymentHistoryTable({
 								<TableRow
 									key={row.id}
 									data-state={row.getIsSelected() && "selected"}
-									className="h-12"
+									className="h-16"
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
@@ -135,10 +189,10 @@ export default function PaymentHistoryTable({
 						) : (
 							<TableRow>
 								<TableCell
-									colSpan={paymentsTableColumn.length}
+									colSpan={transactionTableColumns.length}
 									className="h-24 text-center"
 								>
-									No results.
+									No transactions found.
 								</TableCell>
 							</TableRow>
 						)}
@@ -146,7 +200,6 @@ export default function PaymentHistoryTable({
 				</Table>
 			</div>
 
-			{/* Pagination Controls */}
 			<DataTablePagination table={table} />
 		</div>
 	);
