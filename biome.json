@@ -34,7 +34,8 @@
 				"noArrayIndexKey": "error"
 			},
 			"a11y": {
-				"useButtonType": "warn"
+				"useButtonType": "warn",
+				"noSvgWithoutTitle": "off"
 			}
 		}
 	},

@@ -20,4 +20,14 @@ export const queryKeys = {
 	},
 
 	taskDetail: (taskId: string) => ["task", "detail", taskId] as const,
+
+	wallet: ["user-wallet"] as const,
+
+	transactions: {
+		base: ["transactions"] as const,
+	},
+
+	banks: {
+		list: ["banks"] as const,
+	},
 } as const;

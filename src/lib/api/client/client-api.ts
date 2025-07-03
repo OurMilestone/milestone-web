@@ -8,6 +8,17 @@ import type {
 	TaskDTO,
 	TaskDetailPageData,
 } from "@/lib/data-access-layer/DTOs/task.dto";
+import type {
+	PaystackBankDTO,
+	PaystackResolveDTO,
+	WalletDTO,
+} from "@/lib/data-access-layer/DTOs/wallet.dto";
+import type { ActionResult } from "@/types";
+import type {
+	BankOption,
+	Transaction,
+	WalletAccount,
+} from "@/types/dashboard/payments-types";
 
 class ClientApiError extends Error {
 	constructor(
@@ -150,6 +161,39 @@ export const clientApi = {
 	): Promise<TaskDetailPageData> => {
 		return callApi<TaskDetailPageData>(
 			`/api/tasks/${taskId}/details?projectId=${projectId}`,
+		);
+	},
+
+	/**
+	 * Fetches the user's wallet.
+	 */
+	getWallet: (): Promise<ActionResult<WalletDTO>> => {
+		return callApi<ActionResult<WalletDTO>>("/api/wallet");
+	},
+
+	/**
+	 * Fetches the user's transaction history.
+	 */
+	getTransactions: (): Promise<ActionResult<Transaction[]>> => {
+		return callApi<ActionResult<Transaction[]>>("/api/transactions");
+	},
+
+	/**
+	 * Fetches a list of banks from Paystack.
+	 */
+	getBanks: (): Promise<ActionResult<PaystackBankDTO[]>> => {
+		return callApi<ActionResult<PaystackBankDTO[]>>("/api/banks");
+	},
+
+	/**
+	 * Resolves an account number to get account details.
+	 */
+	resolveAccountNumber: (
+		account_number: string,
+		bank_code: string,
+	): Promise<ActionResult<PaystackResolveDTO | null>> => {
+		return callApi<ActionResult<PaystackResolveDTO | null>>(
+			`/api/resolve-account?account_number=${account_number}&bank_code=${bank_code}`,
 		);
 	},
 };
