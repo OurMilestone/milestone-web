@@ -36,14 +36,8 @@ interface PaymentHistoryTableProps {
 	data: Transaction[];
 }
 
-const transactionTypes = [
-	"credit",
-	"debit",
-	"transfer",
-	"withdrawal",
-	"deposit",
-];
-const transactionStatuses = ["completed", "pending", "failed", "cancelled"];
+const transactionTypes = ["credit", "debit"];
+const transactionStatuses = ["completed", "pending", "failed"];
 
 interface TransactionColumnFilterConfig {
 	columnId: keyof Transaction & string;

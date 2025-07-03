@@ -4,7 +4,6 @@ import PaymentsPageContent from "@/components/dashboard/payments-page/payments-p
 import { AppRoutePaths } from "@/config/routes-config";
 import { getTransactionHistory } from "@/lib/data-access-layer/wallet.dal";
 import { queryKeys } from "@/lib/query/query-keys";
-import type { UserRole } from "@/types/auth/auth-types";
 import {
 	HydrationBoundary,
 	QueryClient,

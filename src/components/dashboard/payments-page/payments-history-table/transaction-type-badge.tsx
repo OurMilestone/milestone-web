@@ -11,10 +11,8 @@ interface TransactionTypeBadgeProps {
 const TransactionTypeBadge = ({ type }: TransactionTypeBadgeProps) => {
 	const getVariant = (transactionType: TransactionType) => {
 		switch (transactionType) {
-			case "Deposit":
 			case "Credit":
-				return "success";
-			case "Withdrawal":
+				return "default";
 			case "Debit":
 				return "destructive";
 			default:
@@ -24,9 +22,10 @@ const TransactionTypeBadge = ({ type }: TransactionTypeBadgeProps) => {
 
 	return (
 		<Badge
+			variant={getVariant(type)}
 			className={cn(
 				"capitalize",
-				getVariant(type) === "success" &&
+				getVariant(type) === "default" &&
 					"bg-green-100 text-green-800 hover:bg-green-100/80",
 				getVariant(type) === "destructive" &&
 					"bg-red-100 text-red-800 hover:bg-red-100/80",
