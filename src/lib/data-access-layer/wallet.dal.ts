@@ -86,9 +86,8 @@ export const getTransactionHistory = cache(
 		await checkUserSession();
 
 		try {
-			const response = await postRequest<TransactionDTO[], object>(
+			const response = await getRequest<TransactionDTO[]>(
 				"/transaction/history/",
-				{},
 				true,
 			);
 
