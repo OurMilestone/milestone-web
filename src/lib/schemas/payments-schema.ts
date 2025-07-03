@@ -1,6 +1,8 @@
 import { z } from "zod";
-import { CURRENCIES, type Currency } from "../constants";
 import { isValidCardNumber } from "../utils";
+
+export const CURRENCIES = ["USD", "EUR", "GBP", "NGN"] as const;
+export type Currency = (typeof CURRENCIES)[number];
 
 export const withdrawFundsSchema = z
 	.object({
@@ -131,3 +133,40 @@ export type AddFundsFormInputData = {
 };
 
 export type AddFundsFormValidatedData = z.infer<typeof addFundsFormSchema>;
+
+export const withdrawFundsSchema2 = z.object({
+	bankId: z.string().min(1, "Please select a bank"),
+	accountNumber: z
+		.string()
+		.min(10, "Account number must be 10 digits")
+		.max(10, "Account number must be 10 digits")
+		.regex(/^\d{10}$/, "Account number must contain only digits"),
+	accountName: z.string().min(1, "Account name is required"),
+	amount: z
+		.string()
+		.min(1, "Amount is required")
+		.refine(
+			(val) => !Number.isNaN(Number(val)) && Number(val) > 0,
+			"Please enter a valid amount",
+		)
+		.transform((val) => Number(val))
+		.pipe(
+			z
+				.number()
+				.positive("Amount must be greater than 0")
+				.max(10000000, "Maximum withdrawal amount is ₦10,000,000"),
+		),
+});
+
+export type WithdrawFundsInput = z.input<typeof withdrawFundsSchema2>;
+export type WithdrawFundsOutput = z.output<typeof withdrawFundsSchema2>;
+
+export const addBankSchema = z.object({
+	bank_code: z.string().min(1),
+	account_number: z
+		.string()
+		.length(10, "Account number must be 10 digits")
+		.regex(/^\d+$/, "Account number must contain only digits"),
+});
+
+export type AddBankInput = z.infer<typeof addBankSchema>;
