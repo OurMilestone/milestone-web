@@ -10,6 +10,11 @@ import { twMerge } from "tailwind-merge";
 import type { ApiResponse } from "./api/server/server-api-client";
 
 import type {
+	Transaction,
+	TransactionStatus,
+	TransactionType,
+} from "@/types/dashboard/payments-types";
+import type {
 	ProjectStatus,
 	UiProject,
 } from "@/types/dashboard/projects-types";
@@ -28,6 +33,7 @@ import {
 import type { Project } from "./constants";
 import type { ProjectWithMembers } from "./data-access-layer/DTOs/project.dto";
 import type { TaskDTO } from "./data-access-layer/DTOs/task.dto";
+import type { TransactionDTO } from "./data-access-layer/DTOs/wallet.dto";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -422,3 +428,24 @@ export function transformApiTaskToUiProjectTaskListItem(
 			: undefined,
 	};
 }
+
+export const CURRENCY = "NGN";
+
+export const mapApiTransactionsToUITransaction = (
+	transaction: TransactionDTO,
+): Transaction => {
+	return {
+		id: transaction.id,
+		amount: Number(transaction.amount),
+		walletId: transaction.wallet,
+		sender: transaction.sender,
+		recipient: transaction.recipient,
+		transactionDate: transaction.transaction_date,
+		currency: CURRENCY,
+		transactionReference: transaction.transaction_reference,
+		transactionStatus:
+			transaction.transaction_status as Lowercase<TransactionStatus>,
+		transactionType: transaction.transaction_type as Lowercase<TransactionType>,
+		transactionDescription: transaction.transaction_description,
+	};
+};

@@ -69,11 +69,8 @@ export const transactionTableColumns: ColumnDef<Transaction>[] = [
 			);
 		},
 		cell: ({ row }) => {
-			const date = new Date(row.getValue("date"));
+			const date = new Date(row.getValue("transactionDate"));
 			return <div>{format(date, "MMM dd, yyyy")}</div>;
-			// <span className="text-xs text-muted-foreground">
-			//       {format(date, "HH:mm")}
-			//     </span>
 		},
 	},
 	{
@@ -213,7 +210,7 @@ export const transactionTableColumns: ColumnDef<Transaction>[] = [
 							Copy Reference
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem className="cursor-pointer">
+						{/* <DropdownMenuItem className="cursor-pointer">
 							<Eye className="mr-2 h-4 w-4" />
 							View Details
 						</DropdownMenuItem>
@@ -228,7 +225,7 @@ export const transactionTableColumns: ColumnDef<Transaction>[] = [
 									Check Status
 								</DropdownMenuItem>
 							</>
-						)}
+						)} */}
 					</DropdownMenuContent>
 				</DropdownMenu>
 			);

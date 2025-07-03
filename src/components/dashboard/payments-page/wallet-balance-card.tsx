@@ -3,7 +3,6 @@
 import AddBankAccountModal from "@/components/modals/add-bank-account-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { WalletDTO } from "@/lib/data-access-layer/DTOs/wallet.dto";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/auth/auth-types";
 import type { WalletAccount } from "@/types/dashboard/payments-types";
@@ -14,7 +13,6 @@ interface WalletBalanceCardProps {
 	walletAccount: WalletAccount;
 	userRole: UserRole;
 	onAddFunds: () => void;
-	shouldShimmer?: boolean;
 }
 
 const TopRightCircles = () => (
@@ -101,7 +99,6 @@ export default function WalletBalanceCard({
 	walletAccount,
 	userRole,
 	onAddFunds,
-	shouldShimmer,
 	className,
 }: WalletBalanceCardProps & { className?: string }) {
 	const [isBalanceVisible, setIsBalanceVisible] = useState(true);
@@ -121,14 +118,12 @@ export default function WalletBalanceCard({
 				className={cn(
 					"bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 flex justify-center items-center relative overflow-hidden shadow-none bg-white",
 					className,
-					shouldShimmer && "ring-4 ring-primary/20 animate-pulse",
 				)}
 			>
 				<BottomLeftCircles />
 				<TopRightCircles />
 
 				<CardContent className="text-center relative z-10">
-					{/* Wallet Balance Section */}
 					<div className="mb-6">
 						<div className="flex items-center justify-center gap-3 mb-3">
 							<h2 className="text-lg text-primary">Wallet Balance</h2>
