@@ -34,9 +34,11 @@ export function StatsCards({
 		},
 		{
 			title: "Wallet Balance",
-			// biome-ignore lint/style/noNonNullAssertion: <explanation>
 			value: hasWallet
-				? `${formatCurrency(wallet?.walletBalance!, CURRENCY)}`
+				? `${
+						// biome-ignore lint/style/noNonNullAssertion: <explanation>
+						formatCurrency(wallet?.walletBalance!, CURRENCY)
+					}`
 				: "N/A",
 			icon: Wallet,
 			iconBg: "bg-purple-100",
