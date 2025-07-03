@@ -1,9 +1,10 @@
 import "server-only";
 
 import type { ActionResult } from "@/types";
+import type { Transaction } from "@/types/dashboard/payments-types";
 import { cache } from "react";
 import { getRequest, postRequest } from "../api/server/api-client";
-import { handleApiError } from "../utils";
+import { handleApiError, mapApiTransactionsToUITransaction } from "../utils";
 import type {
 	AddBankAccountDto,
 	InitiateTransferDto,
@@ -82,7 +83,7 @@ export const addBankAccount = async (
 };
 
 export const getTransactionHistory = cache(
-	async (): Promise<ActionResult<TransactionDTO[] | null>> => {
+	async (): Promise<ActionResult<Transaction[] | null>> => {
 		await checkUserSession();
 
 		try {
@@ -91,9 +92,13 @@ export const getTransactionHistory = cache(
 				true,
 			);
 
+			const transactions = response.data.data.map(
+				mapApiTransactionsToUITransaction,
+			);
+
 			return {
 				success: true,
-				data: response.data.data || [],
+				data: transactions,
 				message: response.data.message || "Transaction history retrieved",
 				status: response.status,
 			};

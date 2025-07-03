@@ -54,50 +54,41 @@ export default function PaymentsPageContent({
 		}, 3000);
 	};
 
-	if (isLoading) {
-		return (
-			<div className="h-40 flex items-center justify-center">
-				<p className="text-sm text-muted-foreground">Loading wallet…</p>
-			</div>
-		);
-	}
-
 	return (
 		<>
 			<PaymentsPageHeader />
 
-			{!hasWallet || !walletAccount ? (
+			{isLoading ? (
+				<div className="h-40 flex items-center justify-center">
+					<p className="text-sm text-muted-foreground">Loading wallet…</p>
+				</div>
+			) : !hasWallet ? (
 				<WalletGenerationPrompt
 					userRole={userRole}
 					onGenerateWallet={handleGenerateWallet}
 					isGenerating={isGenerating}
 				/>
 			) : (
-				<div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-					{/* Left side - Wallet balance */}
-					<div className="lg:col-span-7 h-full">
-						{walletAccount && (
+				walletAccount && (
+					<div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+						<div className="lg:col-span-7 h-full">
 							<WalletBalanceCard
 								className="h-full"
 								walletAccount={walletAccount}
 								userRole={userRole}
 								onAddFunds={handleAddFunds}
-								shouldShimmer={shouldShimmerAccount}
 							/>
-						)}
-					</div>
+						</div>
 
-					{/* Right side - Account details */}
-					<div className="lg:col-span-5 h-full">
-						{walletAccount && (
+						<div className="lg:col-span-5 h-full">
 							<WalletAccountDetails
 								className="h-full"
 								walletAccount={walletAccount}
 								shouldShimmer={shouldShimmerAccount}
 							/>
-						)}
+						</div>
 					</div>
-				</div>
+				)
 			)}
 		</>
 	);

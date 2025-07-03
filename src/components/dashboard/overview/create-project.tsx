@@ -44,7 +44,9 @@ const formSchema = z.object({
 	title: z.string().min(3, "Title must be at least 3 characters"),
 	description: z.string().min(10, "Description must be at least 10 characters"),
 	duration: z.coerce.number().positive("Duration must be a positive number"),
-	duration_type: z.enum(["days", "weeks", "months"]),
+	duration_type: z.enum(["days", "weeks", "months", "years"], {
+		errorMap: () => ({ message: "Please select a valid duration type" }),
+	}),
 	budget: z.coerce.number().positive("Budget must be a positive number"),
 	status: z.string().min(1, "Status is required"),
 });
@@ -70,6 +72,7 @@ export function CreateProjectModal() {
 
 	// Handle form submission
 	function onSubmit(values: FormValues) {
+		console.log("Form submitted with values:", values);
 		startTransition(async () => {
 			try {
 				const result = await createProject(values as CreateProjectData);
@@ -172,6 +175,7 @@ export function CreateProjectModal() {
 												<SelectItem value="days">Days</SelectItem>
 												<SelectItem value="weeks">Weeks</SelectItem>
 												<SelectItem value="months">Months</SelectItem>
+												<SelectItem value="years">Years</SelectItem>
 											</SelectContent>
 										</Select>
 										<FormMessage />

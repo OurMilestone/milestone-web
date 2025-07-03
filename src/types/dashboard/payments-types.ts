@@ -13,18 +13,8 @@ export interface PaymentInfoCardData {
 	changePeriod?: string;
 }
 
-export type TransactionType =
-	| "Deposit"
-	| "Credit"
-	| "Withdrawal"
-	| "Debit"
-	| "Transfer";
-
-export type TransactionStatus =
-	| "Completed"
-	| "Pending"
-	| "Failed"
-	| "Cancelled";
+export type TransactionType = "Credit" | "Debit";
+export type TransactionStatus = "Completed" | "Pending" | "Failed";
 
 export interface PaymentTransaction {
 	id: string;
