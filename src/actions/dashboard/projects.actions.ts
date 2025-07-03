@@ -59,7 +59,7 @@ export interface CreateProjectData {
 	title: string;
 	description: string;
 	duration: number;
-	duration_type: "days" | "weeks" | "months";
+	duration_type: "days" | "weeks" | "months" | "years";
 	status: ProjectStatus;
 	budget: number;
 }

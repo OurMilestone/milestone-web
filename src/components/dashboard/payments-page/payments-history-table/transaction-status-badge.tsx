@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
+import type { badgeVariants } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-
+import type { VariantProps } from "class-variance-authority";
 interface TransactionTypeBadgeProps {
 	type: string;
 }
@@ -8,31 +9,25 @@ interface TransactionTypeBadgeProps {
 export default function TransactionTypeBadge({
 	type,
 }: TransactionTypeBadgeProps) {
-	let variant: "default" | "secondary" | "destructive" | "outline" = "default";
+	let variant: VariantProps<typeof badgeVariants>["variant"];
 	let className = "";
 
 	switch (type.toLowerCase()) {
-		case "credit":
-		case "deposit":
+		case "completed":
 			variant = "default";
-			className =
-				"bg-green-100 text-green-700 dark:bg-green-700/30 dark:text-green-300 border-green-300 dark:border-green-600";
+			className = "bg-green-100 text-green-700 border-green-300";
 			break;
-		case "debit":
-		case "withdrawal":
-			variant = "destructive";
-			className =
-				"bg-red-100 text-red-700 dark:bg-red-700/30 dark:text-red-300 border-red-300 dark:border-red-600";
-			break;
-		case "transfer":
+		case "pending":
 			variant = "secondary";
-			className =
-				"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300 border-blue-300 dark:border-blue-600";
+			className = "bg-yellow-100 text-yellow-700 border-yellow-300";
+			break;
+		case "failed":
+			variant = "destructive";
+			className = "bg-red-100 text-red-700 border-red-300";
 			break;
 		default:
-			variant = "outline";
-			className =
-				"bg-gray-100 text-gray-700 dark:bg-gray-700/30 dark:text-gray-300 border-gray-300 dark:border-gray-600";
+			variant = "default";
+			className = "bg-gray-100 text-gray-700 border-gray-300";
 	}
 
 	return (

@@ -13,7 +13,6 @@ export async function StatsCardsServer({ userRole }: StatsCardsServerProps) {
 
 	return (
 		<StatsCards
-			userRole={userRole}
 			activeProjectsCount={activeProjects}
 			completedProjectsCount={completedProjects}
 		/>
