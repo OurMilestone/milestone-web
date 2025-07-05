@@ -6,7 +6,7 @@ import { queryKeys } from "@/lib/query/query-keys";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../../../../../../../auth";
 
 interface FreelancerTaskDetailPageProps {
 	params: Promise<{

@@ -2,7 +2,7 @@ import Image from "next/image";
 import {
 	ImAuthBackground,
 	ImFullTextLogo,
-} from "../../../public/assets/images/__index__";
+} from "../../../../public/assets/images/__index__";
 
 interface AuthLayoutProps {
 	children: React.ReactNode;
