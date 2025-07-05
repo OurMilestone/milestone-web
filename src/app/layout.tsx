@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { AuthContextProvider } from "@/components/providers/auth-context-provider";
-import AuthSessionProvider from "@/components/providers/auth-session-provider";
-import { QueryProvider } from "@/components/providers/queryclient-provider";
-import { WalletProvider } from "@/components/providers/wallet-provider";
-import VerificationBanner from "@/components/shared/verification-banner";
 import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
 
@@ -30,15 +25,8 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={`${poppins.variable} antialiased font-sans`}>
 				<NextTopLoader showSpinner={false} color="#edbb32" />
-				<QueryProvider>
-					<AuthSessionProvider>
-						<AuthContextProvider>
-							<VerificationBanner />
-							<WalletProvider>{children}</WalletProvider>
-						</AuthContextProvider>
-					</AuthSessionProvider>
-					<Toaster position="top-right" />
-				</QueryProvider>
+				{children}
+				<Toaster position="top-right" />
 			</body>
 		</html>
 	);

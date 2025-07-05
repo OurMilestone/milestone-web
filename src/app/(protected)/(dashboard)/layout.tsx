@@ -5,7 +5,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppRoutePaths } from "@/config/routes-config";
 import { redirect } from "next/navigation";
-import { auth } from "../../../auth";
+import { auth } from "../../../../auth";
 
 export default async function DashboardLayout({
 	children,
