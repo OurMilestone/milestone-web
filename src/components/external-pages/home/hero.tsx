@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { fadeInUp, staggerContainer } from "@/utils/animations";
 import { motion } from "framer-motion";
-import { DollarSign, Search, Target, Users } from "lucide-react";
 import Image from "next/image";
 
 function Hero() {
