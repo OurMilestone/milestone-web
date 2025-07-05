@@ -10,6 +10,7 @@ interface WalletCtx {
 	isLoading: boolean;
 	refetch: () => void;
 	hasWallet: boolean;
+	isError: boolean;
 }
 
 const transformWalletDTOToWalletAccount = (dto: WalletDTO): WalletAccount => {
@@ -31,16 +32,17 @@ const transformWalletDTOToWalletAccount = (dto: WalletDTO): WalletAccount => {
 const Ctx = createContext<WalletCtx | undefined>(undefined);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-	const { data, isLoading, refetch } = useWallet();
+	const { data, isLoading, refetch, isError } = useWallet();
 
 	const value = useMemo(
 		() => ({
 			wallet: data ? transformWalletDTOToWalletAccount(data) : null,
 			isLoading,
 			refetch,
-			hasWallet: data !== null,
+			hasWallet: !!data,
+			isError,
 		}),
-		[data, isLoading, refetch],
+		[data, isLoading, refetch, isError],
 	);
 
 	return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
