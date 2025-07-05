@@ -5,7 +5,7 @@ import { StatsCardsServer } from "@/components/dashboard/overview/stats-card-ser
 import { StatsCardsSkeleton } from "@/components/dashboard/overview/stats-card-skeleton";
 import SectionHeader from "@/components/typography/section-header";
 import { Suspense } from "react";
-import { auth } from "../../../../../../../auth";
+import { auth } from "../../../../../../../../auth";
 
 const ContractorDashboardOverviewPage = async () => {
 	const session = await auth();
