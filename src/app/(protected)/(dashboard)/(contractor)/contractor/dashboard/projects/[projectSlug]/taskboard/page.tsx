@@ -6,7 +6,7 @@ import { queryKeys } from "@/lib/query/query-keys";
 import type { UserRole } from "@/types/auth/auth-types";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
-import { auth } from "../../../../../../../../../auth";
+import { auth } from "../../../../../../../../../../auth";
 
 export default async function ContractorTaskBoardPage(props: {
 	params: Promise<{ projectSlug: string; userRole: UserRole }>;
