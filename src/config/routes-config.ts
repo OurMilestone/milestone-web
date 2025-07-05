@@ -1,6 +1,5 @@
 export const AppRoutePaths = {
 	Index: "/",
-	Home: "/home",
 	SignUp: "/register",
 	SignIn: "/login",
 	CheckRole: "/post-login-redirect",

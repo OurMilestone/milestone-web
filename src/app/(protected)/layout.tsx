@@ -19,7 +19,7 @@ export default function ProtectedRootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<>
+		<main className="bg-background min-h-screen">
 			<NextTopLoader showSpinner={false} color="#edbb32" />
 			<QueryProvider>
 				<AuthSessionProvider>
@@ -30,6 +30,6 @@ export default function ProtectedRootLayout({
 				</AuthSessionProvider>
 				<Toaster position="top-right" />
 			</QueryProvider>
-		</>
+		</main>
 	);
 }
