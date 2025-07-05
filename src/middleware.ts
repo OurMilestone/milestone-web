@@ -87,24 +87,6 @@ export default auth(async (req) => {
 		return NextResponse.redirect(new URL(AppRoutePaths.Index, origin));
 	}
 
-	if (pathname === AppRoutePaths.Index || pathname === "/") {
-		if (req.auth?.user) {
-			const role = req.auth.user.role;
-			if (role === "Freelancer") {
-				return NextResponse.redirect(
-					new URL(AppRoutePaths.FreelancerDashboard.Home, origin),
-				);
-			}
-			if (role === "Contractor") {
-				return NextResponse.redirect(
-					new URL(AppRoutePaths.ContractorDashboard.Home, origin),
-				);
-			}
-		} else {
-			return NextResponse.redirect(new URL(AppRoutePaths.SignIn, origin));
-		}
-	}
-
 	if (isDashboardPage(pathname) && !req.auth?.user) {
 		const redirectUrl = new URL(AppRoutePaths.SignIn, origin);
 		redirectUrl.searchParams.set("callbackUrl", `${pathname}${search}`);
