@@ -165,10 +165,7 @@
 		@apply border-border outline-ring/50;
 	}
 	body {
-		@apply  text-foreground font-sans;
-	}
-	.container{
-		@apply max-w-[1400px] px-5 mx-auto
+		@apply bg-background text-foreground font-sans;
 	}
 }
 
