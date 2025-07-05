@@ -36,7 +36,7 @@ export default function HomeLandingPage() {
 				<Hero />
 			</div>
 
-			<section id="how-it-works" className="py-20 xl:px-4  bg-white">
+			<section id="how-it-works" className="py-20 xl:px-4 bg-white">
 				<div className="container mx-auto px-4">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 						<motion.div
@@ -45,7 +45,7 @@ export default function HomeLandingPage() {
 							transition={{ duration: 0.8 }}
 							viewport={{ once: true }}
 						>
-							<h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12">
+							<h2 className="text-3xl md:text-4xl font-bold text-primary mb-12">
 								How It Works
 							</h2>
 
@@ -111,10 +111,10 @@ export default function HomeLandingPage() {
 											/>
 										</div>
 										<div>
-											<h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
+											<h3 className="text-lg sm:text-xl font-semibold text-primary mb-2">
 												{item.title}
 											</h3>
-											<p className="text-gray-600 leading-relaxed">
+											<p className="text-primary leading-relaxed">
 												{item.description}
 											</p>
 										</div>
@@ -141,7 +141,6 @@ export default function HomeLandingPage() {
 				</div>
 			</section>
 
-			{/* Task Management */}
 			<section className="py-20 xl:px-4  bg-gray-50">
 				<div className="container mx-auto px-4">
 					<div className="flex flex-col lg:flex-row gap-16 items-center justify-center">
@@ -208,10 +207,10 @@ export default function HomeLandingPage() {
 											<Check className="size-5 text-white" />
 										</div>
 										<div>
-											<h3 className="text-lg font-semibold text-gray-900 mb-2">
+											<h3 className="text-lg font-semibold text-primary mb-2">
 												{feature.title}
 											</h3>
-											<p className="text-gray-600">{feature.description}</p>
+											<p className="text-primary">{feature.description}</p>
 										</div>
 									</motion.div>
 								))}
@@ -294,10 +293,10 @@ export default function HomeLandingPage() {
 						viewport={{ once: true }}
 						className="mb-16"
 					>
-						<h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+						<h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
 							Numbers That Drive Confidence
 						</h2>
-						<p className="text-xl text-gray-600 max-w-2xl mx-auto">
+						<p className="text-base text-primary max-w-2xl mx-auto">
 							Trusted by remote teams and freelancers worldwide to simplify
 							payments and project management.
 						</p>
@@ -317,7 +316,7 @@ export default function HomeLandingPage() {
 								number: "12+",
 								label: "Supported currencies for global payouts",
 							},
-						].map((stat, index) => (
+						].map((stat) => (
 							<motion.div
 								key={stat.number}
 								variants={fadeInUp}
@@ -345,7 +344,7 @@ export default function HomeLandingPage() {
 							<h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
 								Connect, Track, And Pay Your Global Team With Ease.
 							</h2>
-							<p className="text-xl text-gray-600 mb-8 leading-relaxed">
+							<p className="text-base text-primary mb-8 leading-relaxed">
 								Milestone simplifies how you work with remote teams and
 								contractors worldwide. From tracking project milestones to
 								ensuring payments are secure and instant, everything happens in
@@ -357,7 +356,7 @@ export default function HomeLandingPage() {
 							>
 								<Button
 									size="lg"
-									className=" text-white px-8 py-3 rounded-full"
+									className=" text-white px-8 h-12 rounded-full"
 								>
 									Schedule a Demo
 								</Button>
@@ -399,11 +398,11 @@ export default function HomeLandingPage() {
 						<Button
 							size="lg"
 							variant="secondary"
-							className=" px-8 py-4 rounded-full text-lg font-semibold"
+							className=" px-8 h-12 rounded-full font-semibold"
 						>
 							Get Started Today
 						</Button>
-						<p className="text-sm mt-1">Start using Milestone today. </p>
+						<p className="text-xs mt-1">Start using Milestone today. </p>
 					</motion.div>
 				</div>
 			</motion.section>
