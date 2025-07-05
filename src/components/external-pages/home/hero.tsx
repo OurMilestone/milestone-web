@@ -25,7 +25,7 @@ function Hero() {
 
 						<motion.p
 							variants={fadeInUp}
-							className="text-sm text-primary mb-8 max-w-3xl mx-auto leading-relaxed"
+							className="text-base text-primary mb-8 max-w-3xl mx-auto leading-relaxed"
 						>
 							Streamline your workflow with our comprehensive project management
 							platform. Track progress, manage teams, and get paid faster with
@@ -40,7 +40,7 @@ function Hero() {
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
 							>
-								<Button size="lg" className="px-8 py-3 rounded-full text-lg">
+								<Button size="lg" className="px-8 h-12 rounded-full text-lg">
 									Schedule a Demo
 								</Button>
 							</motion.div>
@@ -51,7 +51,7 @@ function Hero() {
 								<Button
 									size="lg"
 									variant="secondary"
-									className="px-12 py-3 rounded-full text-lg"
+									className="px-12 h-12 rounded-full text-lg"
 									onClick={() => {
 										document.getElementById("how-it-works")?.scrollIntoView({
 											behavior: "smooth",
