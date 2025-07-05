@@ -67,7 +67,7 @@ function Header() {
 			initial={{ opacity: 0, y: -20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.6 }}
-			className="border-b border-gray-100 mx-7 md:max-w-3xl lg:max-w-5xl md:mx-auto rounded-2xl bg-white/80 backdrop-blur-md sticky top-2 z-50"
+			className="border border-gray-100 mx-7 md:max-w-3xl lg:max-w-5xl md:mx-auto rounded-2xl bg-white/80 backdrop-blur-md sticky top-4 z-50"
 		>
 			<div className="container mx-auto px-4 py-4">
 				<div className="flex items-center justify-between">
@@ -84,25 +84,25 @@ function Header() {
 					<nav className="hidden md:flex items-center space-x-8">
 						<Link
 							href="#about"
-							className="text-gray-600 hover:text-gray-900 transition-colors"
+							className="text-primary hover:text-gray-900 transition-colors"
 						>
 							About Us
 						</Link>
 						<Link
 							href="#products"
-							className="text-gray-600 hover:text-gray-900 transition-colors"
+							className="text-primary hover:text-gray-900 transition-colors"
 						>
 							Products
 						</Link>
 						<Link
 							href="#teams"
-							className="text-gray-600 hover:text-gray-900 transition-colors"
+							className="text-primary hover:text-gray-900 transition-colors"
 						>
 							Teams
 						</Link>
 						<Link
 							href="#community"
-							className="text-gray-600 hover:text-gray-900 transition-colors"
+							className="text-primary hover:text-gray-900 transition-colors"
 						>
 							Our Community
 						</Link>
@@ -113,7 +113,7 @@ function Header() {
 						whileTap={{ scale: 0.95 }}
 						className="hidden md:block"
 					>
-						<Button className=" text-white px-6 py-2 rounded-full">
+						<Button className=" text-white px-6 h-12 rounded-full">
 							Schedule a Demo
 						</Button>
 					</motion.div>
@@ -170,7 +170,7 @@ function Header() {
 										>
 											<Link
 												href="#nav"
-												className="block text-gray-600 hover:text-gray-900 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50"
+												className="block text-primary hover:text-gray-900 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50"
 												onClick={() => setIsMenuOpen(false)}
 											>
 												{item}
@@ -192,7 +192,7 @@ function Header() {
 										whileTap={{ scale: 0.98 }}
 									>
 										<Button
-											className="px-6 py-2 rounded-full w-full"
+											className="px-6 h-12 rounded-full w-full"
 											onClick={() => setIsMenuOpen(false)}
 										>
 											Schedule a Demo
