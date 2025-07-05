@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 import React, { Suspense } from "react";
-import { auth } from "../../../../../../../auth";
+import { auth } from "../../../../../../../../auth";
 
 const FreelancerDashboardPaymentsPage = async () => {
 	const session = await auth();
