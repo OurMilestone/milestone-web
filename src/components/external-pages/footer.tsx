@@ -48,7 +48,9 @@ export default function Footer() {
 						</div>
 						<div className="flex items-center space-x-4">
 							<a
-								href="#linkedin"
+								href="https://www.linkedin.com/company/yourmilestone/"
+								target="_blank"
+								rel="noreferrer noopener"
 								className="bg-primary text-white p-2 rounded-full hover:bg-primary/80 transition-colors"
 								aria-label="LinkedIn"
 							>
@@ -68,7 +70,9 @@ export default function Footer() {
 							</a>
 
 							<a
-								href="#x"
+								href="https://x.com/_yourmilestone"
+								target="_blank"
+								rel="noreferrer noopener"
 								className="bg-primary text-white p-2 rounded-full hover:bg-primary/80 transition-colors"
 								aria-label="X (Twitter)"
 							>
