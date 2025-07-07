@@ -48,9 +48,9 @@ function Header() {
 			initial={{ opacity: 0, y: -20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.6 }}
-			className="border border-gray-100 mx-7 md:max-w-3xl lg:max-w-5xl md:mx-auto rounded-2xl bg-white/80 backdrop-blur-md sticky top-4 z-50"
+			className="border border-gray-100 mx-5 md:max-w-4xl lg:max-w-5xl md:mx-auto rounded-xl lg:rounded-full bg-white/80 backdrop-blur-md sticky top-4 z-50"
 		>
-			<div className="container mx-auto px-4 py-4">
+			<div className="container mx-auto px-4 py-3">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center space-x-2">
 						<Image
