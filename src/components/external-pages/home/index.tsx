@@ -332,7 +332,10 @@ export default function HomeLandingPage() {
 				</div>
 			</section>
 
-			<section className="py-10 md:py-20 xl:px-4 relative overflow-hidden">
+			<section
+				id="connect-with-us"
+				className="py-10 md:py-20 xl:px-4 relative overflow-hidden"
+			>
 				<div className="container mx-auto px-4">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 						<motion.div
