@@ -153,8 +153,8 @@ export default function HomeLandingPage() {
 							<Image
 								src="/assets/images/task-management.png"
 								alt="how it works"
-								width={500}
-								height={500}
+								width={516}
+								height={566}
 							/>
 						</motion.div>
 
@@ -163,7 +163,7 @@ export default function HomeLandingPage() {
 							whileInView={{ opacity: 1, x: 0 }}
 							transition={{ duration: 0.8 }}
 							viewport={{ once: true }}
-							className=""
+							className="lg:max-w-[50%]"
 						>
 							<h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
 								Built for Transparent, Secure, and Efficient Workflows.
@@ -341,6 +341,17 @@ export default function HomeLandingPage() {
 							transition={{ duration: 0.8 }}
 							viewport={{ once: true }}
 						>
+							<motion.div className="flex items-center justify-center gap-x-2 mb-4 py-2 max-w-xs  bg-[#FBF1D38A] rounded-xl">
+								<Image
+									src="/assets/icons/empower.svg"
+									width={25}
+									height={25}
+									alt="remote"
+								/>
+								<span className=" text-[#EDBB24]">
+									Empower Remote Collaboration
+								</span>
+							</motion.div>
 							<h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
 								Connect, Track, And Pay Your Global Team With Ease.
 							</h2>
@@ -354,12 +365,18 @@ export default function HomeLandingPage() {
 								whileHover={{ scale: 1.02 }}
 								whileTap={{ scale: 0.95 }}
 							>
-								<Button
-									size="lg"
-									className=" text-white px-8 h-12 rounded-full"
+								<a
+									href="https://calendly.com/yourmilestone-support/milestone-discovery-call"
+									target="_blank"
+									rel="noreferrer noopener"
 								>
-									Schedule a Demo
-								</Button>
+									<Button
+										size="lg"
+										className=" text-white px-8 h-12 cursor-pointer rounded-full"
+									>
+										Schedule a Demo
+									</Button>
+								</a>
 							</motion.div>
 						</motion.div>
 
@@ -395,13 +412,20 @@ export default function HomeLandingPage() {
 						For Everyone Involved.
 					</h2>
 					<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-						<Button
-							size="lg"
-							variant="secondary"
-							className=" px-8 h-12 rounded-full font-semibold"
+						<a
+							href="https://calendly.com/yourmilestone-support/milestone-discovery-call"
+							target="_blank"
+							rel="noreferrer noopener"
 						>
-							Get Started Today
-						</Button>
+							<Button
+								size="lg"
+								variant="secondary"
+								className=" px-8 h-12 cursor-pointer rounded-full font-semibold"
+							>
+								Schedule a Demo
+							</Button>
+						</a>
+
 						<p className="text-xs mt-1">Start using Milestone today. </p>
 					</motion.div>
 				</div>
