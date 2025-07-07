@@ -68,7 +68,7 @@ function Hero() {
 								<Button
 									size="lg"
 									variant="secondary"
-									className="px-12 h-12 rounded-full text-base"
+									className="px-12 lg:px-8 h-12 rounded-full text-base text-white"
 									onClick={() => {
 										document.getElementById("how-it-works")?.scrollIntoView({
 											behavior: "smooth",

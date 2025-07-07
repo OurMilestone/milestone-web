@@ -372,7 +372,7 @@ export default function HomeLandingPage() {
 								>
 									<Button
 										size="lg"
-										className=" text-white px-8 h-12 cursor-pointer rounded-full"
+										className=" text-white px-8 h-12 rounded-full"
 									>
 										Schedule a Demo
 									</Button>
@@ -420,7 +420,7 @@ export default function HomeLandingPage() {
 							<Button
 								size="lg"
 								variant="secondary"
-								className=" px-8 h-12 cursor-pointer rounded-full font-semibold"
+								className=" px-8 h-12 rounded-full font-semibold"
 							>
 								Schedule a Demo
 							</Button>
