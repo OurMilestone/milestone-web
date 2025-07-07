@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { fadeInUp, staggerContainer } from "@/utils/animations";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 function Hero() {
 	return (
@@ -14,6 +15,17 @@ function Hero() {
 						animate="animate"
 						className="max-w-5xl mx-auto"
 					>
+						<motion.div className="flex items-center justify-center gap-x-2 mb-4 py-2 max-w-xs mx-auto bg-[#FBF1D38A] rounded-xl">
+							<Image
+								src="/assets/icons/hero-icon.svg"
+								width={20}
+								height={20}
+								alt="remote"
+							/>
+							<span className=" text-[#EDBB24]">
+								Built for Remote & Contract Work
+							</span>
+						</motion.div>
 						<motion.h1
 							variants={fadeInUp}
 							className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-6 leading-tight"
@@ -40,9 +52,14 @@ function Hero() {
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
 							>
-								<Button size="lg" className="px-8 h-12 rounded-full text-lg">
-									Schedule a Demo
-								</Button>
+								<Link href="/register">
+									<Button
+										size="lg"
+										className="px-8 h-12 rounded-full text-base"
+									>
+										Get Started
+									</Button>
+								</Link>
 							</motion.div>
 							<motion.div
 								whileHover={{ scale: 1.05 }}
@@ -51,7 +68,7 @@ function Hero() {
 								<Button
 									size="lg"
 									variant="secondary"
-									className="px-12 h-12 rounded-full text-lg"
+									className="px-12 lg:px-8 h-12 rounded-full text-base text-white"
 									onClick={() => {
 										document.getElementById("how-it-works")?.scrollIntoView({
 											behavior: "smooth",
