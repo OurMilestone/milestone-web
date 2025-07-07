@@ -94,9 +94,11 @@ function Header() {
 						whileTap={{ scale: 0.95 }}
 						className="hidden md:block"
 					>
-						<Button className=" text-white px-6 h-12 rounded-full">
-							Schedule a Demo
-						</Button>
+						<Link href="/login">
+							<Button className=" text-white px-8 h-12 rounded-full">
+								Login
+							</Button>
+						</Link>
 					</motion.div>
 
 					{/* Mobile Hamburger Menu */}
@@ -172,12 +174,14 @@ function Header() {
 										whileHover={{ scale: 1.02 }}
 										whileTap={{ scale: 0.98 }}
 									>
-										<Button
-											className="px-6 h-12 rounded-full w-full"
-											onClick={() => setIsMenuOpen(false)}
-										>
-											Schedule a Demo
-										</Button>
+										<Link href="/login">
+											<Button
+												className="px-8 h-12 rounded-full w-full"
+												onClick={() => setIsMenuOpen(false)}
+											>
+												Login
+											</Button>
+										</Link>
 									</motion.div>
 								</motion.div>
 							</nav>
