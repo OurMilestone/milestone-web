@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "../ui/button";
 
 export default function Footer() {
 	return (
@@ -17,41 +16,30 @@ export default function Footer() {
 					</div>
 
 					<nav className="flex items-center space-x-8 mb-4 md:mb-0">
-						<a
-							href="/assets/docs/privacy.pdf"
-							target="_blank"
-							rel="noreferrer noopener"
-							//download
-							className="text-gray-600 hover:text-primary hover:underline font-medium transition-colors"
+						<Link
+							href="#privacy"
+							className="text-gray-600 hover:text-gray-900 transition-colors"
 						>
 							Privacy
-						</a>
+						</Link>
 						<Link
 							href="#terms"
-							className="text-gray-600 hover:text-primary hover:underline font-medium transition-colors"
+							className="text-gray-600 hover:text-gray-900 transition-colors"
 						>
 							Terms
 						</Link>
-						<Button
-							className="text-gray-600 bg-transparent hover:bg-transparent shadow-none hover:text-primary hover:underline cursor-pointer font-medium transition-colors"
-							onClick={() => {
-								document.getElementById("connect-with-us")?.scrollIntoView({
-									behavior: "smooth",
-								});
-							}}
+						<Link
+							href="#ontactc"
+							className="text-gray-600 hover:text-gray-900 transition-colors"
 						>
 							Contact
-						</Button>
-						<Button
-							className="text-gray-600 bg-transparent hover:bg-transparent shadow-none hover:text-primary hover:underline cursor-pointer font-medium transition-colors"
-							onClick={() => {
-								document.getElementById("how-it-works")?.scrollIntoView({
-									behavior: "smooth",
-								});
-							}}
+						</Link>
+						<Link
+							href="#about"
+							className="text-gray-600 hover:text-gray-900 transition-colors"
 						>
 							About
-						</Button>
+						</Link>
 					</nav>
 					<hr />
 					<div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 lg:mt-0">

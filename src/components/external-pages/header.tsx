@@ -63,16 +63,12 @@ function Header() {
 
 					{/* Desktop Navigation */}
 					<nav className="hidden md:flex items-center space-x-8">
-						<Button
-							className="text-primary bg-transparent shadow-none hover:bg-transparent cursor-pointer hover:text-gray-900 transition-colors"
-							onClick={() => {
-								document.getElementById("how-it-works")?.scrollIntoView({
-									behavior: "smooth",
-								});
-							}}
+						<Link
+							href="#about"
+							className="text-primary hover:text-gray-900 transition-colors"
 						>
 							About Us
-						</Button>
+						</Link>
 						<Link
 							href="#products"
 							className="text-primary hover:text-gray-900 transition-colors"
