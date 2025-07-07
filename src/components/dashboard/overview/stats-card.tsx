@@ -39,7 +39,7 @@ export function StatsCards({
 						// biome-ignore lint/style/noNonNullAssertion: <explanation>
 						formatCurrency(wallet?.walletBalance!, CURRENCY)
 					}`
-				: "N/A",
+				: "0.00",
 			icon: Wallet,
 			iconBg: "bg-purple-100",
 			iconColor: "text-purple-500",

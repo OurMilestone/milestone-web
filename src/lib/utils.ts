@@ -429,7 +429,7 @@ export function transformApiTaskToUiProjectTaskListItem(
 	};
 }
 
-export const CURRENCY = "NGN";
+export const CURRENCY = "USD";
 
 export const mapApiTransactionsToUITransaction = (
 	transaction: TransactionDTO,
