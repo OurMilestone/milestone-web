@@ -14,6 +14,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
 	title: "Milestone",
 	description: "Connect, collaborate, and grow your career with ease",
+	verification: {
+		google: "Lp_2GOyrfqos1sqzv2h-t46wd8unVgIIyaWPc2puy7A",
+	},
 };
 
 export default function RootLayout({
@@ -23,6 +26,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
+			<head />
 			<body className={`${poppins.variable} antialiased font-sans`}>
 				<NextTopLoader showSpinner={false} color="#edbb32" />
 				{children}
