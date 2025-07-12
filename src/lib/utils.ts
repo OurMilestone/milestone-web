@@ -32,7 +32,11 @@ import {
 } from "lucide-react";
 import type { Project } from "./constants";
 import type { ProjectWithMembers } from "./data-access-layer/DTOs/project.dto";
-import type { TaskDTO } from "./data-access-layer/DTOs/task.dto";
+import {
+	type SubtaskDTO,
+	type TaskDTO,
+	TaskStatus,
+} from "./data-access-layer/DTOs/task.dto";
 import type { TransactionDTO } from "./data-access-layer/DTOs/wallet.dto";
 
 export function cn(...inputs: ClassValue[]) {
@@ -239,7 +243,6 @@ export function transformApiTaskToUiTask(
 	apiTask: TaskDTO,
 	index: number,
 ): Task {
-	console.log("apiTask: ", apiTask);
 	return {
 		id: apiTask.uuid,
 		title: apiTask.title,
@@ -260,7 +263,6 @@ export function transformApiTaskToUiTask(
 					{
 						id: apiTask.label,
 						name: apiTask.label,
-						// TODO: This can be expanded to a map for different colors based on label name
 						colorClasses:
 							"bg-blue-100 text-blue-700 dark:bg-blue-700/30 dark:text-blue-300",
 					},
@@ -349,9 +351,38 @@ export function transformApiProjectToUiProject(
 	};
 }
 
+export function transformApiSubtaskToUiSubtask(
+	apiSubtask: SubtaskDTO,
+): Subtask {
+	return {
+		id: apiSubtask.id.toString(),
+		uuid: apiSubtask.uuid,
+		title: apiSubtask.title,
+		code: apiSubtask.task_code,
+		description: apiSubtask.description,
+		isCompleted: apiSubtask.status === TaskStatus.DONE,
+		assignee: apiSubtask.assignee
+			? {
+					id: apiSubtask.assignee.id,
+					name: apiSubtask.assignee.name,
+					initials: getInitials(apiSubtask.assignee.name),
+					email: apiSubtask.assignee.email,
+				}
+			: null,
+		columnId: mapApiStatusToColumnId(apiSubtask.status),
+		priority: apiSubtask.priority.toLowerCase() as TaskPriority,
+		order: apiSubtask.order,
+		createdAt: apiSubtask.created_at,
+		updatedAt: apiSubtask.updated_at,
+		deletedAt: apiSubtask.deleted_at,
+		isDeleted: apiSubtask.is_deleted,
+	};
+}
+
 export function transformApiTaskToUiTaskDetail(apiTask: TaskDTO): TaskDetail {
 	return {
-		id: apiTask.uuid,
+		id: Number(apiTask.id),
+		uuid: apiTask.uuid,
 		title: apiTask.title,
 		project: {
 			id: apiTask.project.id.toString(),
@@ -380,7 +411,6 @@ export function transformApiTaskToUiTaskDetail(apiTask: TaskDTO): TaskDetail {
 					email: apiTask.assignee.email,
 				}
 			: null,
-		// The API doesn't provide a separate reporter, so we default to the assignee or project owner
 		reporter: apiTask.assignee
 			? {
 					id: apiTask.assignee.id,
@@ -389,24 +419,7 @@ export function transformApiTaskToUiTaskDetail(apiTask: TaskDTO): TaskDetail {
 					email: apiTask.assignee.email,
 				}
 			: null,
-		subtasks: (apiTask.sub_tasks || []).map(
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-			(sub: any, index: number): Subtask => ({
-				id: sub.uuid || `sub-${index}`,
-				title: sub.title,
-				code: sub.task_code,
-				isCompleted: sub.status === "DONE",
-				assignee: sub.assignee
-					? {
-							id: sub.assignee.id,
-							name: sub.assignee.name,
-							initials: getInitials(sub.assignee.name),
-						}
-					: null,
-				columnId: mapApiStatusToColumnId(sub.status),
-				priority: sub.priority.toLowerCase() as TaskPriority,
-			}),
-		),
+		subtasks: (apiTask.sub_tasks || []).map(transformApiSubtaskToUiSubtask),
 		createdAt: apiTask.created_at,
 		updatedAt: apiTask.updated_at,
 	};

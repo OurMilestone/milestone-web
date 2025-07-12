@@ -13,7 +13,6 @@ import {
 import type { UserRole } from "@/types/auth/auth-types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { assignableUsers } from "../../../lib/constants";
 import { TaskBoardErrorState } from "../taskboard/taskboard-error-state";
 import { TaskDetailPageSkeleton } from "./skeletons/task-detail-page-skeleton";
 
@@ -21,14 +20,14 @@ interface TaskPageClientManagerProps {
 	userRole: UserRole;
 	projectId: number;
 	projectSlug: string;
-	taskId: string;
+	taskUuid: string;
 }
 
 export default function TaskPageClientManager({
 	userRole,
 	projectId,
 	projectSlug,
-	taskId,
+	taskUuid,
 }: TaskPageClientManagerProps) {
 	const queryClient = useQueryClient();
 
@@ -36,11 +35,11 @@ export default function TaskPageClientManager({
 	const [isPinnedFieldsDrawerOpen, setIsPinnedFieldsDrawerOpen] =
 		useState(false);
 
-	const { data, isLoading, error } = useTaskDetailData(projectId, taskId);
+	const { data, isLoading, error } = useTaskDetailData(projectId, taskUuid);
 	const { mutate: updateTaskStatus, isPending: isUpdatingStatus } =
 		useUpdateTaskStatus();
 	const { mutate: updateTaskField, isPending: isUpdatingTask } =
-		useUpdateTaskField(taskId);
+		useUpdateTaskField(taskUuid);
 
 	const toggleProjectListDrawer = () => {
 		setIsProjectListDrawerOpen((prev) => !prev);
@@ -66,7 +65,7 @@ export default function TaskPageClientManager({
 	);
 
 	const handleRetryFetch = () => {
-		queryClient.invalidateQueries({ queryKey: queryKeys.taskDetail(taskId) });
+		queryClient.invalidateQueries({ queryKey: queryKeys.taskDetail(taskUuid) });
 	};
 
 	if (isLoading) {
@@ -106,7 +105,7 @@ export default function TaskPageClientManager({
 					projectTasks={projectTasksData}
 					currentRole={userRole}
 					currentProjectSlug={projectSlug}
-					currentTaskId={taskId}
+					currentTaskUuid={taskUuid}
 					updateTaskField={updateTaskField}
 					isUpdatingTask={isUpdatingTask}
 					assignableUsers={data?.members || []}

@@ -2,16 +2,21 @@
 
 import { AppRoutePaths } from "@/config/routes-config";
 import { patchRequest, postRequest } from "@/lib/api/server/api-client";
-import type { TaskDTO } from "@/lib/data-access-layer/DTOs/task.dto";
+import type {
+	SubtaskDTO,
+	TaskDTO,
+} from "@/lib/data-access-layer/DTOs/task.dto";
 import { getTaskById } from "@/lib/data-access-layer/tasks.dal";
 import {
+	type CreateSubtaskInput,
 	type CreateTaskInput,
+	createSubtaskSchema,
 	createTaskSchema,
 	updateTaskFieldSchema,
 	updateTaskStatusSchema,
 } from "@/lib/schemas/task-schema";
 import { handleApiError, mapColumnIdToApiStatus } from "@/lib/utils";
-import type { ActionResult } from "@/types";
+import type { ActionResult, Expand } from "@/types";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import type { KanbanColumnId } from "@/types/dashboard/taskboard-types";
 import { revalidatePath } from "next/cache";
@@ -189,7 +194,7 @@ export async function updateTaskFieldAction(
 
 	try {
 		const validatedInput = updateTaskFieldSchema.parse(input);
-		const currentTask = await getTaskById(validatedInput.taskId);
+		const currentTask = await getTaskById(validatedInput.taskUuid);
 
 		if (!currentTask) {
 			return {
@@ -212,7 +217,7 @@ export async function updateTaskFieldAction(
 		};
 
 		const response = await patchRequest<TaskDTO, typeof payload>(
-			`/task/${validatedInput.taskId}/update-task/`,
+			`/task/${validatedInput.taskUuid}/update-task/`,
 			payload,
 			true,
 		);
@@ -221,7 +226,7 @@ export async function updateTaskFieldAction(
 			revalidatePath(
 				AppRoutePaths.ContractorDashboard.Projects.TaskDetail(
 					currentTask.project.id.toString(),
-					validatedInput.taskId,
+					validatedInput.taskUuid,
 				),
 				"page",
 			);
@@ -229,7 +234,7 @@ export async function updateTaskFieldAction(
 			revalidatePath(
 				AppRoutePaths.FreelancerDashboard.Projects.TaskDetail(
 					currentTask.project.id.toString(),
-					validatedInput.taskId,
+					validatedInput.taskUuid,
 				),
 				"page",
 			);
@@ -246,32 +251,123 @@ export async function updateTaskFieldAction(
 	}
 }
 
-// TODO: Implement create, update, delete subtask server actions
-// For now, we will mock them to keep the focus on the main task mutations.
 export async function createSubtaskAction(
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	input: any,
-): Promise<ActionResult<null>> {
-	console.log("Simulating create subtask:", input);
-	await new Promise((res) => setTimeout(res, 500));
-	return {
-		success: true,
-		data: null,
-		status: 201,
-		message: "Subtask created.",
-	};
+	input: CreateSubtaskInput,
+): Promise<ActionResult<SubtaskDTO | null>> {
+	const session = await auth();
+
+	if (!session?.user) {
+		return {
+			success: false,
+			status: 401,
+			data: null,
+			message: "Unauthorized",
+		};
+	}
+
+	const role = session.user.role;
+
+	try {
+		const validatedInput = createSubtaskSchema.parse(input);
+
+		const apiPayload = {
+			task: validatedInput.taskId,
+			title: validatedInput.title,
+			description: validatedInput.description,
+			status: validatedInput.status,
+			priority: validatedInput.priority,
+		};
+
+		const response = await postRequest<SubtaskDTO, typeof apiPayload>(
+			"/subtask/",
+			apiPayload,
+			true,
+		);
+
+		const currentTask = await getTaskById(response.data.data.task.uuid);
+
+		if (currentTask) {
+			if (role === "Contractor") {
+				revalidatePath(
+					AppRoutePaths.ContractorDashboard.Projects.TaskDetail(
+						currentTask.project.id.toString(),
+						currentTask.uuid,
+					),
+					"page",
+				);
+			} else {
+				revalidatePath(
+					AppRoutePaths.FreelancerDashboard.Projects.TaskDetail(
+						currentTask.project.id.toString(),
+						currentTask.uuid,
+					),
+					"page",
+				);
+			}
+		}
+
+		return {
+			success: true,
+			data: response.data.data,
+			status: response.status,
+			message: "Subtask created successfully!",
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to create subtask.");
+	}
 }
 
 export async function updateSubtaskAction(
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	input: any,
-): Promise<ActionResult<null>> {
-	console.log("Simulating update subtask:", input);
-	await new Promise((res) => setTimeout(res, 500));
-	return {
-		success: true,
-		data: null,
-		status: 200,
-		message: "Subtask updated.",
-	};
+	subtaskId: string,
+	data: Partial<CreateSubtaskInput>,
+): Promise<ActionResult<SubtaskDTO | null>> {
+	const session = await auth();
+
+	if (!session?.user) {
+		return {
+			success: false,
+			status: 401,
+			data: null,
+			message: "Unauthorized",
+		};
+	}
+
+	const role = session.user.role;
+
+	try {
+		const response = await patchRequest<
+			SubtaskDTO,
+			Partial<CreateSubtaskInput>
+		>(`/subtask?subtask_id=${subtaskId}`, data, true);
+
+		const taskUuid = response.data.data.task.uuid;
+		const projectId = response.data.data.task.project.id;
+
+		if (role === "Contractor") {
+			revalidatePath(
+				AppRoutePaths.ContractorDashboard.Projects.TaskDetail(
+					projectId.toString(),
+					taskUuid,
+				),
+				"page",
+			);
+		} else {
+			revalidatePath(
+				AppRoutePaths.FreelancerDashboard.Projects.TaskDetail(
+					projectId.toString(),
+					taskUuid,
+				),
+				"page",
+			);
+		}
+
+		return {
+			success: true,
+			data: response.data.data,
+			status: response.status,
+			message: response.data.message ?? "Subtask updated successfully!",
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to update subtask.");
+	}
 }

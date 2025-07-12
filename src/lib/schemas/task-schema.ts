@@ -39,8 +39,34 @@ export const updateTaskStatusSchema = z.object({
 	projectId: z.number(),
 });
 
+export const createSubtaskSchema = z.object({
+	taskId: z.number({ required_error: "Task ID is missing." }),
+
+	title: z
+		.string()
+		.min(3, { message: "Title must be at least 3 characters long." }),
+
+	description: z
+		.string()
+		.min(10, { message: "Description must be at least 10 characters long." }),
+
+	priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"], {
+		errorMap: () => ({ message: "Please select a valid priority." }),
+	}),
+
+	status: z.enum(
+		["BACKLOG", "IN_PROGRESS", "IN_REVIEW", "DONE", "PENDING", "CANCELLED"],
+		{
+			errorMap: () => ({ message: "Please select a valid status." }),
+		},
+	),
+});
+
+export type CreateSubtaskInput = z.infer<typeof createSubtaskSchema>;
+
 export const updateTaskFieldSchema = z.object({
-	taskId: z.string().uuid(),
+	taskId: z.number(),
+	taskUuid: z.string().uuid(),
 	fields: z
 		.object({
 			title: z.string().min(3).optional(),

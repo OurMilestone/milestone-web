@@ -1,5 +1,8 @@
-import "server-only";
-import type { TaskPriority } from "@/types/dashboard/taskboard-types";
+import type { Expand } from "@/types";
+import type {
+	TaskAssignee,
+	TaskPriority,
+} from "@/types/dashboard/taskboard-types";
 import type { ProjectMemberDTO, SingleProjectDTO } from "./project.dto";
 
 export enum TaskStatus {
@@ -9,6 +12,7 @@ export enum TaskStatus {
 	PENDING = "pending",
 	CANCELLED = "cancelled",
 	COMPLETED = "completed",
+	BACKLOG = "backlog",
 }
 
 export interface TaskDTO {
@@ -25,13 +29,8 @@ export interface TaskDTO {
 		title: string;
 		status: string;
 	};
-	assignee: {
-		id: string;
-		name: string;
-		email: string;
-	} | null;
-	// biome-ignore lint/suspicious/noExplicitAny: Would be defined more strictly in the future when the API is stable
-	sub_tasks: any[]; // Todo: Define more strictly when API is stable
+	assignee: Assignee | null;
+	sub_tasks: SubtaskDTO[];
 	created_at: string;
 	updated_at: string;
 	order: number;
@@ -48,3 +47,24 @@ export interface TaskDetailPageData {
 	projectTasks: TaskDTO[];
 	members: ProjectMemberDTO[];
 }
+
+export interface SubtaskDTO {
+	id: number;
+	uuid: string;
+	title: string;
+	description: string;
+	status: TaskStatus;
+	priority: TaskPriority;
+	assignee: Assignee;
+	task_code: string;
+	created_at: string;
+	updated_at: string;
+	deleted_at: string | null;
+	is_deleted: boolean;
+	order: number;
+	task: TaskDTO;
+}
+
+export type Assignee = Expand<
+	Pick<TaskAssignee, "id" | "name"> & { email: string }
+>;

@@ -15,16 +15,24 @@ export interface UserProfile {
 
 export interface Subtask {
 	id: string;
+	uuid: string;
 	title: string;
 	code: string;
+	description: string;
 	isCompleted: boolean;
 	assignee: Expand<TaskAssignee> | null;
 	columnId: KanbanColumnId;
 	priority: TaskPriority;
+	order: number;
+	createdAt: string;
+	updatedAt: string;
+	deletedAt: string | null;
+	isDeleted: boolean;
 }
 
 export interface TaskDetail {
-	id: string;
+	id: number;
+	uuid: string;
 	title: string;
 	project: {
 		id: string;
@@ -52,7 +60,7 @@ export interface TaskDetail {
 }
 
 export type ProjectTaskListItem = Expand<
-	Omit<Subtask, "isCompleted" | "assignee"> & {
-		assignee?: Pick<TaskAssignee, "avatarUrl" | "initials">;
+	Pick<Subtask, "id" | "code" | "title" | "columnId" | "priority"> & {
+		assignee: Pick<TaskAssignee, "avatarUrl" | "initials"> | undefined;
 	}
 >;
