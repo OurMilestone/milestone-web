@@ -72,8 +72,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} antialiased font-sans`}>
-        {/* Structured data for SEO */}
+      <body className={`${poppins.variable} antialiased font-sans`}>        
+  {/*  biome-ignore lint/security/noDangerouslySetInnerHtml: Structured data for SEO  */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
