@@ -4,6 +4,7 @@ import type {
 	ProjectWithMembers,
 } from "@/lib/data-access-layer/DTOs/project.dto";
 import type {
+	SubtaskDTO,
 	TaskBoardPageData,
 	TaskDTO,
 	TaskDetailPageData,
@@ -195,5 +196,15 @@ export const clientApi = {
 		return callApi<ActionResult<PaystackResolveDTO | null>>(
 			`/api/resolve-account?account_number=${account_number}&bank_code=${bank_code}`,
 		);
+	},
+
+	/**
+	 * Retrieves subtasks associated with a specific task.
+	 *
+	 * @param taskId - The unique identifier of the task for which subtasks are to be fetched.
+	 * @returns A promise that resolves to an array of SubtaskDTO objects representing the subtasks of the specified task.
+	 */
+	getSubtasksByTaskId: (taskId: string): Promise<SubtaskDTO[]> => {
+		return callApi<SubtaskDTO[]>(`/api/subtasks?taskId=${taskId}`);
 	},
 };

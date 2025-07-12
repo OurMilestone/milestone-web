@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import type { useUpdateTaskField } from "@/hooks/mutations/use-update-task";
+import { useSubtasks } from "@/hooks/queries/use-subtasks";
+import { transformApiSubtaskToUiSubtask } from "@/lib/utils";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Plus } from "lucide-react";
@@ -23,6 +25,15 @@ export default function TaskDetailView({
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [title, setTitle] = useState(task.title);
 	const [parent] = useAutoAnimate<HTMLDivElement>();
+	const {
+		data: fetchedSubtasks = [],
+		isLoading: isLoadingSubtasks,
+		error: subtasksError,
+	} = useSubtasks(task.id);
+
+	const subtasksToRender = fetchedSubtasks?.length
+		? fetchedSubtasks.map(transformApiSubtaskToUiSubtask)
+		: [];
 
 	useEffect(() => {
 		setTitle(task.title);
@@ -33,8 +44,10 @@ export default function TaskDetailView({
 			setIsEditingTitle(false);
 			return;
 		}
+
 		updateTaskField({
 			taskId: task.id,
+			taskUuid: task.uuid,
 			fields: { title },
 		});
 		setIsEditingTitle(false);
@@ -101,12 +114,23 @@ export default function TaskDetailView({
 				)}
 			</div>
 			<TaskDescription
-				initialDescription={task.description}
 				taskId={task.id}
+				initialDescription={task.description}
+				taskUuid={task.uuid}
 				updateTaskField={updateTaskField}
 				isUpdatingTask={isUpdatingTask}
 			/>
-			<TaskSubtasks subtasks={task.subtasks || []} parentTaskCode={task.code} />
+			{isLoadingSubtasks && (
+				<p className="text-sm text-muted-foreground">Loading subtasks…</p>
+			)}
+			{subtasksError && (
+				<p className="text-sm text-destructive">Failed to load subtasks.</p>
+			)}
+			<TaskSubtasks
+				subtasks={subtasksToRender}
+				parentTaskId={task.id}
+				parentTaskUuid={task.uuid}
+			/>
 			{/* //* Activity section was here for now. Maybe implemeted after MVP */}
 		</div>
 	);

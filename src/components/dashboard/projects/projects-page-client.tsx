@@ -116,9 +116,11 @@ export function ProjectsPageClient({ userRole }: ProjectsPageClientProps) {
 					caption="Track your active projects, milestones and payments"
 					className="space-y-1"
 				/>
-				<div className="flex items-center gap-3">
-					<CreateProjectModal />
-				</div>
+				{userRole === "Contractor" && (
+					<div className="flex items-center gap-3">
+						<CreateProjectModal />
+					</div>
+				)}
 			</div>
 
 			<div className="flex flex-col md:flex-row gap-4 justify-between mb-4">
