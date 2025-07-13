@@ -360,7 +360,7 @@ export function transformApiSubtaskToUiSubtask(
 		title: apiSubtask.title,
 		code: apiSubtask.task_code,
 		description: apiSubtask.description,
-		isCompleted: apiSubtask.status === TaskStatus.DONE,
+		isCompleted: apiSubtask.status === TaskStatus.DONE.toUpperCase(),
 		assignee: apiSubtask.assignee
 			? {
 					id: apiSubtask.assignee.id,

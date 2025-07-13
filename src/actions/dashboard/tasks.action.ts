@@ -1,7 +1,11 @@
 "use server";
 
 import { AppRoutePaths } from "@/config/routes-config";
-import { patchRequest, postRequest } from "@/lib/api/server/api-client";
+import {
+	deleteRequest,
+	patchRequest,
+	postRequest,
+} from "@/lib/api/server/api-client";
 import type {
 	SubtaskDTO,
 	TaskDTO,
@@ -279,7 +283,7 @@ export async function createSubtaskAction(
 		};
 
 		const response = await postRequest<SubtaskDTO, typeof apiPayload>(
-			"/subtask/",
+			"/subtask/create/",
 			apiPayload,
 			true,
 		);
@@ -318,7 +322,7 @@ export async function createSubtaskAction(
 }
 
 export async function updateSubtaskAction(
-	subtaskId: string,
+	subtaskUuid: string,
 	data: Partial<CreateSubtaskInput>,
 ): Promise<ActionResult<SubtaskDTO | null>> {
 	const session = await auth();
@@ -338,7 +342,7 @@ export async function updateSubtaskAction(
 		const response = await patchRequest<
 			SubtaskDTO,
 			Partial<CreateSubtaskInput>
-		>(`/subtask?subtask_id=${subtaskId}`, data, true);
+		>(`/subtask/${subtaskUuid}/update-subtask/`, data, true);
 
 		const taskUuid = response.data.data.task.uuid;
 		const projectId = response.data.data.task.project.id;
@@ -369,5 +373,38 @@ export async function updateSubtaskAction(
 		};
 	} catch (error) {
 		return handleApiError(error, "Failed to update subtask.");
+	}
+}
+
+export async function deleteSubtaskAction(
+	subtaskUuid: string,
+): Promise<ActionResult<{ message: string } | null>> {
+	const session = await auth();
+
+	if (!session?.user) {
+		return {
+			success: false,
+			status: 401,
+			data: null,
+			message: "Unauthorized",
+		};
+	}
+
+	type DeleteDTO = { message: string };
+
+	try {
+		const response = await deleteRequest<DeleteDTO>(
+			`/subtask/${subtaskUuid}/delete-subtask/`,
+			true,
+		);
+
+		return {
+			success: true,
+			data: null,
+			status: response.status,
+			message: response.data.data.message ?? response.data.message,
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to delete subtask.");
 	}
 }
