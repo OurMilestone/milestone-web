@@ -11,7 +11,7 @@ import { auth } from "../../../../../../../../../../../auth";
 interface FreelancerTaskDetailPageProps {
 	params: Promise<{
 		projectSlug: string;
-		taskId: string;
+		taskUuid: string;
 	}>;
 }
 
@@ -19,7 +19,7 @@ export default async function FreelancerTaskDetailPage({
 	params,
 }: FreelancerTaskDetailPageProps) {
 	const session = await auth();
-	const { projectSlug, taskId } = await params;
+	const { projectSlug, taskUuid } = await params;
 	const projectId = Number.parseInt(projectSlug, 10);
 
 	if (!session?.user) {
@@ -31,8 +31,8 @@ export default async function FreelancerTaskDetailPage({
 	const queryClient = getQueryClient();
 
 	await queryClient.prefetchQuery({
-		queryKey: queryKeys.taskDetail(taskId),
-		queryFn: () => getTaskDetailPageData(projectId, taskId),
+		queryKey: queryKeys.taskDetail(taskUuid),
+		queryFn: () => getTaskDetailPageData(projectId, taskUuid),
 	});
 
 	return (
@@ -42,7 +42,7 @@ export default async function FreelancerTaskDetailPage({
 					userRole={userRole}
 					projectId={projectId}
 					projectSlug={projectSlug}
-					taskId={taskId}
+					taskUuid={taskUuid}
 				/>
 			</Suspense>
 		</HydrationBoundary>

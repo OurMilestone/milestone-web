@@ -116,9 +116,11 @@ export function ProjectsPageClient({ userRole }: ProjectsPageClientProps) {
 					caption="Track your active projects, milestones and payments"
 					className="space-y-1"
 				/>
-				<div className="flex items-center gap-3">
-					<CreateProjectModal />
-				</div>
+				{userRole === "Contractor" && (
+					<div className="flex items-center gap-3">
+						<CreateProjectModal />
+					</div>
+				)}
 			</div>
 
 			<div className="flex flex-col md:flex-row gap-4 justify-between mb-4">
@@ -131,7 +133,7 @@ export function ProjectsPageClient({ userRole }: ProjectsPageClientProps) {
 						className="pl-10"
 					/>
 				</div>
-				<div className="flex gap-2">
+				<div className="flex gap-2 flex-col md:flex-row">
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button variant="outline" className="w-full md:w-auto">
