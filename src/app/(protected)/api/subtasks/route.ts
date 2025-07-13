@@ -1,11 +1,11 @@
-import { getSubtasksByTaskId } from "@/lib/data-access-layer/tasks.dal";
+import { getSubtasksByTaskUuid } from "@/lib/data-access-layer/tasks.dal";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
 	const { searchParams } = new URL(request.url);
-	const taskIdStr = searchParams.get("taskId");
+	const taskUuid = searchParams.get("taskId");
 
-	if (!taskIdStr) {
+	if (!taskUuid) {
 		return NextResponse.json(
 			{ message: "TaskId is required" },
 			{ status: 400 },
@@ -13,16 +13,10 @@ export async function GET(request: NextRequest) {
 	}
 
 	try {
-		const taskId = Number.parseInt(taskIdStr);
-
-		if (Number.isNaN(taskId)) {
-			return NextResponse.json({ message: "Invalid Task ID" }, { status: 400 });
-		}
-
-		const subTasks = await getSubtasksByTaskId(taskId);
+		const subTasks = await getSubtasksByTaskUuid(taskUuid);
 		return NextResponse.json(subTasks);
 	} catch (error) {
-		console.error(`API Error in /api/subtasks?taskId=${taskIdStr}`);
+		console.error(`API Error in /api/subtasks?taskId=${taskUuid}`);
 
 		const message =
 			error instanceof Error ? error.message : "An unknown error occurred";

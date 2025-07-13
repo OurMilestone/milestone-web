@@ -14,7 +14,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface UpdateSubtaskMutationProps {
-	subtaskId: string;
+	subtaskUuid: string;
 	data: Partial<CreateSubtaskInput>;
 }
 
@@ -22,16 +22,16 @@ export function useUpdateSubtask(taskId: number, taskUuid: string) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: ({ subtaskId, data }: UpdateSubtaskMutationProps) =>
-			updateSubtaskAction(subtaskId, data),
+		mutationFn: ({ subtaskUuid, data }: UpdateSubtaskMutationProps) =>
+			updateSubtaskAction(subtaskUuid, data),
 
-		onMutate: async ({ subtaskId, data }) => {
+		onMutate: async ({ subtaskUuid, data }) => {
 			await queryClient.cancelQueries({
 				queryKey: queryKeys.taskDetail(taskUuid),
 			});
 
 			await queryClient.cancelQueries({
-				queryKey: queryKeys.subtasks.byTaskId(taskId),
+				queryKey: queryKeys.subtasks.byTaskId(taskUuid),
 			});
 
 			const previousTaskDetail = queryClient.getQueryData<TaskDetailPageData>(
@@ -39,7 +39,7 @@ export function useUpdateSubtask(taskId: number, taskUuid: string) {
 			);
 
 			const previousSubtasks = queryClient.getQueryData<SubtaskDTO[]>(
-				queryKeys.subtasks.byTaskId(taskId),
+				queryKeys.subtasks.byTaskId(taskUuid),
 			);
 
 			const getUIUpdates = (apiData: Partial<CreateSubtaskInput>) => {
@@ -86,7 +86,9 @@ export function useUpdateSubtask(taskId: number, taskUuid: string) {
 					if (!oldData) return undefined;
 
 					const updatedSubtasks = oldData.mainTask.sub_tasks.map((subtask) =>
-						subtask.uuid === subtaskId ? { ...subtask, ...uiUpdates } : subtask,
+						subtask.uuid === subtaskUuid
+							? { ...subtask, ...uiUpdates }
+							: subtask,
 					);
 
 					return {
@@ -100,12 +102,14 @@ export function useUpdateSubtask(taskId: number, taskUuid: string) {
 			);
 
 			queryClient.setQueryData<SubtaskDTO[]>(
-				queryKeys.subtasks.byTaskId(taskId),
+				queryKeys.subtasks.byTaskId(taskUuid),
 				(oldData) => {
 					if (!oldData) return undefined;
 
 					return oldData.map((subtask) =>
-						subtask.uuid === subtaskId ? { ...subtask, ...uiUpdates } : subtask,
+						subtask.uuid === subtaskUuid
+							? { ...subtask, ...uiUpdates }
+							: subtask,
 					);
 				},
 			);
@@ -133,7 +137,7 @@ export function useUpdateSubtask(taskId: number, taskUuid: string) {
 
 			if (context?.previousSubtasks) {
 				queryClient.setQueryData(
-					queryKeys.subtasks.byTaskId(taskId),
+					queryKeys.subtasks.byTaskId(taskUuid),
 					context.previousSubtasks,
 				);
 			}
@@ -144,7 +148,7 @@ export function useUpdateSubtask(taskId: number, taskUuid: string) {
 				queryKey: queryKeys.taskDetail(taskUuid),
 			});
 			queryClient.invalidateQueries({
-				queryKey: queryKeys.subtasks.byTaskId(taskId),
+				queryKey: queryKeys.subtasks.byTaskId(taskUuid),
 			});
 		},
 

@@ -8,6 +8,7 @@ import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import TaskSubtaskSkeleton from "./skeletons/task-subtask-skeleton";
 import TaskDescription from "./task-description";
 import TaskSubtasks from "./task-subtask";
 
@@ -28,11 +29,14 @@ export default function TaskDetailView({
 	const {
 		data: fetchedSubtasks = [],
 		isLoading: isLoadingSubtasks,
-		error: subtasksError,
-	} = useSubtasks(task.id);
+		error,
+		refetch,
+	} = useSubtasks(task.uuid);
 
 	const subtasksToRender = fetchedSubtasks?.length
-		? fetchedSubtasks.map(transformApiSubtaskToUiSubtask)
+		? fetchedSubtasks
+				.filter((subtask) => !subtask.is_deleted)
+				.map(transformApiSubtaskToUiSubtask)
 		: [];
 
 	useEffect(() => {
@@ -120,16 +124,13 @@ export default function TaskDetailView({
 				updateTaskField={updateTaskField}
 				isUpdatingTask={isUpdatingTask}
 			/>
-			{isLoadingSubtasks && (
-				<p className="text-sm text-muted-foreground">Loading subtasks…</p>
-			)}
-			{subtasksError && (
-				<p className="text-sm text-destructive">Failed to load subtasks.</p>
-			)}
 			<TaskSubtasks
 				subtasks={subtasksToRender}
 				parentTaskId={task.id}
 				parentTaskUuid={task.uuid}
+				isLoading={isLoadingSubtasks}
+				error={error}
+				refetch={refetch}
 			/>
 			{/* //* Activity section was here for now. Maybe implemeted after MVP */}
 		</div>

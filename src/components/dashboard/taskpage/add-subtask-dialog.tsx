@@ -33,11 +33,13 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { queryKeys } from "@/lib/query/query-keys";
 import {
 	type CreateSubtaskInput,
 	createSubtaskSchema,
 } from "@/lib/schemas/task-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -47,16 +49,20 @@ interface AddSubtaskDialogProps {
 	taskId: number;
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
+	parentTaskUuid: string;
 }
 
 export const AddSubtaskDialog = ({
 	taskId,
 	open,
 	onOpenChange,
+	parentTaskUuid,
 }: AddSubtaskDialogProps) => {
 	const isMobile = useMediaQuery("(max-width: 768px)");
 	const [isLoading, setLoading] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(open || false);
+
+	const queryClient = useQueryClient();
 
 	useEffect(() => {
 		if (open !== undefined) {
@@ -90,6 +96,14 @@ export const AddSubtaskDialog = ({
 			if (result.success) {
 				toast.success("Subtask created successfully!");
 				form.reset();
+
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.taskDetail(parentTaskUuid),
+				});
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.subtasks.byTaskId(parentTaskUuid),
+				});
+
 				handleOpenChange(false);
 			} else {
 				toast.error(result.message || "Failed to create subtask.");
@@ -139,7 +153,7 @@ export const AddSubtaskDialog = ({
 						<FormItem>
 							<FormLabel>Status</FormLabel>
 							<Select onValueChange={field.onChange} defaultValue={field.value}>
-								<FormControl>
+								<FormControl className="w-full">
 									<SelectTrigger>
 										<SelectValue placeholder="Select status" />
 									</SelectTrigger>
@@ -163,7 +177,7 @@ export const AddSubtaskDialog = ({
 						<FormItem>
 							<FormLabel>Priority</FormLabel>
 							<Select onValueChange={field.onChange} defaultValue={field.value}>
-								<FormControl>
+								<FormControl className="w-full">
 									<SelectTrigger>
 										<SelectValue placeholder="Select priority" />
 									</SelectTrigger>

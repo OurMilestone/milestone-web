@@ -201,10 +201,10 @@ export const clientApi = {
 	/**
 	 * Retrieves subtasks associated with a specific task.
 	 *
-	 * @param taskId - The unique identifier of the task for which subtasks are to be fetched.
+	 * @param taskUuid - The unique identifier of the task for which subtasks are to be fetched.
 	 * @returns A promise that resolves to an array of SubtaskDTO objects representing the subtasks of the specified task.
 	 */
-	getSubtasksByTaskId: (taskId: string): Promise<SubtaskDTO[]> => {
-		return callApi<SubtaskDTO[]>(`/api/subtasks?taskId=${taskId}`);
+	getSubtasksByTaskUuid: (taskUuid: string): Promise<SubtaskDTO[]> => {
+		return callApi<SubtaskDTO[]>(`/api/subtasks?taskId=${taskUuid}`);
 	},
 };

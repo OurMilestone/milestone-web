@@ -91,19 +91,19 @@ export const getTaskDetailPageData = cache(
 	},
 );
 
-export const getSubtasksByTaskId = cache(
-	async (taskId: number): Promise<SubtaskDTO[]> => {
+export const getSubtasksByTaskUuid = cache(
+	async (taskUuid: string): Promise<SubtaskDTO[]> => {
 		await checkUserSession();
 
 		try {
 			const response = await getRequest<SubtaskDTO[]>(
-				`/subtask?task_id=${taskId}`,
+				`/subtask/${taskUuid}/get-subtasks/`,
 				true,
 			);
 
 			return response.data.data || [];
 		} catch (error) {
-			console.error(`DAL Error fetching subtasks for task ${taskId}:`, error);
+			console.error(`DAL Error fetching subtasks for task ${taskUuid}:`, error);
 
 			return [];
 		}
