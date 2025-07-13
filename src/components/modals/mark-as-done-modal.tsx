@@ -29,7 +29,6 @@ interface MarkAsDoneModalProps {
 	isOpen: boolean;
 	onOpenChange: (isOpen: boolean) => void;
 	taskName: string;
-	projectName: string;
 	projectId: string;
 	userRole: UserRole;
 }
@@ -38,7 +37,6 @@ export default function MarkAsDoneModal({
 	isOpen,
 	onOpenChange,
 	taskName,
-	projectName,
 	projectId,
 	userRole,
 }: MarkAsDoneModalProps) {
@@ -54,11 +52,6 @@ export default function MarkAsDoneModal({
 		router.push(taskboardPath);
 		onOpenChange(false);
 	};
-
-	// const handleWorkflow = () => {
-	// 	alert("Workflow button clicked");
-	// 	onOpenChange(false);
-	// };
 
 	const content = (
 		<div className="text-center p-2 sm:p-4">
@@ -100,9 +93,6 @@ export default function MarkAsDoneModal({
 						>
 							View Project
 						</Button>
-						{/* <Button onClick={handleWorkflow} variant="outline" className="">
-							Workflow
-						</Button> */}
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
@@ -124,9 +114,6 @@ export default function MarkAsDoneModal({
 					>
 						View Project
 					</Button>
-					{/* <Button onClick={handleWorkflow} variant="outline" className="w-full">
-						Workflow
-					</Button> */}
 					<DrawerClose asChild>
 						<Button variant="ghost" className="w-full">
 							Close

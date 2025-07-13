@@ -22,7 +22,6 @@ import PinnedFieldSection from "./pinned-field-section";
 
 interface TaskDetailSidebarProps {
 	task: TaskDetail;
-	userRole: UserRole;
 	updateTaskField: ReturnType<typeof useUpdateTaskField>["mutate"];
 	isUpdatingTask: boolean;
 	assignableUsers: ProjectMemberDTO[];
@@ -30,7 +29,6 @@ interface TaskDetailSidebarProps {
 
 export default function TaskDetailSidebar({
 	task,
-	userRole,
 	updateTaskField,
 	isUpdatingTask,
 	assignableUsers,
@@ -85,6 +83,7 @@ export default function TaskDetailSidebar({
 					onSave={(newAssignee) => {
 						updateTaskField({
 							taskId: task.id,
+							taskUuid: task.uuid,
 							fields: { assignee: newAssignee ? newAssignee.id : undefined },
 						});
 					}}
@@ -119,47 +118,6 @@ export default function TaskDetailSidebar({
 					}
 				/>
 
-				{/* Reporter Field */}
-				{/* <EditableField<TaskDetail["reporter"], string>
-					label="Reporter"
-					currentValue={task.reporter}
-					options={assigneeOptions}
-					fieldType="select"
-					isEditable={false}
-					isLoading={isUpdatingTask}
-					onSave={() => {}}
-					valueTransformer={{
-						toComponent: (apiValue) => apiValue?.id || "",
-						fromComponent: (componentValue) => {
-							const user =
-								assignableUsers.find((u) => u.id === componentValue) || null;
-							if (!user) return null;
-							return {
-								id: user.id,
-								name: user.full_name || user.preferred_name,
-								initials: getInitials(user.full_name || user.preferred_name),
-							};
-						},
-					}}
-					renderDisplayValue={(currentReporter) =>
-						currentReporter ? (
-							<div className="flex items-center gap-2 justify-end">
-								<Avatar className="h-6 w-6">
-									<AvatarImage src={currentReporter.avatarUrl} />
-									<AvatarFallback className="text-xs">
-										{currentReporter.initials}
-									</AvatarFallback>
-								</Avatar>
-								<span className="text-sm text-primary">
-									{currentReporter.name}
-								</span>
-							</div>
-						) : (
-							<span className="text-sm text-muted-foreground">N/A</span>
-						)
-					}
-				/> */}
-
 				{/* Parent Task */}
 				<EditableField<TaskDetail["parentTask"], string>
 					label="Parent Task"
@@ -193,6 +151,7 @@ export default function TaskDetailSidebar({
 					onSave={(newLabel) => {
 						updateTaskField({
 							taskId: task.id,
+							taskUuid: task.uuid,
 							fields: {
 								label: newLabel?.id as
 									| "FEATURE"
@@ -240,6 +199,7 @@ export default function TaskDetailSidebar({
 					onSave={(newPriority) => {
 						updateTaskField({
 							taskId: task.id,
+							taskUuid: task.uuid,
 							fields: {
 								priority: newPriority.toUpperCase() as
 									| "LOW"
@@ -275,6 +235,7 @@ export default function TaskDetailSidebar({
 					onSave={(newStatus) => {
 						updateTaskField({
 							taskId: task.id,
+							taskUuid: task.uuid,
 							fields: {
 								status: newStatus.toUpperCase() as
 									| "BACKLOG"

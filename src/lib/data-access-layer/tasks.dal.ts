@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { getRequest } from "../api/server/api-client";
 import type {
+	SubtaskDTO,
 	TaskBoardPageData,
 	TaskDTO,
 	TaskDetailPageData,
@@ -87,5 +88,24 @@ export const getTaskDetailPageData = cache(
 			projectTasks,
 			members: membersResult?.success ? membersResult.data?.members || [] : [],
 		};
+	},
+);
+
+export const getSubtasksByTaskUuid = cache(
+	async (taskUuid: string): Promise<SubtaskDTO[]> => {
+		await checkUserSession();
+
+		try {
+			const response = await getRequest<SubtaskDTO[]>(
+				`/subtask/${taskUuid}/get-subtasks/`,
+				true,
+			);
+
+			return response.data.data || [];
+		} catch (error) {
+			console.error(`DAL Error fetching subtasks for task ${taskUuid}:`, error);
+
+			return [];
+		}
 	},
 );

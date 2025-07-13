@@ -74,7 +74,7 @@ export function AddMemberModal({
 		onSuccess: (res) => {
 			if (res.success) {
 				toast.success("Member Added", {
-					description: res.message,
+					description: <span className="text-foreground">{res.message}</span>,
 				});
 
 				queryClient.invalidateQueries({
@@ -88,13 +88,13 @@ export function AddMemberModal({
 				form.reset();
 			} else {
 				toast.error("Failed to Add Member", {
-					description: res.message,
+					description: <span className="text-foreground">{res.message}</span>,
 				});
 			}
 		},
 		onError: (err) => {
 			toast.error("An Error Occurred", {
-				description: err.message,
+				description: <span className="text-foreground">{err.message}</span>,
 			});
 		},
 	});

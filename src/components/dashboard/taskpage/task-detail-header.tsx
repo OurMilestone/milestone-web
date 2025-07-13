@@ -55,7 +55,7 @@ export default function TaskDetailHeaderGlobal({
 	const handleMarkAsDone = () => {
 		updateTaskStatus(
 			{
-				taskId: task.id,
+				taskId: task.id.toString(),
 				newStatus: "done",
 				projectId: Number.parseInt(task.project.id, 10),
 			},
@@ -194,7 +194,6 @@ export default function TaskDetailHeaderGlobal({
 				isOpen={isMarkAsDoneModalOpen}
 				onOpenChange={setIsMarkAsDoneModalOpen}
 				taskName={task.title}
-				projectName={task.project.name}
 				projectId={task.project.id}
 				userRole={userRole}
 			/>
