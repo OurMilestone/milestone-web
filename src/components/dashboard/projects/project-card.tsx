@@ -240,11 +240,10 @@ export function ProjectCard({ project, userRole, view }: ProjectCardProps) {
 								</p>
 							</div>
 
-							{view === "detail" && (
-								<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
-									{project.description}
-								</p>
-							)}
+							<p className="text-sm text-muted-foreground line-clamp-3 mb-2">
+								{project.description}
+							</p>
+
 							<hr className="my-3 border-border" />
 
 							<div className="flex items-center justify-between mb-3 text-xs md:text-sm text-muted-foreground">

@@ -8,9 +8,11 @@ import "@/components/tiptap/tiptap-styles.css";
 
 interface TaskDescriptionProps {
 	initialDescription?: string;
-	taskId: string;
+	taskId: number;
+	taskUuid: string;
 	updateTaskField: (variables: {
-		taskId: string;
+		taskId: number;
+		taskUuid: string;
 		fields: { description: string };
 	}) => void;
 	isUpdatingTask: boolean;
@@ -19,6 +21,7 @@ interface TaskDescriptionProps {
 export default function TaskDescription({
 	initialDescription = "",
 	taskId,
+	taskUuid,
 	updateTaskField,
 	isUpdatingTask,
 }: TaskDescriptionProps) {
@@ -43,6 +46,7 @@ export default function TaskDescription({
 	const handleSave = () => {
 		updateTaskField({
 			taskId,
+			taskUuid,
 			fields: { description: tempDescription },
 		});
 		setIsEditing(false);

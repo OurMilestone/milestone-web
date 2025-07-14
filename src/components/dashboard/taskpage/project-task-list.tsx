@@ -9,14 +9,14 @@ interface ProjectTaskListProps {
 	tasks: ProjectTaskListItem[];
 	currentRole: UserRole;
 	currentProjectSlug: string;
-	activeTaskId: string;
+	activeTaskUuid: string;
 }
 
 export default function ProjectTaskList({
 	tasks,
 	currentRole,
 	currentProjectSlug,
-	activeTaskId,
+	activeTaskUuid,
 }: ProjectTaskListProps) {
 	return (
 		<div className="flex flex-col h-full rounded-md border border-border py-2 overflow-y-auto custom-scrollbar max-h-screen">
@@ -29,7 +29,7 @@ export default function ProjectTaskList({
 								task={task}
 								role={currentRole}
 								projectSlug={currentProjectSlug}
-								isActive={task.id === activeTaskId}
+								isActive={task.id === activeTaskUuid}
 							/>
 						))}
 					</ul>
