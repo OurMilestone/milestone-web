@@ -6,6 +6,7 @@ import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import TaskActivity from "./task-activity";
 import TaskDescription from "./task-description";
 import TaskSubtasks from "./task-subtask";
 
@@ -23,6 +24,8 @@ export default function TaskDetailView({
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [title, setTitle] = useState(task.title);
 	const [parent] = useAutoAnimate<HTMLDivElement>();
+
+	console.log(task, "task");
 
 	useEffect(() => {
 		setTitle(task.title);
@@ -107,7 +110,7 @@ export default function TaskDetailView({
 				isUpdatingTask={isUpdatingTask}
 			/>
 			<TaskSubtasks subtasks={task.subtasks || []} parentTaskCode={task.code} />
-			{/* //* Activity section was here for now. Maybe implemeted after MVP */}
+			<TaskActivity projectId={task.project.id} taskId={task.id} />
 		</div>
 	);
 }

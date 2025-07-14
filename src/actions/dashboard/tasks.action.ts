@@ -5,6 +5,10 @@ import { patchRequest, postRequest } from "@/lib/api/server/api-client";
 import type { TaskDTO } from "@/lib/data-access-layer/DTOs/task.dto";
 import { getTaskById } from "@/lib/data-access-layer/tasks.dal";
 import {
+	type CreateCommentInput,
+	createCommentSchema,
+} from "@/lib/schemas/task-schema";
+import {
 	type CreateTaskInput,
 	createTaskSchema,
 	updateTaskFieldSchema,
@@ -274,4 +278,50 @@ export async function updateSubtaskAction(
 		status: 200,
 		message: "Subtask updated.",
 	};
+}
+
+export async function createCommentAction(
+	input: CreateCommentInput,
+): Promise<ActionResult<null>> {
+	const session = await auth();
+
+	if (!session?.user) {
+		return {
+			success: false,
+			status: 401,
+			data: null,
+			message: "Unauthorized",
+		};
+	}
+
+	try {
+		const validatedInput = createCommentSchema.parse(input);
+
+		const apiPayload = {
+			task: validatedInput.task,
+			subtask_id: validatedInput.subtask_id,
+			content: validatedInput.content,
+			mentions: validatedInput.mentions,
+		};
+
+		const response = await postRequest<null, typeof apiPayload>(
+			"/comment/",
+			apiPayload,
+			true,
+		);
+
+		// Revalidate the task detail page to show the new comment
+		// Note: We'll need to get the project ID from the task to revalidate properly
+		// For now, we'll revalidate the task detail page
+		revalidatePath("/dashboard/projects/*/task/*", "page");
+
+		return {
+			success: true,
+			data: null,
+			status: response.status,
+			message: "Comment created successfully!",
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to create comment.");
+	}
 }
