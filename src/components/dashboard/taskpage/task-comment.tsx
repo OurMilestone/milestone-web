@@ -1,27 +1,26 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import type { Comment } from "@/types/dashboard/task-details-types";
+import type React from "react";
 import MoodIcon from "./mood-icon";
 
-const TaskComment = () => {
+const TaskComment: React.FC<{ comment: Comment }> = ({ comment }) => {
 	return (
 		<div className="bg-[#F9FAFB] p-4 flex items-start gap-2 rounded-lg">
 			<Avatar className="size-10">
-				<AvatarImage src="https://github.com/shadcn.png" />
-				<AvatarFallback>CN</AvatarFallback>
+				<AvatarImage src={""} />
+				<AvatarFallback>{comment?.author_name?.charAt(0)}</AvatarFallback>
 			</Avatar>
 
 			<div className="flex flex-col gap-2">
 				<div className="flex items-center gap-2">
 					<h1 className="text-primary text-base font-semibold">
-						Adewale Julius
+						{comment?.author_name}
 					</h1>
 					<p className="text-sm text-[#AAB1C2]">2024-11-18 | 10:35 AM</p>
 				</div>
 
-				<p className="text-base text-[#808AA3]">
-					I’ll prepare a few alternative colour schemes for review by tomorrow.
-				</p>
+				<p className="text-base text-[#808AA3]">{comment?.content}</p>
 
 				<div className="flex items-center gap-2.5">
 					<Button

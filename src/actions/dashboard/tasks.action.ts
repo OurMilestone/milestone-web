@@ -10,7 +10,10 @@ import type {
 	SubtaskDTO,
 	TaskDTO,
 } from "@/lib/data-access-layer/DTOs/task.dto";
-import { getTaskById } from "@/lib/data-access-layer/tasks.dal";
+import {
+	getTaskById,
+	getTaskCommentsByTaskId,
+} from "@/lib/data-access-layer/tasks.dal";
 import {
 	type CreateCommentInput,
 	createCommentSchema,
@@ -456,5 +459,22 @@ export async function createCommentAction(
 		};
 	} catch (error) {
 		return handleApiError(error, "Failed to create comment.");
+	}
+}
+
+export async function getTaskCommentsAction(taskId: number) {
+	try {
+		const comments = await getTaskCommentsByTaskId(taskId);
+		return {
+			success: true,
+			data: comments,
+			message: "Comments fetched successfully",
+		};
+	} catch (error) {
+		return {
+			success: false,
+			data: [],
+			message: "Failed to fetch comments",
+		};
 	}
 }

@@ -12,3 +12,12 @@ export function useTaskDetailData(projectId: number, taskId: string) {
 		placeholderData: keepPreviousData,
 	});
 }
+
+export function useTaskComments(taskId: number) {
+	return useQuery({
+		queryKey: queryKeys.taskComments(taskId),
+		queryFn: () => clientApi.getTaskComments(taskId),
+		staleTime: 10 * 60 * 1000,
+		placeholderData: keepPreviousData,
+	});
+}

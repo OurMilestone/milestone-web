@@ -24,6 +24,7 @@ export const queryKeys = {
 	},
 
 	taskDetail: (taskUuid: string) => ["task", "detail", taskUuid] as const,
+	taskComments: (taskId: number) => ["task", "comments", taskId] as const,
 
 	wallet: ["user-wallet"] as const,
 
