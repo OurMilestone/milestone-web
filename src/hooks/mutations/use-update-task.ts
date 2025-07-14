@@ -1,4 +1,3 @@
-// hooks/mutations/use-update-task.ts - NEW FILE
 "use client";
 
 import { updateTaskFieldAction } from "@/actions/dashboard/tasks.action";
@@ -7,7 +6,7 @@ import { queryKeys } from "@/lib/query/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export function useUpdateTaskField(taskId: string) {
+export function useUpdateTaskField(taskUuid: string) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
@@ -15,15 +14,15 @@ export function useUpdateTaskField(taskId: string) {
 
 		onMutate: async (variables) => {
 			await queryClient.cancelQueries({
-				queryKey: queryKeys.taskDetail(taskId),
+				queryKey: queryKeys.taskDetail(taskUuid),
 			});
 
 			const previousData = queryClient.getQueryData<TaskDetailPageData>(
-				queryKeys.taskDetail(taskId),
+				queryKeys.taskDetail(taskUuid),
 			);
 
 			queryClient.setQueryData<TaskDetailPageData>(
-				queryKeys.taskDetail(taskId),
+				queryKeys.taskDetail(taskUuid),
 				(oldData) => {
 					if (!oldData) return undefined;
 
@@ -72,14 +71,16 @@ export function useUpdateTaskField(taskId: string) {
 			toast.error("Update failed", { description: err.message });
 			if (context?.previousData) {
 				queryClient.setQueryData(
-					queryKeys.taskDetail(taskId),
+					queryKeys.taskDetail(taskUuid),
 					context.previousData,
 				);
 			}
 		},
 
 		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: queryKeys.taskDetail(taskId) });
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.taskDetail(taskUuid),
+			});
 		},
 		retry: 2,
 	});

@@ -25,7 +25,7 @@ interface TaskDetailLayoutProps {
 	projectTasks: ProjectTaskListItem[];
 	currentRole: UserRole;
 	currentProjectSlug: string;
-	currentTaskId: string;
+	currentTaskUuid: string;
 	assignableUsers: ProjectMemberDTO[];
 	updateTaskField: ReturnType<typeof useUpdateTaskField>["mutate"];
 	isUpdatingTask: boolean;
@@ -40,7 +40,7 @@ export default function TaskDetailLayout({
 	projectTasks,
 	currentRole,
 	currentProjectSlug,
-	currentTaskId,
+	currentTaskUuid,
 	isProjectListDrawerOpen,
 	onProjectListDrawerOpenChange,
 	isPinnedFieldsDrawerOpen,
@@ -79,15 +79,6 @@ export default function TaskDetailLayout({
 		return filtered;
 	}, [projectTasks, filters]);
 
-	const handleSubtaskToggleComplete = (
-		subtaskId: string,
-		_originalIsCompleted: boolean,
-		newColumnIdIfRelevant?: KanbanColumnId,
-	) => {
-		//Todo: This is where we will implement or call the mutation function
-		toast.info("Subtask completion status updated (simulated).");
-	};
-
 	return (
 		<div className="flex h-full min-h-screen  dark:bg-slate-900">
 			{/* Column 1: Far Left - Project Task List */}
@@ -113,7 +104,7 @@ export default function TaskDetailLayout({
 					tasks={filteredProjectTasks}
 					currentRole={currentRole}
 					currentProjectSlug={currentProjectSlug}
-					activeTaskId={currentTaskId}
+					activeTaskUuid={currentTaskUuid}
 				/>
 			</aside>
 
@@ -145,7 +136,7 @@ export default function TaskDetailLayout({
 							tasks={filteredProjectTasks}
 							currentRole={currentRole}
 							currentProjectSlug={currentProjectSlug}
-							activeTaskId={currentTaskId}
+							activeTaskUuid={currentTaskUuid}
 						/>
 					</div>
 				</DrawerContent>
@@ -165,7 +156,6 @@ export default function TaskDetailLayout({
 				{/* <TaskDetailSidebar task={task} userRole={currentRole} /> */}
 				<TaskDetailSidebar
 					task={task}
-					userRole={currentRole}
 					updateTaskField={updateTaskField}
 					isUpdatingTask={isUpdatingTask}
 					assignableUsers={assignableUsers}
@@ -180,7 +170,6 @@ export default function TaskDetailLayout({
 					<div className="flex flex-col h-full p-3">
 						<TaskDetailSidebar
 							task={task}
-							userRole={currentRole}
 							updateTaskField={updateTaskField}
 							isUpdatingTask={isUpdatingTask}
 							assignableUsers={assignableUsers}
