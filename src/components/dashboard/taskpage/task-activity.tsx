@@ -17,6 +17,7 @@ import {
 import { useCreateComment } from "@/hooks/mutations/use-create-comment";
 import { useProjectMembers } from "@/hooks/queries/use-projects";
 import { getInitials } from "@/lib/utils";
+import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import { useRef, useState } from "react";
 import TaskComment from "./task-comment";
 
@@ -27,10 +28,7 @@ interface MentionUser {
 	initials: string;
 }
 
-const TaskActivity = ({
-	projectId,
-	taskId,
-}: { projectId: string; taskId: string }) => {
+const TaskActivity = ({ task }: { task: TaskDetail }) => {
 	const [commentText, setCommentText] = useState("");
 	const [mentions, setMentions] = useState<string[]>([]);
 	const [showMentionPopover, setShowMentionPopover] = useState(false);
@@ -38,10 +36,9 @@ const TaskActivity = ({
 	const [cursorPosition, setCursorPosition] = useState(0);
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const { data: projectMembers } = useProjectMembers(Number(projectId));
+	const { data: projectMembers } = useProjectMembers(Number(task.project.id));
 	const { mutate: createComment, isPending } = useCreateComment();
 
-	// Extract mentionable users from project members
 	const mentionableUsers: MentionUser[] =
 		projectMembers?.members?.map((member) => ({
 			id: member.id,
@@ -50,14 +47,12 @@ const TaskActivity = ({
 			initials: getInitials(member.preferred_name || member.full_name),
 		})) || [];
 
-	// Filter users based on search
 	const filteredUsers = mentionableUsers.filter(
 		(user) =>
 			user.name.toLowerCase().includes(mentionSearch.toLowerCase()) ||
 			user.email.toLowerCase().includes(mentionSearch.toLowerCase()),
 	);
 
-	// Handle input change and detect @ mentions
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setCommentText(value);
@@ -65,7 +60,6 @@ const TaskActivity = ({
 		const cursorPos = e.target.selectionStart || 0;
 		setCursorPosition(cursorPos);
 
-		// Check if we're typing after an @ symbol
 		const beforeCursor = value.slice(0, cursorPos);
 		const atIndex = beforeCursor.lastIndexOf("@");
 
@@ -78,7 +72,6 @@ const TaskActivity = ({
 		}
 	};
 
-	// Handle user selection from mention popover
 	const handleUserSelect = (user: MentionUser) => {
 		const beforeAt = commentText.slice(0, commentText.lastIndexOf("@"));
 		const afterCursor = commentText.slice(cursorPosition);
@@ -89,23 +82,20 @@ const TaskActivity = ({
 		setShowMentionPopover(false);
 		setMentionSearch("");
 
-		// Focus back to input
 		setTimeout(() => {
 			inputRef.current?.focus();
 		}, 0);
 	};
 
-	// Handle comment submission
 	const handleSubmitComment = () => {
 		if (!commentText.trim()) return;
 
 		createComment({
-			task: taskId,
+			task: task.id,
 			content: commentText,
 			mentions: mentions,
 		});
 
-		// Reset form
 		setCommentText("");
 		setMentions([]);
 	};
