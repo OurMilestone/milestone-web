@@ -137,7 +137,7 @@ export default function TaskDetailView({
 				refetch={refetch}
 			/>
 
-			<TaskActivity projectId={task.project.id} taskId={task.id} />
+			<TaskActivity task={task} />
 			{/* //* Activity section was here for now. Maybe implemeted after MVP */}
 		</div>
 	);
