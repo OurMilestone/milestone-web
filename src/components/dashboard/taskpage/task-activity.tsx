@@ -1,4 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuthContext } from "@/components/providers/auth-context-provider";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -9,13 +10,10 @@ import {
 	CommandList,
 } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent } from "@/components/ui/popover";
 import { useCreateComment } from "@/hooks/mutations/use-create-comment";
 import { useProjectMembers } from "@/hooks/queries/use-projects";
+import { useTaskComments } from "@/hooks/queries/use-task-detail";
 import { getInitials } from "@/lib/utils";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import { useRef, useState } from "react";
@@ -29,6 +27,8 @@ interface MentionUser {
 }
 
 const TaskActivity = ({ task }: { task: TaskDetail }) => {
+	const { user: authContextUser } = useAuthContext();
+
 	const [commentText, setCommentText] = useState("");
 	const [mentions, setMentions] = useState<string[]>([]);
 	const [showMentionPopover, setShowMentionPopover] = useState(false);
@@ -38,6 +38,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 
 	const { data: projectMembers } = useProjectMembers(Number(task.project.id));
 	const { mutate: createComment, isPending } = useCreateComment();
+	const { data: comments } = useTaskComments(task.id);
 
 	const mentionableUsers: MentionUser[] =
 		projectMembers?.members?.map((member) => ({
@@ -63,20 +64,22 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 		const beforeCursor = value.slice(0, cursorPos);
 		const atIndex = beforeCursor.lastIndexOf("@");
 
-		if (atIndex !== -1 && atIndex < cursorPos) {
+		if (atIndex !== -1 && atIndex === beforeCursor.length - 1) {
+			setShowMentionPopover(true);
+			setMentionSearch("");
+		} else if (atIndex !== -1 && atIndex < beforeCursor.length - 1) {
 			const searchTerm = beforeCursor.slice(atIndex + 1);
 			setMentionSearch(searchTerm);
 			setShowMentionPopover(true);
 		} else {
 			setShowMentionPopover(false);
+			setMentionSearch("");
 		}
 	};
 
 	const handleUserSelect = (user: MentionUser) => {
-		const beforeAt = commentText.slice(0, commentText.lastIndexOf("@"));
-		const afterCursor = commentText.slice(cursorPosition);
-		const newText = `${beforeAt}@${user.name} ${afterCursor}`;
-
+		const mentionText = `@${user.name}`;
+		const newText = `${commentText.slice(0, cursorPosition - mentionSearch.length - 1)}${mentionText} ${commentText.slice(cursorPosition)}`;
 		setCommentText(newText);
 		setMentions((prev) => [...prev, user.name]);
 		setShowMentionPopover(false);
@@ -84,6 +87,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 
 		setTimeout(() => {
 			inputRef.current?.focus();
+			inputRef.current?.setSelectionRange(newText.length, newText.length);
 		}, 0);
 	};
 
@@ -145,8 +149,9 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 
 			<div className="flex items-center gap-2">
 				<Avatar className="size-10">
-					<AvatarImage src="https://github.com/shadcn.png" />
-					<AvatarFallback>CN</AvatarFallback>
+					<AvatarFallback>
+						{getInitials(authContextUser?.full_name)}
+					</AvatarFallback>
 				</Avatar>
 
 				<div className="flex-1 relative">
@@ -162,6 +167,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 								handleSubmitComment();
 							}
 						}}
+						onBlur={() => setTimeout(() => setShowMentionPopover(false), 200)}
 					/>
 
 					{/* Mention Popover */}
@@ -234,7 +240,9 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 			)}
 
 			<div className="grid grid-cols-1 gap-4">
-				<TaskComment />
+				{comments?.map((comment) => {
+					return <TaskComment key={comment.id} comment={comment} />;
+				})}
 			</div>
 		</div>
 	);

@@ -1,5 +1,9 @@
 import "server-only";
 
+import type {
+	Comment,
+	CommentsResponse,
+} from "@/types/dashboard/task-details-types";
 import { cache } from "react";
 import { getRequest } from "../api/server/api-client";
 import type {
@@ -107,5 +111,15 @@ export const getSubtasksByTaskUuid = cache(
 
 			return [];
 		}
+	},
+);
+
+export const getTaskCommentsByTaskId = cache(
+	async (taskId: number): Promise<Comment[]> => {
+		const response = await getRequest<Comment[]>(
+			`/comment/get-all-comments?taskId=${taskId}`,
+			true,
+		);
+		return response.data.data || [];
 	},
 );

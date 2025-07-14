@@ -40,8 +40,6 @@ export default function TaskDetailView({
 				.map(transformApiSubtaskToUiSubtask)
 		: [];
 
-	console.log(task, "task");
-
 	useEffect(() => {
 		setTitle(task.title);
 	}, [task.title]);

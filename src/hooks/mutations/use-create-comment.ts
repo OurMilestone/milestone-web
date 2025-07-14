@@ -31,6 +31,9 @@ export function useCreateComment() {
 			queryClient.invalidateQueries({
 				queryKey: queryKeys.taskDetail(task.toString()),
 			});
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.taskComments(Number(task)),
+			});
 		},
 	});
 }

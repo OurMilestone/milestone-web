@@ -20,6 +20,7 @@ import type {
 	Transaction,
 	WalletAccount,
 } from "@/types/dashboard/payments-types";
+import type { Comment } from "@/types/dashboard/task-details-types";
 
 class ClientApiError extends Error {
 	constructor(
@@ -206,5 +207,9 @@ export const clientApi = {
 	 */
 	getSubtasksByTaskUuid: (taskUuid: string): Promise<SubtaskDTO[]> => {
 		return callApi<SubtaskDTO[]>(`/api/subtasks?taskId=${taskUuid}`);
+	},
+
+	getTaskComments: (taskId: number): Promise<Comment[]> => {
+		return callApi<Comment[]>(`/api/comment?taskId=${taskId}`);
 	},
 };
