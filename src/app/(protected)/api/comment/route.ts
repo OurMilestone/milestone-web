@@ -1,28 +1,19 @@
-import { getTaskCommentsByTaskId } from "@/lib/data-access-layer/tasks.dal";
+import { getTaskCommentsByTaskUuid } from "@/lib/data-access-layer/tasks.dal";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
 	const { searchParams } = new URL(request.url);
-	const taskIdString = searchParams.get("taskId");
+	const taskId = searchParams.get("taskId");
 
-	if (!taskIdString) {
+	if (!taskId) {
 		return NextResponse.json(
 			{ message: "TaskId is required" },
 			{ status: 400 },
 		);
 	}
 
-	const taskId = Number.parseInt(taskIdString);
-
-	if (Number.isNaN(taskId)) {
-		return NextResponse.json(
-			{ message: "Invalid project ID" },
-			{ status: 400 },
-		);
-	}
-
 	try {
-		const taskComments = await getTaskCommentsByTaskId(taskId);
+		const taskComments = await getTaskCommentsByTaskUuid(taskId);
 		return NextResponse.json(taskComments);
 	} catch (error) {
 		console.error(`API Error in /api/comments?taskId=${taskId}`);

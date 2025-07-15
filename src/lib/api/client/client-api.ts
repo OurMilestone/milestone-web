@@ -209,7 +209,12 @@ export const clientApi = {
 		return callApi<SubtaskDTO[]>(`/api/subtasks?taskId=${taskUuid}`);
 	},
 
-	getTaskComments: (taskId: number): Promise<Comment[]> => {
-		return callApi<Comment[]>(`/api/comment?taskId=${taskId}`);
+	getTaskComments: async (taskUuid: string): Promise<Comment[]> => {
+		const response = await callApi<{
+			status: boolean;
+			message: string;
+			data: Comment[];
+		}>(`/api/comment?taskId=${taskUuid}`);
+		return response.data || [];
 	},
 };

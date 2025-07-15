@@ -114,12 +114,21 @@ export const getSubtasksByTaskUuid = cache(
 	},
 );
 
-export const getTaskCommentsByTaskId = cache(
-	async (taskId: number): Promise<Comment[]> => {
-		const response = await getRequest<Comment[]>(
-			`/comment/get-all-comments?taskId=${taskId}`,
-			true,
-		);
-		return response.data.data || [];
+export const getTaskCommentsByTaskUuid = cache(
+	async (taskUuid: string): Promise<Comment[]> => {
+		await checkUserSession();
+
+		try {
+			const response = await getRequest<Comment[]>(
+				`/comment/get-all-comments?taskId=${taskUuid}`,
+				true,
+			);
+
+			return response.data.data || [];
+		} catch (error) {
+			console.error(`DAL Error fetching comments for task ${taskUuid}:`, error);
+
+			return [];
+		}
 	},
 );

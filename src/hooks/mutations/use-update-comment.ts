@@ -10,15 +10,20 @@ export function useUpdateComment() {
 		mutationFn: ({
 			commentUuid,
 			content,
-			taskId,
-		}: { commentUuid: string; content: string; taskId: number }) =>
+			taskUuid,
+		}: { commentUuid: string; content: string; taskUuid: string }) =>
 			updateCommentAction(commentUuid, content),
 
-		onSuccess: (res) => {
+		onSuccess: (res, variables) => {
 			if (res.success) {
 				toast.success(res.message || "Comment updated successfully!");
 			} else {
 				toast.error("Failed to update comment", { description: res.message });
+			}
+			if (variables?.taskUuid) {
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.taskComments(variables.taskUuid),
+				});
 			}
 		},
 
@@ -29,13 +34,12 @@ export function useUpdateComment() {
 			});
 		},
 
-		onSettled: (_, __, { commentUuid, taskId }) => {
-			queryClient.invalidateQueries({
-				queryKey: queryKeys.taskComment(commentUuid),
-			});
-			queryClient.invalidateQueries({
-				queryKey: queryKeys.taskComments(taskId),
-			});
+		onSettled: (_, __, variables) => {
+			if (variables?.taskUuid) {
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.taskComments(variables.taskUuid),
+				});
+			}
 		},
 	});
 }

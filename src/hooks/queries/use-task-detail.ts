@@ -13,10 +13,10 @@ export function useTaskDetailData(projectId: number, taskId: string) {
 	});
 }
 
-export function useTaskComments(taskId: number) {
+export function useTaskComments(taskUuid: string) {
 	return useQuery({
-		queryKey: queryKeys.taskComments(taskId),
-		queryFn: () => clientApi.getTaskComments(taskId),
+		queryKey: queryKeys.taskComments(taskUuid),
+		queryFn: () => clientApi.getTaskComments(taskUuid),
 		staleTime: 10 * 60 * 1000,
 		placeholderData: keepPreviousData,
 	});

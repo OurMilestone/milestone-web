@@ -9,14 +9,28 @@ export function useCreateComment() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: createCommentAction,
+		mutationFn: ({
+			task,
+			content,
+			parent,
+			mentions,
+		}: {
+			task: number;
+			content: string;
+			parent?: number;
+			mentions: string[];
+			taskUuid: string;
+		}) => createCommentAction({ task, content, parent, mentions }),
 
-		onSuccess: (res) => {
+		onSuccess: (res, variables) => {
 			if (res.success) {
 				toast.success(res.message || "Comment added successfully!");
 			} else {
 				toast.error("Failed to add comment", { description: res.message });
 			}
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.taskComments(variables.taskUuid),
+			});
 		},
 
 		onError: (error) => {
@@ -26,14 +40,12 @@ export function useCreateComment() {
 			});
 		},
 
-		onSettled: (_, __, { task }) => {
-			// Invalidate task detail queries to refresh comments
-			queryClient.invalidateQueries({
-				queryKey: queryKeys.taskDetail(task.toString()),
-			});
-			queryClient.invalidateQueries({
-				queryKey: queryKeys.taskComments(Number(task)),
-			});
+		onSettled: (_, __, variables) => {
+			if (variables?.taskUuid) {
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.taskComments(variables.taskUuid),
+				});
+			}
 		},
 	});
 }
