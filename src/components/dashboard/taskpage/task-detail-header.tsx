@@ -55,7 +55,7 @@ export default function TaskDetailHeaderGlobal({
 	const handleMarkAsDone = () => {
 		updateTaskStatus(
 			{
-				taskId: task.id.toString(),
+				taskUuid: task.uuid,
 				newStatus: "done",
 				projectId: Number.parseInt(task.project.id, 10),
 			},
