@@ -17,6 +17,7 @@ import { useTaskComments } from "@/hooks/queries/use-task-detail";
 import { getInitials } from "@/lib/utils";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 import TaskCommentSkeleton from "./skeletons/task-comment-skeleton";
 import TaskComment from "./task-comment";
 
@@ -39,7 +40,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 	const [replyingToId, setReplyingToId] = useState<number | null>(null);
 
 	const { data: projectMembers } = useProjectMembers(Number(task.project.id));
-	const { mutate: createComment, isPending } = useCreateComment();
+	const { mutateAsync: createComment, isPending } = useCreateComment();
 	const {
 		data: comments,
 		isLoading: isCommentsLoading,
@@ -100,12 +101,20 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 	const handleSubmitComment = () => {
 		if (!commentText.trim()) return;
 
-		createComment({
-			task: task.id,
-			content: commentText,
-			mentions: mentions,
-			taskUuid: task.uuid,
-		});
+		toast.promise(
+			async () =>
+				await createComment({
+					task: task.id,
+					content: commentText,
+					mentions: mentions,
+					taskUuid: task.uuid,
+				}),
+			{
+				loading: "Adding comment...",
+				success: "Comment added!",
+				error: "Failed to add comment",
+			},
+		);
 
 		setCommentText("");
 		setMentions([]);
@@ -233,7 +242,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 					disabled={!commentText.trim() || isPending}
 					className="px-4"
 				>
-					{isPending ? "Adding..." : "Comment"}
+					Comment
 				</Button>
 			</div>
 
