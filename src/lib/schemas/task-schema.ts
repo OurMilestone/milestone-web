@@ -91,6 +91,7 @@ export const updateTaskFieldSchema = z.object({
 export const createCommentSchema = z.object({
 	task: z.number(),
 	subtask_id: z.number().optional(),
+	parent: z.number().nullable().optional(),
 	content: z
 		.string()
 		.min(1, { message: "Comment content cannot be empty." })
