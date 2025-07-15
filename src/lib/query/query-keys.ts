@@ -24,7 +24,7 @@ export const queryKeys = {
 	},
 
 	taskDetail: (taskUuid: string) => ["task", "detail", taskUuid] as const,
-	taskComments: (taskUuid: number) => ["task", "comments", taskUuid] as const,
+	taskComments: (taskUuid: string) => ["task", "comments", taskUuid] as const,
 	taskComment: (commentUuid: string) =>
 		["task", "comment", commentUuid] as const,
 

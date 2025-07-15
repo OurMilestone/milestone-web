@@ -4,37 +4,58 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { useCreateComment } from "@/hooks/mutations/use-create-comment";
+import { useDeleteComment } from "@/hooks/mutations/use-delete-comment";
 import { useUpdateComment } from "@/hooks/mutations/use-update-comment";
 import { getInitials } from "@/lib/utils";
 import type { Comment } from "@/types/dashboard/task-details-types";
 import type React from "react";
 import { useState } from "react";
+import { toast } from "sonner";
 import MoodIcon from "./mood-icon";
 
 const TaskComment: React.FC<{
 	comment: Comment;
 	taskId: number;
+	taskUuid: string;
 	reply?: boolean;
 	replyingToId: number | null;
 	setReplyingToId: (id: number | null) => void;
-}> = ({ comment, taskId, reply = false, replyingToId, setReplyingToId }) => {
+}> = ({
+	comment,
+	taskId,
+	taskUuid,
+	reply = false,
+	replyingToId,
+	setReplyingToId,
+}) => {
 	const { user } = useAuthContext();
 
 	const [replyText, setReplyText] = useState("");
-	const { mutate: createComment, isPending } = useCreateComment();
+	const { mutateAsync: createComment, isPending } = useCreateComment();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editText, setEditText] = useState(comment.content);
-	const { mutate: updateComment, isPending: isUpdating } = useUpdateComment();
+	const { mutateAsync: updateComment, isPending: isUpdating } =
+		useUpdateComment();
+	const { mutateAsync: deleteComment } = useDeleteComment();
 
 	const handleReply = () => {
 		if (!replyText.trim()) return;
 
-		createComment({
-			task: taskId,
-			content: replyText,
-			parent: comment.id,
-			mentions: [],
-		});
+		toast.promise(
+			() =>
+				createComment({
+					task: taskId,
+					content: replyText,
+					parent: comment.id,
+					mentions: [],
+					taskUuid,
+				}),
+			{
+				loading: "Sending reply...",
+				success: "Reply sent!",
+				error: "Failed to send reply.",
+			},
+		);
 
 		setReplyText("");
 		setReplyingToId(null);
@@ -52,11 +73,19 @@ const TaskComment: React.FC<{
 
 	const handleEdit = () => {
 		if (!editText.trim()) return;
-		updateComment({
-			commentUuid: comment.uuid,
-			content: editText,
-			taskId: taskId,
-		});
+		toast.promise(
+			() =>
+				updateComment({
+					commentUuid: comment.uuid,
+					content: editText,
+					taskUuid: taskUuid,
+				}),
+			{
+				loading: "Updating comment...",
+				success: "Comment updated!",
+				error: "Failed to update comment.",
+			},
+		);
 		setIsEditing(false);
 	};
 
@@ -68,6 +97,21 @@ const TaskComment: React.FC<{
 			setIsEditing(false);
 			setEditText(comment.content);
 		}
+	};
+
+	const handleDeleteComment = () => {
+		toast.promise(
+			() =>
+				deleteComment({
+					commentUuid: comment.uuid,
+					taskUuid: taskUuid,
+				}),
+			{
+				loading: "Deleting comment...",
+				success: "Comment deleted successfully!",
+				error: "Failed to delete comment.",
+			},
+		);
 	};
 
 	return (
@@ -133,6 +177,9 @@ const TaskComment: React.FC<{
 								<Button
 									className="p-0 text-[#808AA3] hover:text-[#808AA3] hover:scale-105 hover:bg-transparent text-base"
 									variant={"ghost"}
+									onClick={() => {
+										handleDeleteComment();
+									}}
 								>
 									Delete
 								</Button>
@@ -257,6 +304,7 @@ const TaskComment: React.FC<{
 							key={reply.id}
 							comment={reply}
 							taskId={taskId}
+							taskUuid={taskUuid}
 							reply={true}
 							replyingToId={replyingToId}
 							setReplyingToId={setReplyingToId}

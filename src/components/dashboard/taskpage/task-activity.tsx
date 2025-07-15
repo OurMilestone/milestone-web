@@ -44,7 +44,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 		data: comments,
 		isLoading: isCommentsLoading,
 		isFetching: isCommentsFetching,
-	} = useTaskComments(task.id);
+	} = useTaskComments(task.uuid);
 
 	const mentionableUsers: MentionUser[] =
 		projectMembers?.members?.map((member) => ({
@@ -104,6 +104,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 			task: task.id,
 			content: commentText,
 			mentions: mentions,
+			taskUuid: task.uuid,
 		});
 
 		setCommentText("");
@@ -257,6 +258,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 					: comments?.map((comment) => (
 							<TaskComment
 								key={comment.id}
+								taskUuid={task.uuid}
 								comment={comment}
 								taskId={task.id}
 								replyingToId={replyingToId}

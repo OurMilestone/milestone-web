@@ -12,7 +12,7 @@ import type {
 } from "@/lib/data-access-layer/DTOs/task.dto";
 import {
 	getTaskById,
-	getTaskCommentsByTaskId,
+	getTaskCommentsByTaskUuid,
 } from "@/lib/data-access-layer/tasks.dal";
 import {
 	type CreateCommentInput,
@@ -442,7 +442,7 @@ export async function createCommentAction(
 		};
 
 		const response = await postRequest<null, typeof apiPayload>(
-			"/comment/",
+			"/comment/create/",
 			apiPayload,
 			true,
 		);
@@ -490,7 +490,7 @@ export async function updateCommentAction(
 
 		const apiPayload = { content };
 		const response = await patchRequest<null, typeof apiPayload>(
-			`/comment/${commentUuid}/`,
+			`/comment/${commentUuid}/update/`,
 			apiPayload,
 			true,
 		);
@@ -508,9 +508,9 @@ export async function updateCommentAction(
 	}
 }
 
-export async function getTaskCommentsAction(taskId: number) {
+export async function getTaskCommentsAction(taskUuid: string) {
 	try {
-		const comments = await getTaskCommentsByTaskId(taskId);
+		const comments = await getTaskCommentsByTaskUuid(taskUuid);
 		return {
 			success: true,
 			data: comments,
@@ -522,5 +522,47 @@ export async function getTaskCommentsAction(taskId: number) {
 			data: [],
 			message: "Failed to fetch comments",
 		};
+	}
+}
+
+export async function deleteCommentAction(
+	commentUuid: string,
+): Promise<ActionResult<null>> {
+	const session = await auth();
+
+	if (!session?.user) {
+		return {
+			success: false,
+			status: 401,
+			data: null,
+			message: "Unauthorized",
+		};
+	}
+
+	try {
+		if (!commentUuid) {
+			return {
+				success: false,
+				status: 400,
+				data: null,
+				message: "Comment UUID is required.",
+			};
+		}
+
+		const response = await deleteRequest<null>(
+			`/comment/${commentUuid}/delete/`,
+			true,
+		);
+
+		revalidatePath("/dashboard/projects/*/task/*", "page");
+
+		return {
+			success: true,
+			data: null,
+			status: response.status,
+			message: "Comment deleted successfully!",
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to delete comment.");
 	}
 }
