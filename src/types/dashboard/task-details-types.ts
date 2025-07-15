@@ -62,6 +62,7 @@ export interface TaskDetail {
 export interface Comment {
 	id: number;
 	task: number;
+	uuid: string;
 	subtask: number | null;
 	author: string;
 	parent: number | null;

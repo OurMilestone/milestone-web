@@ -463,6 +463,51 @@ export async function createCommentAction(
 	}
 }
 
+export async function updateCommentAction(
+	commentUuid: string,
+	content: string,
+): Promise<ActionResult<null>> {
+	const session = await auth();
+
+	if (!session?.user) {
+		return {
+			success: false,
+			status: 401,
+			data: null,
+			message: "Unauthorized",
+		};
+	}
+
+	try {
+		if (!content || !commentUuid) {
+			return {
+				success: false,
+				status: 400,
+				data: null,
+				message: "Comment UUID and content are required.",
+			};
+		}
+
+		const apiPayload = { content };
+		const response = await patchRequest<null, typeof apiPayload>(
+			`/comment/${commentUuid}/`,
+			apiPayload,
+			true,
+		);
+
+		revalidatePath("/dashboard/projects/*/task/*", "page");
+
+		return {
+			success: true,
+			data: null,
+			status: response.status,
+			message: "Comment updated successfully!",
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to update comment.");
+	}
+}
+
 export async function getTaskCommentsAction(taskId: number) {
 	try {
 		const comments = await getTaskCommentsByTaskId(taskId);
