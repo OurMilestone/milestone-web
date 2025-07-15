@@ -59,7 +59,7 @@ const {user} = useAuthContext()
 							Reply
 						</span>
 					)}
-					<p className="text-sm text-[#AAB1C2]">2024-11-18 | 10:35 AM</p>
+					{/* <p className="text-sm text-[#AAB1C2]">2024-11-18 | 10:35 AM</p> */}
 				</div>
 
 					<p className="text-base text-[#808AA3]">{comment?.content}</p>
@@ -88,7 +88,7 @@ const {user} = useAuthContext()
 							Reply
 						</Button>
 
-						{comment.replies && comment.replies.length > 0 && (
+						{/* {comment.replies && comment.replies.length > 0 && (
 							<Button
 								className="p-0 text-[#808AA3] hover:text-[#808AA3] hover:scale-105 hover:bg-transparent text-base"
 								variant={"ghost"}
@@ -96,7 +96,7 @@ const {user} = useAuthContext()
 							>
 								{showReplies ? "Hide" : "Show"} {comment.replies.length} {comment.replies.length === 1 ? "reply" : "replies"}
 							</Button>
-						)}
+						)} */}
 
 						<Button
 							className="border rounded-2xl hover:scale-105 py-1.5 px-3 border-[#2B3C66] hover:bg-transparent text-[#2B3C66] text-base"
