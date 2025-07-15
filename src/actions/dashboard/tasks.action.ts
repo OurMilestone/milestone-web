@@ -97,7 +97,7 @@ export async function createTaskAction(
 }
 
 export async function updateTaskStatusAction(input: {
-	taskId: string;
+	taskUuid: string;
 	newStatus: string;
 	projectId: number;
 }): Promise<ActionResult<null>> {
@@ -116,7 +116,7 @@ export async function updateTaskStatusAction(input: {
 
 	try {
 		const validatedInput = updateTaskStatusSchema.parse({
-			taskUuid: input.taskId,
+			taskUuid: input.taskUuid,
 			newStatus: input.newStatus,
 			projectId: input.projectId,
 		});
