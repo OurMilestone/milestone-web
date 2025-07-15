@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/drawer";
 import { AppRoutePaths } from "@/config/routes-config";
 import type { UserRole } from "@/types/auth/auth-types";
-import { CircleCheck } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "usehooks-ts";
@@ -65,17 +64,6 @@ export default function MarkAsDoneModal({
 				You've successfully completed "{taskName}"! Your hard work and
 				dedication has paid off.
 			</p>
-			<div className="mb-8 text-center">
-				<div className="flex items-center justify-center mb-1">
-					<CircleCheck size={18} className="mr-2 text-primary flex-shrink-0" />
-					<h4 className="font-medium text-primary">
-						Project Milestone Reached
-					</h4>
-				</div>
-				<p className="text-sm text-primary">
-					Your professional profile has been updated with this achievement.
-				</p>
-			</div>
 		</div>
 	);
 
