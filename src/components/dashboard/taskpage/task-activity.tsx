@@ -241,7 +241,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 
 			<div className="grid grid-cols-1 gap-4">
 				{comments?.map((comment) => {
-					return <TaskComment key={comment.id} comment={comment} />;
+					return <TaskComment key={comment.id} comment={comment} taskId={task.id} />;
 				})}
 			</div>
 		</div>

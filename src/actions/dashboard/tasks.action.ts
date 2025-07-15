@@ -438,6 +438,7 @@ export async function createCommentAction(
 			subtask_id: validatedInput.subtask_id,
 			content: validatedInput.content,
 			mentions: validatedInput.mentions,
+			parent: validatedInput.parent,
 		};
 
 		const response = await postRequest<null, typeof apiPayload>(
