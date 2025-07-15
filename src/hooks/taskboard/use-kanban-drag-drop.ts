@@ -62,7 +62,7 @@ export function useKanbanDragDrop({
 	const { mutate: updateTaskStatus } = useMutation({
 		mutationFn: updateTaskStatusAction,
 		onMutate: async (variables: {
-			taskId: string;
+			taskUuid: string;
 			newStatus: string;
 			projectId: number;
 		}) => {
@@ -80,7 +80,7 @@ export function useKanbanDragDrop({
 					if (!oldData) return undefined;
 
 					const newTasks = oldData.tasks.map((task) =>
-						task.uuid === variables.taskId
+						task.uuid === variables.taskUuid
 							? {
 									...task,
 									status: variables.newStatus.toLowerCase() as TaskStatus,
@@ -203,7 +203,7 @@ export function useKanbanDragDrop({
 
 			if (originalColumnId !== finalColumnId) {
 				updateTaskStatus({
-					taskId: active.id as string,
+					taskUuid: active.id as string,
 					newStatus: finalColumnId,
 					projectId,
 				});
