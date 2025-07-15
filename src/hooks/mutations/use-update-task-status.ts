@@ -14,18 +14,18 @@ export function useUpdateTaskStatus() {
 		mutationFn: updateTaskStatusAction,
 
 		onMutate: async (variables) => {
-			const { taskId, newStatus } = variables;
+			const { taskUuid, newStatus } = variables;
 
 			await queryClient.cancelQueries({
-				queryKey: queryKeys.taskDetail(taskId),
+				queryKey: queryKeys.taskDetail(taskUuid),
 			});
 
 			const previousData = queryClient.getQueryData<TaskDetailPageData>(
-				queryKeys.taskDetail(taskId),
+				queryKeys.taskDetail(taskUuid),
 			);
 
 			queryClient.setQueryData<TaskDetailPageData>(
-				queryKeys.taskDetail(taskId),
+				queryKeys.taskDetail(taskUuid),
 				(oldData) => {
 					if (!oldData) return undefined;
 
@@ -56,7 +56,7 @@ export function useUpdateTaskStatus() {
 
 			if (context?.previousData) {
 				queryClient.setQueryData(
-					queryKeys.taskDetail(variables.taskId),
+					queryKeys.taskDetail(variables.taskUuid),
 					context.previousData,
 				);
 			}
@@ -64,7 +64,7 @@ export function useUpdateTaskStatus() {
 
 		onSettled: (data, error, variables) => {
 			queryClient.invalidateQueries({
-				queryKey: queryKeys.taskDetail(variables.taskId),
+				queryKey: queryKeys.taskDetail(variables.taskUuid),
 			});
 		},
 	});
