@@ -17,6 +17,7 @@ import { useTaskComments } from "@/hooks/queries/use-task-detail";
 import { getInitials } from "@/lib/utils";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import { useRef, useState } from "react";
+import TaskCommentSkeleton from "./skeletons/task-comment-skeleton";
 import TaskComment from "./task-comment";
 
 interface MentionUser {
@@ -35,10 +36,15 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 	const [mentionSearch, setMentionSearch] = useState("");
 	const [cursorPosition, setCursorPosition] = useState(0);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const [replyingToId, setReplyingToId] = useState<number | null>(null);
 
 	const { data: projectMembers } = useProjectMembers(Number(task.project.id));
 	const { mutate: createComment, isPending } = useCreateComment();
-	const { data: comments } = useTaskComments(task.id);
+	const {
+		data: comments,
+		isLoading: isCommentsLoading,
+		isFetching: isCommentsFetching,
+	} = useTaskComments(task.id);
 
 	const mentionableUsers: MentionUser[] =
 		projectMembers?.members?.map((member) => ({
@@ -104,6 +110,12 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 		setMentions([]);
 	};
 
+	const skeletonKeys = [
+		"comment-skeleton-1",
+		"comment-skeleton-2",
+		"comment-skeleton-3",
+	];
+
 	return (
 		<div className="space-y-3 py-3">
 			<div className="flex justify-between items-center">
@@ -116,7 +128,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 					<Button
 						variant="outline"
 						size="sm"
-						className="gap-1.5 bg-[#F8FAFC] border-[#EAEAEB]"
+						className="gap-1.5 hidden bg-[#F8FAFC] border-[#EAEAEB]"
 					>
 						All
 					</Button>
@@ -132,7 +144,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 					<Button
 						variant="outline"
 						size="sm"
-						className="gap-1.5 bg-[#F8FAFC] border-[#EAEAEB]"
+						className="gap-1.5 hidden bg-[#F8FAFC] border-[#EAEAEB]"
 					>
 						History
 					</Button>
@@ -140,7 +152,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 					<Button
 						variant="outline"
 						size="sm"
-						className="gap-1.5 bg-[#F8FAFC] border-[#EAEAEB]"
+						className="gap-1.5 hidden bg-[#F8FAFC] border-[#EAEAEB]"
 					>
 						Work log
 					</Button>
@@ -158,7 +170,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 					<Input
 						ref={inputRef}
 						className="py-3 px-4"
-						placeholder="Add a comment... Use @ to mention someone"
+						placeholder="Add a comment..."
 						value={commentText}
 						onChange={handleInputChange}
 						onKeyDown={(e) => {
@@ -239,10 +251,18 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 				</div>
 			)}
 
-			<div className="grid grid-cols-1 gap-4">
-				{comments?.map((comment) => {
-					return <TaskComment key={comment.id} comment={comment} taskId={task.id} />;
-				})}
+			<div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto">
+				{isCommentsLoading || isCommentsFetching
+					? skeletonKeys.map((key) => <TaskCommentSkeleton key={key} />)
+					: comments?.map((comment) => (
+							<TaskComment
+								key={comment.id}
+								comment={comment}
+								taskId={task.id}
+								replyingToId={replyingToId}
+								setReplyingToId={setReplyingToId}
+							/>
+						))}
 			</div>
 		</div>
 	);
