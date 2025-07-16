@@ -9,8 +9,12 @@ export function useUpdateComment() {
 		mutationFn: ({
 			taskUuid,
 			...rest
-		}: { commentUuid: string; content: string; taskUuid: string }) =>
-			updateCommentAction(rest.commentUuid, rest.content),
+		}: {
+			commentUuid: string;
+			content: string;
+			taskUuid: string;
+			mentions: string[];
+		}) => updateCommentAction(rest.commentUuid, rest.content, rest.mentions),
 
 		onSuccess: (_res, variables) => {
 			if (variables?.taskUuid) {
