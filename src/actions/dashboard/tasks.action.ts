@@ -466,6 +466,7 @@ export async function createCommentAction(
 export async function updateCommentAction(
 	commentUuid: string,
 	content: string,
+	mentions: string[],
 ): Promise<ActionResult<null>> {
 	const session = await auth();
 
@@ -488,7 +489,7 @@ export async function updateCommentAction(
 			};
 		}
 
-		const apiPayload = { content };
+		const apiPayload = { content, mentions };
 		const response = await patchRequest<null, typeof apiPayload>(
 			`/comment/${commentUuid}/update/`,
 			apiPayload,

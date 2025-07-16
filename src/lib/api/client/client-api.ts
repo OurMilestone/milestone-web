@@ -99,10 +99,15 @@ export const clientApi = {
 	 * Corresponds to `getProjectMembers` in the DAL.
 	 * Note: The server returns ProjectMembersDTO, not an array.
 	 */
-	getProjectMembers: (projectId: number): Promise<ProjectMembersDTO | null> => {
-		return callApi<ProjectMembersDTO | null>(
-			`/api/projects/${projectId}/members`,
-		);
+	getProjectMembers: async (
+		projectId: number,
+	): Promise<ProjectMembersDTO | null> => {
+		const response = await callApi<{
+			status: boolean;
+			message: string;
+			data: ProjectMembersDTO | null;
+		}>(`/api/projects/${projectId}/members`);
+		return response.data || null;
 	},
 
 	/**
