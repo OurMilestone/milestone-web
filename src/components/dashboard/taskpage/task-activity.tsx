@@ -1,42 +1,23 @@
 import { useAuthContext } from "@/components/providers/auth-context-provider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent } from "@/components/ui/popover";
+import useMentions, {
+	type MentionableUser,
+} from "@/hooks/comments/useMentions";
 import { useCreateComment } from "@/hooks/mutations/use-create-comment";
 import { useProjectMembers } from "@/hooks/queries/use-projects";
 import { useTaskComments } from "@/hooks/queries/use-task-detail";
 import { getInitials } from "@/lib/utils";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import TaskCommentSkeleton from "./skeletons/task-comment-skeleton";
 import TaskComment from "./task-comment";
 
-interface MentionUser {
-	id: string;
-	name: string;
-	email: string;
-	initials: string;
-}
-
 const TaskActivity = ({ task }: { task: TaskDetail }) => {
 	const { user: authContextUser } = useAuthContext();
 
-	const [commentText, setCommentText] = useState("");
-	const [mentions, setMentions] = useState<string[]>([]);
-	const [showMentionPopover, setShowMentionPopover] = useState(false);
-	const [mentionSearch, setMentionSearch] = useState("");
-	const [cursorPosition, setCursorPosition] = useState(0);
-	const inputRef = useRef<HTMLInputElement>(null);
 	const [replyingToId, setReplyingToId] = useState<number | null>(null);
 
 	const { data: projectMembers } = useProjectMembers(Number(task.project.id));
@@ -47,65 +28,36 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 		isFetching: isCommentsFetching,
 	} = useTaskComments(task.uuid);
 
-	const mentionableUsers: MentionUser[] =
+	const mentionableUsers: MentionableUser[] =
 		projectMembers?.members?.map((member) => ({
 			id: member.id,
-			name: member.preferred_name || member.full_name,
+			name: member.full_name,
 			email: member.email,
-			initials: getInitials(member.preferred_name || member.full_name),
+			initials: getInitials(member.full_name),
 		})) || [];
 
-	const filteredUsers = mentionableUsers.filter(
-		(user) =>
-			user.name.toLowerCase().includes(mentionSearch.toLowerCase()) ||
-			user.email.toLowerCase().includes(mentionSearch.toLowerCase()),
-	);
-
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-		setCommentText(value);
-
-		const cursorPos = e.target.selectionStart || 0;
-		setCursorPosition(cursorPos);
-
-		const beforeCursor = value.slice(0, cursorPos);
-		const atIndex = beforeCursor.lastIndexOf("@");
-
-		if (atIndex !== -1 && atIndex === beforeCursor.length - 1) {
-			setShowMentionPopover(true);
-			setMentionSearch("");
-		} else if (atIndex !== -1 && atIndex < beforeCursor.length - 1) {
-			const searchTerm = beforeCursor.slice(atIndex + 1);
-			setMentionSearch(searchTerm);
-			setShowMentionPopover(true);
-		} else {
-			setShowMentionPopover(false);
-			setMentionSearch("");
-		}
-	};
-
-	const handleUserSelect = (user: MentionUser) => {
-		const mentionText = `@${user.name}`;
-		const newText = `${commentText.slice(0, cursorPosition - mentionSearch.length - 1)}${mentionText} ${commentText.slice(cursorPosition)}`;
-		setCommentText(newText);
-		setMentions((prev) => [...prev, user.name]);
-		setShowMentionPopover(false);
-		setMentionSearch("");
-
-		setTimeout(() => {
-			inputRef.current?.focus();
-			inputRef.current?.setSelectionRange(newText.length, newText.length);
-		}, 0);
-	};
+	const {
+		showMentionPopover,
+		filteredUsers,
+		selectedIndex,
+		mentions,
+		text,
+		inputRef,
+		handleInputChange,
+		handleUserSelect,
+		handleKeyDown,
+		setText,
+		setMentions,
+	} = useMentions(mentionableUsers);
 
 	const handleSubmitComment = () => {
-		if (!commentText.trim()) return;
+		if (!text.trim()) return;
 
 		toast.promise(
 			async () =>
 				await createComment({
 					task: task.id,
-					content: commentText,
+					content: text,
 					mentions: mentions,
 					taskUuid: task.uuid,
 				}),
@@ -116,7 +68,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 			},
 		);
 
-		setCommentText("");
+		setText("");
 		setMentions([]);
 	};
 
@@ -181,85 +133,51 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 						ref={inputRef}
 						className="py-3 px-4"
 						placeholder="Add a comment..."
-						value={commentText}
+						value={text}
 						onChange={handleInputChange}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" && !e.shiftKey) {
-								e.preventDefault();
-								handleSubmitComment();
-							}
-						}}
-						onBlur={() => setTimeout(() => setShowMentionPopover(false), 200)}
+						onKeyDown={handleKeyDown}
 					/>
 
-					{/* Mention Popover */}
-					{showMentionPopover && (
-						<Popover
-							open={showMentionPopover}
-							onOpenChange={setShowMentionPopover}
-						>
-							<PopoverContent className="p-0 w-80" align="start">
-								<Command>
-									<CommandInput
-										placeholder="Search members..."
-										value={mentionSearch}
-										onValueChange={setMentionSearch}
-									/>
-									<CommandList>
-										<CommandEmpty>No members found.</CommandEmpty>
-										<CommandGroup>
-											{filteredUsers.map((user) => (
-												<CommandItem
-													key={user.id}
-													onSelect={() => handleUserSelect(user)}
-													className="flex items-center gap-2 cursor-pointer"
-												>
-													<Avatar className="h-6 w-6">
-														<AvatarFallback className="text-xs">
-															{user.initials}
-														</AvatarFallback>
-													</Avatar>
-													<div className="flex flex-col">
-														<span className="text-sm font-medium">
-															{user.name}
-														</span>
-														<span className="text-xs text-muted-foreground">
-															{user.email}
-														</span>
-													</div>
-												</CommandItem>
-											))}
-										</CommandGroup>
-									</CommandList>
-								</Command>
-							</PopoverContent>
-						</Popover>
+					{showMentionPopover && filteredUsers.length > 0 && (
+						<div className="absolute top-full left-0 right-0 z-50 mt-1">
+							<div className="bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+								{filteredUsers.map((user, index) => (
+									<button
+										key={user.id}
+										type="button"
+										onClick={() => handleUserSelect(user)}
+										className={`flex items-center gap-3 px-4 py-3 transition-colors w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+											index === selectedIndex
+												? "bg-blue-50 border-l-2 border-blue-500"
+												: "hover:bg-gray-50 cursor-pointer"
+										}`}
+									>
+										<div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm font-medium">
+											{user.initials}
+										</div>
+										<div className="flex flex-col">
+											<span className="text-sm font-medium text-gray-900">
+												{user.name}
+											</span>
+											<span className="text-xs text-gray-500">
+												{user.email}
+											</span>
+										</div>
+									</button>
+								))}
+							</div>
+						</div>
 					)}
 				</div>
 
 				<Button
 					onClick={handleSubmitComment}
-					disabled={!commentText.trim() || isPending}
+					disabled={!text.trim() || isPending}
 					className="px-4"
 				>
 					Comment
 				</Button>
 			</div>
-
-			{/* Show selected mentions */}
-			{mentions.length > 0 && (
-				<div className="flex flex-wrap gap-1">
-					<span className="text-xs text-muted-foreground">Mentioned:</span>
-					{mentions.map((mention) => (
-						<span
-							key={`mention-${mention}`}
-							className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
-						>
-							{mention}
-						</span>
-					))}
-				</div>
-			)}
 
 			<div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto">
 				{isCommentsLoading || isCommentsFetching
@@ -268,6 +186,7 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 							<TaskComment
 								key={comment.id}
 								taskUuid={task.uuid}
+								mentionableUsers={mentionableUsers}
 								comment={comment}
 								taskId={task.id}
 								replyingToId={replyingToId}
