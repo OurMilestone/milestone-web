@@ -59,6 +59,25 @@ export interface TaskDetail {
 	updatedAt: string;
 }
 
+export interface Comment {
+	id: number;
+	task: number;
+	uuid: string;
+	subtask: number | null;
+	author: string;
+	parent: number | null;
+	mentions: string[];
+	content: string;
+	author_name: string;
+	replies: Comment[];
+}
+
+export interface CommentsResponse {
+	status: boolean;
+	message: string;
+	data: Comment[];
+}
+
 export type ProjectTaskListItem = Expand<
 	Pick<Subtask, "id" | "code" | "title" | "columnId" | "priority"> & {
 		assignee: Pick<TaskAssignee, "avatarUrl" | "initials"> | undefined;

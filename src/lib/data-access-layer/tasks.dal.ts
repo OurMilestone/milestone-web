@@ -1,5 +1,9 @@
 import "server-only";
 
+import type {
+	Comment,
+	CommentsResponse,
+} from "@/types/dashboard/task-details-types";
 import { cache } from "react";
 import { getRequest } from "../api/server/api-client";
 import type {
@@ -104,6 +108,25 @@ export const getSubtasksByTaskUuid = cache(
 			return response.data.data || [];
 		} catch (error) {
 			console.error(`DAL Error fetching subtasks for task ${taskUuid}:`, error);
+
+			return [];
+		}
+	},
+);
+
+export const getTaskCommentsByTaskUuid = cache(
+	async (taskUuid: string): Promise<Comment[]> => {
+		await checkUserSession();
+
+		try {
+			const response = await getRequest<Comment[]>(
+				`/comment/get-all-comments?taskId=${taskUuid}`,
+				true,
+			);
+
+			return response.data.data || [];
+		} catch (error) {
+			console.error(`DAL Error fetching comments for task ${taskUuid}:`, error);
 
 			return [];
 		}

@@ -10,7 +10,14 @@ import type {
 	SubtaskDTO,
 	TaskDTO,
 } from "@/lib/data-access-layer/DTOs/task.dto";
-import { getTaskById } from "@/lib/data-access-layer/tasks.dal";
+import {
+	getTaskById,
+	getTaskCommentsByTaskUuid,
+} from "@/lib/data-access-layer/tasks.dal";
+import {
+	type CreateCommentInput,
+	createCommentSchema,
+} from "@/lib/schemas/task-schema";
 import {
 	type CreateSubtaskInput,
 	type CreateTaskInput,
@@ -406,5 +413,156 @@ export async function deleteSubtaskAction(
 		};
 	} catch (error) {
 		return handleApiError(error, "Failed to delete subtask.");
+	}
+}
+
+export async function createCommentAction(
+	input: CreateCommentInput,
+): Promise<ActionResult<null>> {
+	const session = await auth();
+
+	if (!session?.user) {
+		return {
+			success: false,
+			status: 401,
+			data: null,
+			message: "Unauthorized",
+		};
+	}
+
+	try {
+		const validatedInput = createCommentSchema.parse(input);
+
+		const apiPayload = {
+			task: validatedInput.task,
+			subtask_id: validatedInput.subtask_id,
+			content: validatedInput.content,
+			mentions: validatedInput.mentions,
+			parent: validatedInput.parent,
+		};
+
+		const response = await postRequest<null, typeof apiPayload>(
+			"/comment/create/",
+			apiPayload,
+			true,
+		);
+
+		// Revalidate the task detail page to show the new comment
+		// Note: We'll need to get the project ID from the task to revalidate properly
+		// For now, we'll revalidate the task detail page
+		revalidatePath("/dashboard/projects/*/task/*", "page");
+
+		return {
+			success: true,
+			data: null,
+			status: response.status,
+			message: "Comment created successfully!",
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to create comment.");
+	}
+}
+
+export async function updateCommentAction(
+	commentUuid: string,
+	content: string,
+): Promise<ActionResult<null>> {
+	const session = await auth();
+
+	if (!session?.user) {
+		return {
+			success: false,
+			status: 401,
+			data: null,
+			message: "Unauthorized",
+		};
+	}
+
+	try {
+		if (!content || !commentUuid) {
+			return {
+				success: false,
+				status: 400,
+				data: null,
+				message: "Comment UUID and content are required.",
+			};
+		}
+
+		const apiPayload = { content };
+		const response = await patchRequest<null, typeof apiPayload>(
+			`/comment/${commentUuid}/update/`,
+			apiPayload,
+			true,
+		);
+
+		revalidatePath("/dashboard/projects/*/task/*", "page");
+
+		return {
+			success: true,
+			data: null,
+			status: response.status,
+			message: "Comment updated successfully!",
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to update comment.");
+	}
+}
+
+export async function getTaskCommentsAction(taskUuid: string) {
+	try {
+		const comments = await getTaskCommentsByTaskUuid(taskUuid);
+		return {
+			success: true,
+			data: comments,
+			message: "Comments fetched successfully",
+		};
+	} catch (error) {
+		return {
+			success: false,
+			data: [],
+			message: "Failed to fetch comments",
+		};
+	}
+}
+
+export async function deleteCommentAction(
+	commentUuid: string,
+): Promise<ActionResult<null>> {
+	const session = await auth();
+
+	if (!session?.user) {
+		return {
+			success: false,
+			status: 401,
+			data: null,
+			message: "Unauthorized",
+		};
+	}
+
+	try {
+		if (!commentUuid) {
+			return {
+				success: false,
+				status: 400,
+				data: null,
+				message: "Comment UUID is required.",
+			};
+		}
+
+		const response = await deleteRequest<null>(
+			`/comment/${commentUuid}/delete/`,
+			true,
+		);
+
+		revalidatePath("/dashboard/projects/*/task/*", "page");
+
+		return {
+			success: true,
+			data: null,
+			status: response.status,
+			message: "Comment deleted successfully!",
+		};
+	} catch (error) {
+		return handleApiError(error, "Failed to delete comment.");
 	}
 }

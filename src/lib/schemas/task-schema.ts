@@ -87,3 +87,16 @@ export const updateTaskFieldSchema = z.object({
 		})
 		.partial(),
 });
+
+export const createCommentSchema = z.object({
+	task: z.number(),
+	subtask_id: z.number().optional(),
+	parent: z.number().nullable().optional(),
+	content: z
+		.string()
+		.min(1, { message: "Comment content cannot be empty." })
+		.max(1000, { message: "Comment content cannot exceed 1000 characters." }),
+	mentions: z.array(z.string()).optional().default([]),
+});
+
+export type CreateCommentInput = z.infer<typeof createCommentSchema>;
