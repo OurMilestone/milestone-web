@@ -3,12 +3,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingButton } from "@/components/ui/loading-button";
+import useMentions, {
+	type MentionableUser,
+} from "@/hooks/comments/useMentions";
 import { useCreateComment } from "@/hooks/mutations/use-create-comment";
 import { useDeleteComment } from "@/hooks/mutations/use-delete-comment";
 import { useUpdateComment } from "@/hooks/mutations/use-update-comment";
 import { getInitials } from "@/lib/utils";
 import type { Comment } from "@/types/dashboard/task-details-types";
-import type React from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { toast } from "sonner";
 import MoodIcon from "./mood-icon";
@@ -20,6 +23,7 @@ const TaskComment: React.FC<{
 	reply?: boolean;
 	replyingToId: number | null;
 	setReplyingToId: (id: number | null) => void;
+	mentionableUsers: MentionableUser[];
 }> = ({
 	comment,
 	taskId,
@@ -27,16 +31,57 @@ const TaskComment: React.FC<{
 	reply = false,
 	replyingToId,
 	setReplyingToId,
+	mentionableUsers,
 }) => {
 	const { user } = useAuthContext();
 
-	const [replyText, setReplyText] = useState("");
+	const {
+		showMentionPopover,
+		filteredUsers,
+		selectedIndex,
+		mentions,
+		text: replyText,
+		inputRef,
+		handleInputChange: handleReplyInputChange,
+		handleUserSelect,
+		handleKeyDown: handleReplyKeyDown,
+		setText: setReplyText,
+		setMentions,
+	} = useMentions(mentionableUsers);
+
+	const {
+		showMentionPopover: showEditMentionPopover,
+		filteredUsers: editFilteredUsers,
+		selectedIndex: editSelectedIndex,
+		mentions: editMentions,
+		text: editMentionText,
+		inputRef: editInputRef,
+		handleInputChange: handleEditInputChange,
+		handleUserSelect: handleEditUserSelect,
+		handleKeyDown: handleEditKeyDown,
+		setText: setEditMentionText,
+		setMentions: setEditMentions,
+	} = useMentions(mentionableUsers);
+
 	const { mutateAsync: createComment, isPending } = useCreateComment();
 	const [isEditing, setIsEditing] = useState(false);
-	const [editText, setEditText] = useState(comment.content);
+
 	const { mutateAsync: updateComment, isPending: isUpdating } =
 		useUpdateComment();
 	const { mutateAsync: deleteComment } = useDeleteComment();
+
+	useEffect(() => {
+		if (isEditing) {
+			setEditMentionText(comment.content);
+			setEditMentions(comment.mentions || []);
+		}
+	}, [
+		isEditing,
+		comment.content,
+		comment.mentions,
+		setEditMentionText,
+		setEditMentions,
+	]);
 
 	const handleReply = () => {
 		if (!replyText.trim()) return;
@@ -47,7 +92,7 @@ const TaskComment: React.FC<{
 					task: taskId,
 					content: replyText,
 					parent: comment.id,
-					mentions: [],
+					mentions: mentions,
 					taskUuid,
 				}),
 			{
@@ -58,26 +103,18 @@ const TaskComment: React.FC<{
 		);
 
 		setReplyText("");
+		setMentions([]);
 		setReplyingToId(null);
 	};
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === "Enter" && !e.shiftKey) {
-			e.preventDefault();
-			handleReply();
-		} else if (e.key === "Escape") {
-			setReplyingToId(null);
-			setReplyText("");
-		}
-	};
-
 	const handleEdit = () => {
-		if (!editText.trim()) return;
+		if (!editMentionText.trim()) return;
 		toast.promise(
 			() =>
 				updateComment({
 					commentUuid: comment.uuid,
-					content: editText,
+					content: editMentionText,
+					mentions: editMentions,
 					taskUuid: taskUuid,
 				}),
 			{
@@ -89,13 +126,16 @@ const TaskComment: React.FC<{
 		setIsEditing(false);
 	};
 
-	const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === "Enter" && !e.shiftKey) {
+	const handleEditKeyDownWrapper = (
+		e: React.KeyboardEvent<HTMLInputElement>,
+	) => {
+		handleEditKeyDown(e);
+		if (e.key === "Enter" && !e.shiftKey && !showEditMentionPopover) {
 			e.preventDefault();
 			handleEdit();
 		} else if (e.key === "Escape") {
 			setIsEditing(false);
-			setEditText(comment.content);
+			setEditMentionText(comment.content);
 		}
 	};
 
@@ -112,6 +152,51 @@ const TaskComment: React.FC<{
 				error: "Failed to delete comment.",
 			},
 		);
+	};
+
+	const highlightMentions = (content: string, mentions: string[]) => {
+		if (!mentions || mentions.length === 0) {
+			return content;
+		}
+
+		const sortedMentions = [...mentions].sort((a, b) => b.length - a.length);
+
+		const mentionPatterns = sortedMentions.map((mention) => {
+			const escapedMention = mention.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+			return `@${escapedMention}`;
+		});
+
+		const pattern = `(${mentionPatterns.join("|")})`;
+		const regex = new RegExp(pattern, "gi");
+
+		const parts = content.split(regex);
+
+		return parts.map((part) => {
+			if (part.startsWith("@")) {
+				const mentionName = part.slice(1);
+				const isMention = mentions.some(
+					(mention) => mention.toLowerCase() === mentionName.toLowerCase(),
+				);
+
+				if (isMention) {
+					return (
+						<span
+							key={part}
+							style={{
+								color: "#2463EB",
+								fontWeight: "500",
+								backgroundColor: "#EBF4FF",
+								padding: "1px 4px",
+								borderRadius: "3px",
+							}}
+						>
+							{part}
+						</span>
+					);
+				}
+			}
+			return <span key={part}>{part}</span>;
+		});
 	};
 
 	return (
@@ -136,7 +221,9 @@ const TaskComment: React.FC<{
 						)}
 					</div>
 
-					<p className="text-base text-[#808AA3]">{comment?.content}</p>
+					<p className="text-base text-[#808AA3]">
+						{highlightMentions(comment.content, comment.mentions)}
+					</p>
 
 					<div className="flex items-center gap-2.5">
 						{user?.full_name === comment?.author_name ? (
@@ -147,7 +234,7 @@ const TaskComment: React.FC<{
 										variant={"ghost"}
 										onClick={() => {
 											setIsEditing(true);
-											setEditText(comment.content);
+											setEditMentionText(comment.content);
 										}}
 									>
 										Edit
@@ -158,7 +245,7 @@ const TaskComment: React.FC<{
 											className="p-0 text-[#2463EB] hover:scale-105 hover:bg-transparent text-base"
 											variant={"ghost"}
 											onClick={handleEdit}
-											disabled={!editText.trim() || isUpdating}
+											disabled={!editMentionText.trim() || isUpdating}
 										>
 											Save
 										</Button>
@@ -167,7 +254,7 @@ const TaskComment: React.FC<{
 											variant={"ghost"}
 											onClick={() => {
 												setIsEditing(false);
-												setEditText(comment.content);
+												setEditMentionText(comment.content);
 											}}
 										>
 											Cancel
@@ -220,14 +307,47 @@ const TaskComment: React.FC<{
 							</AvatarFallback>
 						</Avatar>
 						<div className="flex-1 flex-col flex gap-2">
-							<Input
-								className="flex-1"
-								placeholder={`Reply to ${comment.author_name}...`}
-								value={replyText}
-								onChange={(e) => setReplyText(e.target.value)}
-								onKeyDown={handleKeyDown}
-								autoFocus
-							/>
+							<div className="relative">
+								<Input
+									className="flex-1"
+									placeholder={`Reply to ${comment.author_name}...`}
+									value={replyText}
+									onChange={handleReplyInputChange}
+									onKeyDown={handleReplyKeyDown}
+									autoFocus
+									ref={inputRef}
+								/>
+								{showMentionPopover && filteredUsers.length > 0 && (
+									<div className="absolute top-full left-0 right-0 z-50 mt-1">
+										<div className="bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+											{filteredUsers.map((user, index) => (
+												<button
+													key={user.id}
+													type="button"
+													onClick={() => handleUserSelect(user)}
+													className={`flex items-center gap-3 px-4 py-3 transition-colors w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+														index === selectedIndex
+															? "bg-blue-50 border-l-2 border-blue-500"
+															: "hover:bg-gray-50 cursor-pointer"
+													}`}
+												>
+													<div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm font-medium">
+														{user.initials}
+													</div>
+													<div className="flex flex-col">
+														<span className="text-sm font-medium text-gray-900">
+															{user.name}
+														</span>
+														<span className="text-xs text-gray-500">
+															{user.email}
+														</span>
+													</div>
+												</button>
+											))}
+										</div>
+									</div>
+								)}
+							</div>
 							<div className="flex justify-end gap-2">
 								<LoadingButton
 									onClick={handleReply}
@@ -264,18 +384,51 @@ const TaskComment: React.FC<{
 							</AvatarFallback>
 						</Avatar>
 						<div className="flex-1 flex-col flex gap-2">
-							<Input
-								className="flex-1"
-								placeholder="Edit your comment..."
-								value={editText}
-								onChange={(e) => setEditText(e.target.value)}
-								onKeyDown={handleEditKeyDown}
-								autoFocus
-							/>
+							<div className="relative">
+								<Input
+									className="flex-1"
+									placeholder="Edit your comment..."
+									value={editMentionText}
+									onChange={handleEditInputChange}
+									onKeyDown={handleEditKeyDownWrapper}
+									autoFocus
+									ref={editInputRef}
+								/>
+								{showEditMentionPopover && editFilteredUsers.length > 0 && (
+									<div className="absolute top-full left-0 right-0 z-50 mt-1">
+										<div className="bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+											{editFilteredUsers.map((user, index) => (
+												<button
+													key={user.id}
+													type="button"
+													onClick={() => handleEditUserSelect(user)}
+													className={`flex items-center gap-3 px-4 py-3 transition-colors w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+														index === editSelectedIndex
+															? "bg-blue-50 border-l-2 border-blue-500"
+															: "hover:bg-gray-50 cursor-pointer"
+													}`}
+												>
+													<div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm font-medium">
+														{user.initials}
+													</div>
+													<div className="flex flex-col">
+														<span className="text-sm font-medium text-gray-900">
+															{user.name}
+														</span>
+														<span className="text-xs text-gray-500">
+															{user.email}
+														</span>
+													</div>
+												</button>
+											))}
+										</div>
+									</div>
+								)}
+							</div>
 							<div className="flex justify-end gap-2">
 								<Button
 									onClick={handleEdit}
-									disabled={!editText.trim() || isUpdating}
+									disabled={!editMentionText.trim() || isUpdating}
 									variant="default"
 									size="sm"
 								>
@@ -286,7 +439,7 @@ const TaskComment: React.FC<{
 									size="sm"
 									onClick={() => {
 										setIsEditing(false);
-										setEditText(comment.content);
+										setEditMentionText(comment.content);
 									}}
 								>
 									Cancel
@@ -308,6 +461,7 @@ const TaskComment: React.FC<{
 							reply={true}
 							replyingToId={replyingToId}
 							setReplyingToId={setReplyingToId}
+							mentionableUsers={mentionableUsers}
 						/>
 					))}
 				</div>
