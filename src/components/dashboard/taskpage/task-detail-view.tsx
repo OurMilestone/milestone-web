@@ -9,6 +9,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import TaskSubtaskSkeleton from "./skeletons/task-subtask-skeleton";
+import TaskActivity from "./task-activity";
 import TaskDescription from "./task-description";
 import TaskSubtasks from "./task-subtask";
 
@@ -124,6 +125,7 @@ export default function TaskDetailView({
 				updateTaskField={updateTaskField}
 				isUpdatingTask={isUpdatingTask}
 			/>
+
 			<TaskSubtasks
 				subtasks={subtasksToRender}
 				parentTaskId={task.id}
@@ -132,6 +134,8 @@ export default function TaskDetailView({
 				error={error}
 				refetch={refetch}
 			/>
+
+			<TaskActivity task={task} />
 			{/* //* Activity section was here for now. Maybe implemeted after MVP */}
 		</div>
 	);
