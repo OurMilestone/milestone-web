@@ -14,6 +14,7 @@ import type { Comment } from "@/types/dashboard/task-details-types";
 import { useEffect } from "react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { MentionPopover } from "./mention-popover";
 import MoodIcon from "./mood-icon";
 
 const TaskComment: React.FC<{
@@ -47,6 +48,7 @@ const TaskComment: React.FC<{
 		handleKeyDown: handleReplyKeyDown,
 		setText: setReplyText,
 		setMentions,
+		closeMentionPopover,
 	} = useMentions(mentionableUsers);
 
 	const {
@@ -317,36 +319,15 @@ const TaskComment: React.FC<{
 									autoFocus
 									ref={inputRef}
 								/>
-								{showMentionPopover && filteredUsers.length > 0 && (
-									<div className="absolute top-full left-0 right-0 z-50 mt-1">
-										<div className="bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-											{filteredUsers.map((user, index) => (
-												<button
-													key={user.id}
-													type="button"
-													onClick={() => handleUserSelect(user)}
-													className={`flex items-center gap-3 px-4 py-3 transition-colors w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-														index === selectedIndex
-															? "bg-blue-50 border-l-2 border-blue-500"
-															: "hover:bg-gray-50 cursor-pointer"
-													}`}
-												>
-													<div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm font-medium">
-														{user.initials}
-													</div>
-													<div className="flex flex-col">
-														<span className="text-sm font-medium text-gray-900">
-															{user.name}
-														</span>
-														<span className="text-xs text-gray-500">
-															{user.email}
-														</span>
-													</div>
-												</button>
-											))}
-										</div>
-									</div>
-								)}
+
+								<MentionPopover
+									show={showMentionPopover}
+									users={filteredUsers}
+									onClose={closeMentionPopover}
+									selectedIndex={selectedIndex}
+									onUserSelect={handleUserSelect}
+									inputRef={inputRef}
+								/>
 							</div>
 							<div className="flex justify-end gap-2">
 								<LoadingButton
@@ -394,36 +375,14 @@ const TaskComment: React.FC<{
 									autoFocus
 									ref={editInputRef}
 								/>
-								{showEditMentionPopover && editFilteredUsers.length > 0 && (
-									<div className="absolute top-full left-0 right-0 z-50 mt-1">
-										<div className="bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-											{editFilteredUsers.map((user, index) => (
-												<button
-													key={user.id}
-													type="button"
-													onClick={() => handleEditUserSelect(user)}
-													className={`flex items-center gap-3 px-4 py-3 transition-colors w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-														index === editSelectedIndex
-															? "bg-blue-50 border-l-2 border-blue-500"
-															: "hover:bg-gray-50 cursor-pointer"
-													}`}
-												>
-													<div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm font-medium">
-														{user.initials}
-													</div>
-													<div className="flex flex-col">
-														<span className="text-sm font-medium text-gray-900">
-															{user.name}
-														</span>
-														<span className="text-xs text-gray-500">
-															{user.email}
-														</span>
-													</div>
-												</button>
-											))}
-										</div>
-									</div>
-								)}
+								<MentionPopover
+									show={showEditMentionPopover}
+									users={editFilteredUsers}
+									onClose={closeMentionPopover}
+									selectedIndex={editSelectedIndex}
+									onUserSelect={handleEditUserSelect}
+									inputRef={editInputRef}
+								/>
 							</div>
 							<div className="flex justify-end gap-2">
 								<Button
