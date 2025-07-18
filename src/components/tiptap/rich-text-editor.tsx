@@ -9,6 +9,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import { type Content, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import clsx from "clsx";
 import css from "highlight.js/lib/languages/css";
 import javascript from "highlight.js/lib/languages/javascript";
 import typescript from "highlight.js/lib/languages/typescript";
@@ -81,7 +82,11 @@ export default function RichTextEditor({
 	});
 
 	return (
-		<div className="border border-border rounded-md">
+		<div
+			className={clsx(
+				editable ? "border border-border rounded-md" : "border-none",
+			)}
+		>
 			{editable && <MenuBar editor={editor} />}
 			<EditorContent
 				editor={editor}

@@ -77,6 +77,7 @@ export default function TaskDescription({
 						content={tempDescription}
 						onChange={setTempDescription}
 						placeholder="Add a detailed description for this task..."
+						editable={true}
 					/>
 					<div className="flex items-center gap-2 justify-start">
 						<Button
@@ -105,10 +106,10 @@ export default function TaskDescription({
 					</div>
 				</div>
 			) : description ? (
-				<div
-					className="prose dark:prose-invert max-w-none "
-					// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-					dangerouslySetInnerHTML={{ __html: description }}
+				<RichTextEditor
+					content={description}
+					onChange={() => {}}
+					editable={false}
 				/>
 			) : (
 				<div
