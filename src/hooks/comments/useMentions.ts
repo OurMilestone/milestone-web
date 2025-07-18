@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 export interface MentionableUser {
 	id: string;
@@ -20,6 +20,7 @@ interface UseMentionsReturn {
 	handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 	setText: React.Dispatch<React.SetStateAction<string>>;
 	setMentions: React.Dispatch<React.SetStateAction<string[]>>;
+	closeMentionPopover: () => void;
 }
 
 const useMentions = (
@@ -49,10 +50,13 @@ const useMentions = (
 		const atIndex = beforeCursor.lastIndexOf("@");
 
 		if (atIndex !== -1) {
+			const charBeforeAt = atIndex === 0 ? "" : beforeCursor[atIndex - 1];
+			const validBoundary =
+				atIndex === 0 || /[\s.,;:!?()\[\]{}]/.test(charBeforeAt);
 			const afterAt = beforeCursor.slice(atIndex + 1);
 			const hasSpace = afterAt.includes(" ");
 
-			if (!hasSpace) {
+			if (validBoundary && !hasSpace) {
 				setMentionStartIndex(atIndex);
 				setMentionSearch(afterAt);
 				setShowMentionPopover(true);
@@ -92,6 +96,12 @@ const useMentions = (
 		}, 0);
 	};
 
+	const closeMentionPopover = useCallback(() => {
+		setShowMentionPopover(false);
+		setMentionSearch("");
+		setSelectedIndex(0);
+	}, []);
+
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (showMentionPopover && filteredUsers.length > 0) {
 			if (e.key === "ArrowDown") {
@@ -128,6 +138,7 @@ const useMentions = (
 		handleKeyDown,
 		setText,
 		setMentions,
+		closeMentionPopover,
 	};
 };
 
