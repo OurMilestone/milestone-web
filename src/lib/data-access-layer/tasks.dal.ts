@@ -120,7 +120,7 @@ export const getTaskCommentsByTaskUuid = cache(
 
 		try {
 			const response = await getRequest<Comment[]>(
-				`/comment/get-all-comments?taskId=${taskUuid}`,
+				`/comment/get-all-comments?task=${taskUuid}`,
 				true,
 			);
 

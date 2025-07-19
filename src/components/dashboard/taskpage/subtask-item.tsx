@@ -18,7 +18,7 @@ import type { Subtask } from "@/types/dashboard/task-details-types";
 import type { KanbanColumnId } from "@/types/dashboard/taskboard-types";
 import { ChevronDown, Edit2, Trash2 } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PriorityDots } from "../taskboard/task-card";
 
 interface SubtaskItemProps {
@@ -50,6 +50,18 @@ export default function SubtaskItem({
 
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [editedTitle, setEditedTitle] = useState(subtask.title);
+
+	// Expand/collapse state for description
+	const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+	const [isDescriptionOverflowing, setIsDescriptionOverflowing] =
+		useState(false);
+	const descriptionRef = useRef<HTMLParagraphElement>(null);
+	const setDescriptionRef = (el: HTMLParagraphElement | null) => {
+		descriptionRef.current = el;
+		if (el) {
+			setIsDescriptionOverflowing(el.scrollHeight > el.clientHeight + 2);
+		}
+	};
 
 	const handleStatusChange = async (newStatus: KanbanColumnId) => {
 		const newCompletedState = newStatus === "done";
@@ -111,100 +123,134 @@ export default function SubtaskItem({
 	return (
 		<li
 			className={cn(
-				"flex items-center gap-3 p-2.5 border rounded-md bg-card hover:bg-muted/50 transition-all duration-150",
+				"flex flex-col md:flex-row flex-wrap items-center md:items-start gap-3 p-2.5 border rounded-md bg-card hover:bg-muted/50 transition-all duration-150",
 				subtaskCompletedStyles,
 			)}
 		>
-			<Checkbox
-				id={`subtask-${subtask.uuid}`}
-				checked={isCompleted}
-				onCheckedChange={handleCheckboxChange}
-				aria-label={`Mark subtask ${subtask.title} as ${
-					isCompleted ? "incomplete" : "complete"
-				}`}
-				disabled={isLoading}
-				className="cursor-pointer"
-			/>
-			<div className="flex-1 min-w-0 space-y-0.5">
-				{isEditingTitle ? (
-					<Input
-						value={editedTitle}
-						onChange={handleTitleChange}
-						onBlur={handleTitleBlur}
-						onKeyDown={handleTitleKeyDown}
-						className="text-sm font-medium text-foreground truncate"
-						autoFocus
-					/>
-				) : (
-					<div className="flex items-center gap-2">
-						<span
-							className={cn("text-sm font-medium text-foreground truncate")}
-							title={subtask.title}
-						>
-							{subtask.title}
-						</span>
-						<Edit2
-							size={14}
-							className="cursor-pointer text-muted-foreground"
-							onClick={() => setIsEditingTitle(true)}
+			<div className="flex gap-3">
+				<Checkbox
+					id={`subtask-${subtask.uuid}`}
+					checked={isCompleted}
+					onCheckedChange={handleCheckboxChange}
+					aria-label={`Mark subtask ${subtask.title} as ${
+						isCompleted ? "incomplete" : "complete"
+					}`}
+					disabled={isLoading}
+					className="cursor-pointer hidden md:block"
+				/>
+				<div className="flex-1 min-w-0 space-y-0.5">
+					{isEditingTitle ? (
+						<Input
+							value={editedTitle}
+							onChange={handleTitleChange}
+							onBlur={handleTitleBlur}
+							onKeyDown={handleTitleKeyDown}
+							className="text-sm font-medium text-foreground truncate"
+							autoFocus
 						/>
-					</div>
-				)}
-				{subtask.description && (
-					<p className="text-xs text-muted-foreground line-clamp-2">
-						{subtask.description}
-					</p>
-				)}
-				<span className="text-xs text-muted-foreground">{subtask.code}</span>
+					) : (
+						<div className="flex items-center gap-2">
+							<span
+								className={cn(
+									"text-sm font-medium line-clamp-1 text-foreground truncate",
+								)}
+								title={subtask.title}
+							>
+								{subtask.title}
+							</span>
+							<Edit2
+								size={14}
+								className="cursor-pointer text-muted-foreground"
+								onClick={() => setIsEditingTitle(true)}
+							/>
+						</div>
+					)}
+					{subtask.description && (
+						<div>
+							<p
+								className={cn(
+									"text-xs text-muted-foreground",
+									!isDescriptionExpanded && "line-clamp-2",
+								)}
+								ref={setDescriptionRef}
+							>
+								{subtask.description}
+							</p>
+							{isDescriptionOverflowing && (
+								<button
+									type="button"
+									className="text-xs text-primary underline mt-1 focus:outline-none"
+									onClick={() => setIsDescriptionExpanded((prev) => !prev)}
+								>
+									{isDescriptionExpanded ? "Collapse" : "Expand"}
+								</button>
+							)}
+						</div>
+					)}
+					<span className="text-xs text-muted-foreground">{subtask.code}</span>
+				</div>
 			</div>
 
-			<div className="flex items-center gap-2 ml-auto flex-shrink-0">
-				<PriorityDots priority={subtask.priority} />
-
-				{subtask.assignee && (
-					<Avatar className="h-6 w-6">
-						<AvatarFallback className="text-[10px]">
-							{getInitials(subtask.assignee.name)}
-						</AvatarFallback>
-					</Avatar>
-				)}
-
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button
-							variant="outline"
-							size="sm"
-							className="h-7 px-2 py-1 text-xs gap-1 bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-700"
-							disabled={isLoading}
-						>
-							<span className="truncate max-w-[70px]">
-								{currentStatusInfo?.title || "Status"}
-							</span>
-							<ChevronDown size={14} className="opacity-70" />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						{staticTaskBoardData.columns.map((statusCol) => (
-							<DropdownMenuItem
-								key={statusCol.id}
-								onClick={() => handleStatusChange(statusCol.id)}
-								disabled={subtask.columnId === statusCol.id || isLoading}
-							>
-								{statusCol.title}
-							</DropdownMenuItem>
-						))}
-					</DropdownMenuContent>
-				</DropdownMenu>
-
-				<Button
-					variant="ghost"
-					size="icon"
-					className="h-7 w-7 text-muted-foreground hover:text-destructive"
-					onClick={handleDeleteSubtask}
+			<div className="flex justify-between items-center w-full">
+				<Checkbox
+					id={`subtask-${subtask.uuid}`}
+					checked={isCompleted}
+					onCheckedChange={handleCheckboxChange}
+					aria-label={`Mark subtask ${subtask.title} as ${
+						isCompleted ? "incomplete" : "complete"
+					}`}
 					disabled={isLoading}
-				>
-					<Trash2 size={16} />
-				</Button>
+					className="cursor-pointer block md:hidden"
+				/>
+
+				<div className="flex items-center gap-2 ml-auto flex-shrink-0">
+					<PriorityDots priority={subtask.priority} />
+
+					{subtask.assignee && (
+						<Avatar className="h-6 w-6">
+							<AvatarFallback className="text-[10px]">
+								{getInitials(subtask.assignee.name)}
+							</AvatarFallback>
+						</Avatar>
+					)}
+
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button
+								variant="outline"
+								size="sm"
+								className="h-7 px-2 py-1 text-xs gap-1 bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-700"
+								disabled={isLoading}
+							>
+								<span className="truncate max-w-[70px]">
+									{currentStatusInfo?.title || "Status"}
+								</span>
+								<ChevronDown size={14} className="opacity-70" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							{staticTaskBoardData.columns.map((statusCol) => (
+								<DropdownMenuItem
+									key={statusCol.id}
+									onClick={() => handleStatusChange(statusCol.id)}
+									disabled={subtask.columnId === statusCol.id || isLoading}
+								>
+									{statusCol.title}
+								</DropdownMenuItem>
+							))}
+						</DropdownMenuContent>
+					</DropdownMenu>
+
+					<Button
+						variant="ghost"
+						size="icon"
+						className="h-7 w-7 text-muted-foreground hover:text-destructive"
+						onClick={handleDeleteSubtask}
+						disabled={isLoading}
+					>
+						<Trash2 size={16} />
+					</Button>
+				</div>
 			</div>
 		</li>
 	);
