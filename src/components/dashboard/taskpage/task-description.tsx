@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Edit3, Loader2, Save, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import "@/components/tiptap/tiptap-styles.css";
+import type { TaskDetail } from "@/types/dashboard/task-details-types";
 
 interface TaskDescriptionProps {
 	initialDescription?: string;
@@ -27,15 +28,14 @@ export default function TaskDescription({
 }: TaskDescriptionProps) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [tempDescription, setTempDescription] = useState(initialDescription);
+	const [description, setDescription] = useState(initialDescription);
 
 	useEffect(() => {
-		if (!isEditing) {
-			setTempDescription(initialDescription);
-		}
-	}, [initialDescription, isEditing]);
+		setDescription(initialDescription);
+		setTempDescription(initialDescription);
+	}, [initialDescription]);
 
 	const handleEdit = () => {
-		setTempDescription(initialDescription);
 		setIsEditing(true);
 	};
 
@@ -43,16 +43,20 @@ export default function TaskDescription({
 		setIsEditing(false);
 	};
 
-	const handleSave = () => {
-		updateTaskField({
-			taskId,
-			taskUuid,
-			fields: { description: tempDescription },
-		});
-		setIsEditing(false);
+	const handleSave = async () => {
+		if (!tempDescription) return;
+		try {
+			await updateTaskField({
+				taskId,
+				taskUuid,
+				fields: { description: tempDescription },
+			});
+			setDescription(tempDescription);
+			setIsEditing(false);
+		} catch (error) {
+			setTempDescription(description);
+		}
 	};
-
-	const description = initialDescription;
 
 	return (
 		<div className="space-y-3 py-3">
@@ -74,7 +78,7 @@ export default function TaskDescription({
 			{isEditing ? (
 				<div className="space-y-3">
 					<RichTextEditor
-						content={tempDescription}
+						content={tempDescription ?? ""}
 						onChange={setTempDescription}
 						placeholder="Add a detailed description for this task..."
 						editable={true}
