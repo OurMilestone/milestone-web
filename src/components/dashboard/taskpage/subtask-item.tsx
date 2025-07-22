@@ -195,11 +195,11 @@ export default function SubtaskItem({
 						<Minus className="size-2 text-muted-foreground" />
 						<div className="text-muted-foreground text-xs">
 							<span className="font-medium">Created:</span>{" "}
-							{format(parseISO(subtask.createdAt), "MMM dd, yyyy · hh:mma")}
+							{format(parseISO(subtask.createdAt), "MMM dd, yyyy · hh:mm a")}
 						</div>
 						<div className="text-muted-foreground text-xs">
 							<span className="font-medium">Updated:</span>{" "}
-							{format(parseISO(subtask.updatedAt), "MMM dd, yyyy · hh:mma")}
+							{format(parseISO(subtask.updatedAt), "MMM dd, yyyy · hh:mm a")}
 						</div>
 					</div>
 				</div>
