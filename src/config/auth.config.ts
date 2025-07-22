@@ -12,6 +12,35 @@ import Credentials from "next-auth/providers/credentials";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
+const getDomainByEnvironment = () => {
+	if (process.env.NODE_ENV === "development") {
+		return "http://localhost:3000";
+	}
+
+	if (process.env.AUTH_URL) {
+		return process.env.AUTH_URL;
+	}
+
+	const environment = process.env.ENVIRONMENT || "staging";
+
+	switch (environment) {
+		case "production":
+			return "https://ourmilestones.com";
+		case "staging":
+			return "https://staging.ourmilestones.com";
+		default:
+			return "https://ourmilestones.com";
+	}
+};
+
+const getCurrentDomain = () => {
+	const domain = getDomainByEnvironment();
+	console.log(
+		`Auth.js using domain: ${domain} (NODE_ENV: ${process.env.NODE_ENV}, ENVIRONMENT: ${process.env.ENVIRONMENT})`,
+	);
+	return domain;
+};
+
 const authOptions: NextAuthConfig = {
 	providers: [
 		Credentials({
@@ -65,6 +94,33 @@ const authOptions: NextAuthConfig = {
 		maxAge: 24 * 60 * 60,
 	},
 	callbacks: {
+		async redirect({ url }) {
+			const currentDomain = getCurrentDomain();
+
+			if (url.includes("amplifyapp.com")) {
+				return url.replace(/https:\/\/[^.]+\.amplifyapp\.com/, currentDomain);
+			}
+
+			if (url.includes("ourmilestones.com") && !url.startsWith(currentDomain)) {
+				const path = url.split("ourmilestones.com")[1] || "";
+				const newUrl = `${currentDomain}${path}`;
+				return newUrl;
+			}
+
+			if (url.startsWith("/")) {
+				return `${currentDomain}${url}`;
+			}
+
+			const isValidDomain =
+				url.startsWith(currentDomain) ||
+				(isDevelopment && url.startsWith("http://localhost"));
+
+			if (isValidDomain) {
+				return url;
+			}
+
+			return currentDomain;
+		},
 		async signIn({ user, account }) {
 			if (account?.provider === "credentials") {
 				return !!user;
