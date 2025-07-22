@@ -16,6 +16,7 @@ import { staticTaskBoardData } from "@/lib/constants";
 import { cn, getInitials } from "@/lib/utils";
 import type { Subtask } from "@/types/dashboard/task-details-types";
 import type { KanbanColumnId } from "@/types/dashboard/taskboard-types";
+import { format, parseISO } from "date-fns";
 import { ChevronDown, Edit2, Trash2 } from "lucide-react";
 import { useRouter } from "nextjs-toploader/app";
 import { useEffect, useRef, useState } from "react";
@@ -188,6 +189,17 @@ export default function SubtaskItem({
 						</div>
 					)}
 					<span className="text-xs text-muted-foreground">{subtask.code}</span>
+					<div className="flex flex-col gap-0.5 text-xs text-gray-500">
+						<div>
+							<span className="font-medium">Created:</span>{" "}
+							{format(parseISO(subtask.createdAt), "MMM dd, yyyy · hh:mma")}
+						</div>
+
+						<div>
+							<span className="font-medium">Updated:</span>{" "}
+							{format(parseISO(subtask.updatedAt), "MMM dd, yyyy · hh:mma")}
+						</div>
+					</div>
 				</div>
 			</div>
 
