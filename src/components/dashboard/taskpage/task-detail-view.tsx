@@ -1,11 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import type { useUpdateTaskField } from "@/hooks/mutations/use-update-task";
 import { useSubtasks } from "@/hooks/queries/use-subtasks";
 import { transformApiSubtaskToUiSubtask } from "@/lib/utils";
 import type { TaskDetail } from "@/types/dashboard/task-details-types";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { format, parseISO } from "date-fns";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import TaskSubtaskSkeleton from "./skeletons/task-subtask-skeleton";
@@ -118,6 +120,19 @@ export default function TaskDetailView({
 					</Button>
 				)}
 			</div>
+
+			<div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+				<div>
+					<span className="font-medium">Created:</span>{" "}
+					{format(parseISO(task.createdAt), "MMM dd, yyyy · hh:mma")}
+				</div>
+				<span className="h-4 hidden md:block bg-gray-500 w-px" />
+				<div>
+					<span className="font-medium">Updated:</span>{" "}
+					{format(parseISO(task.updatedAt), "MMM dd, yyyy · hh:mma")}
+				</div>
+			</div>
+
 			<TaskDescription
 				taskId={task.id}
 				initialDescription={task.description}
@@ -136,7 +151,6 @@ export default function TaskDetailView({
 			/>
 
 			<TaskActivity task={task} />
-			{/* //* Activity section was here for now. Maybe implemeted after MVP */}
 		</div>
 	);
 }
