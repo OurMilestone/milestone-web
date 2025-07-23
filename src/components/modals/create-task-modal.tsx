@@ -161,7 +161,7 @@ export function CreateTaskModal({
 						Fill in the details below to add a new task to the project.
 					</DrawerDescription>
 				</DrawerHeader>
-				<div className="p-4">{renderForm()}</div>
+				<div className="">{renderForm()}</div>
 			</DrawerContent>
 		</Drawer>
 	);

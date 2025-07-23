@@ -1,5 +1,6 @@
 "use client";
 
+import RichTextEditor from "@/components/tiptap/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import {
 	FormControl,
@@ -36,7 +37,10 @@ export function CreateTaskForm({
 	onSubmit,
 }: CreateTaskFormProps) {
 	return (
-		<div className="space-y-4">
+		<div
+			className="overflow-y-auto custom-scrollbar max-h-[70vh] md:max-h-[80vh] space-y-4 px-2 pb-20 md:pb-4"
+			style={{ WebkitOverflowScrolling: "touch" }}
+		>
 			<FormField
 				control={form.control}
 				name="title"
@@ -60,10 +64,12 @@ export function CreateTaskForm({
 					<FormItem>
 						<FormLabel>Description</FormLabel>
 						<FormControl>
-							<Textarea
+							<RichTextEditor
+								content={field.value ?? ""}
+								onChange={field.onChange}
 								placeholder="Provide a detailed description of the task..."
-								className="resize-none"
-								{...field}
+								editable={true}
+								extraStyles="h-[150px] resize-none"
 							/>
 						</FormControl>
 						<FormMessage />
