@@ -69,7 +69,7 @@ export function CreateTaskForm({
 								onChange={field.onChange}
 								placeholder="Provide a detailed description of the task..."
 								editable={true}
-								extraStyles="h-[150px] resize-none"
+								extraStyles="!min-h-16 max-h-[150px] resize-none"
 							/>
 						</FormControl>
 						<FormMessage />
