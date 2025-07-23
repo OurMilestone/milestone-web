@@ -124,12 +124,12 @@ export default function TaskDetailView({
 			<div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
 				<div>
 					<span className="font-medium">Created:</span>{" "}
-					{format(parseISO(task.createdAt), "MMM dd, yyyy · hh:mma")}
+					{format(parseISO(task.createdAt), "MMM dd, yyyy · hh:mm a")}
 				</div>
 				<span className="h-4 hidden md:block bg-gray-500 w-px" />
 				<div>
 					<span className="font-medium">Updated:</span>{" "}
-					{format(parseISO(task.updatedAt), "MMM dd, yyyy · hh:mma")}
+					{format(parseISO(task.updatedAt), "MMM dd, yyyy · hh:mm a")}
 				</div>
 			</div>
 

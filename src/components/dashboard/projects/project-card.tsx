@@ -150,8 +150,9 @@ export function ProjectCard({ project, userRole, view }: ProjectCardProps) {
 		<>
 			<TooltipProvider>
 				<Card
+					onClick={handleViewProject}
 					className={cn(
-						"overflow-hidden !shadow-none duration-300 ease-in-out h-full flex flex-col bg-white p-0",
+						"overflow-hidden cursor-pointer !shadow-none duration-300 ease-in-out h-full flex flex-col bg-white p-0",
 					)}
 				>
 					<CardContent className="p-1.5 flex flex-col flex-grow">
@@ -176,7 +177,10 @@ export function ProjectCard({ project, userRole, view }: ProjectCardProps) {
 									{formatProjectStatus(project.status)}
 								</Badge>
 								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
+									<DropdownMenuTrigger
+										onClick={(e) => e.stopPropagation()}
+										asChild
+									>
 										<Button
 											variant="ghost"
 											size="icon"
