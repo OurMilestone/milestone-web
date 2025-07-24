@@ -29,6 +29,7 @@ interface RichTextEditorProps {
 	onChange: (htmlContent: string) => void;
 	placeholder?: string;
 	editable?: boolean;
+	extraStyles?: string;
 }
 
 export default function RichTextEditor({
@@ -36,6 +37,7 @@ export default function RichTextEditor({
 	onChange,
 	placeholder = "Start writing...",
 	editable = true,
+	extraStyles = "",
 }: RichTextEditorProps) {
 	const editor = useEditor({
 		extensions: [
@@ -75,8 +77,7 @@ export default function RichTextEditor({
 		},
 		editorProps: {
 			attributes: {
-				class:
-					"prose prose-sm sm:prose dark:prose-invert focus:outline-none p-3 min-h-[150px] max-w-full",
+				class: `prose prose-sm sm:prose dark:prose-invert focus:outline-none p-3 min-h-[150px] max-w-full ${extraStyles}`,
 			},
 		},
 	});
