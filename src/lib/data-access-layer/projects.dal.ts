@@ -182,13 +182,13 @@ export const getProjectMembers = cache(
 				true,
 			);
 
-			const responseData = response.data.data;
+			const responseData = response.data;
 
 			if (
 				!responseData ||
 				(responseData.message &&
 					responseData.message === "No members found for this project") ||
-				(Array.isArray(responseData) && responseData.length === 0)
+				!responseData.data
 			) {
 				return {
 					success: true,
@@ -198,7 +198,7 @@ export const getProjectMembers = cache(
 				};
 			}
 
-			const projectMembersData = responseData[0];
+			const projectMembersData = responseData.data;
 
 			return {
 				success: true,
