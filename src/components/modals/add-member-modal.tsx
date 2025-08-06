@@ -117,6 +117,7 @@ export function AddMemberModal({
 				</Button>
 			</DialogTrigger>
 			<DialogContent
+				onClick={(e) => e.stopPropagation()}
 				className="sm:max-w-[425px]"
 				onInteractOutside={(e) => e.stopPropagation()}
 			>
