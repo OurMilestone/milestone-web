@@ -26,6 +26,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.0.1
         version: 5.0.1(react-hook-form@7.56.3(react@19.1.0))
+      '@intercom/messenger-js-sdk':
+        specifier: ^0.0.16
+        version: 0.0.16
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.14
         version: 1.1.14(@types/react-dom@19.1.5(@types/react@19.1.4))(@types/react@19.1.4)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -672,6 +675,9 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
+
+  '@intercom/messenger-js-sdk@0.0.16':
+    resolution: {integrity: sha512-wLd4OsYomxEMERRBz6ddvLVF4gg6kJ1UcaaB+FqaLKkCC0O1MTJ9F7JFiTO5tJNjf+TE0paMR2y1GDznHrLQpQ==}
 
   '@isaacs/fs-minipass@4.0.1':
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
@@ -3402,6 +3408,8 @@ snapshots:
   '@inquirer/type@3.0.7(@types/node@20.17.47)':
     optionalDependencies:
       '@types/node': 20.17.47
+
+  '@intercom/messenger-js-sdk@0.0.16': {}
 
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
