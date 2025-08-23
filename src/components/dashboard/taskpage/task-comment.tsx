@@ -89,14 +89,21 @@ const TaskComment: React.FC<{
 		if (!replyText.trim()) return;
 
 		toast.promise(
-			() =>
-				createComment({
+			async () => {
+				const result = await createComment({
 					task: taskId,
 					content: replyText,
 					parent: comment.id,
 					mentions: mentions,
 					taskUuid,
-				}),
+				});
+
+				if (!result.success) {
+					throw new Error(result.message);
+				}
+
+				return result;
+			},
 			{
 				loading: "Sending reply...",
 				success: "Reply sent!",
@@ -111,20 +118,29 @@ const TaskComment: React.FC<{
 
 	const handleEdit = () => {
 		if (!editMentionText.trim()) return;
+
 		toast.promise(
-			() =>
-				updateComment({
+			async () => {
+				const result = await updateComment({
 					commentUuid: comment.uuid,
 					content: editMentionText,
 					mentions: editMentions,
 					taskUuid: taskUuid,
-				}),
+				});
+
+				if (!result.success) {
+					throw new Error(result.message);
+				}
+
+				return result;
+			},
 			{
 				loading: "Updating comment...",
 				success: "Comment updated!",
 				error: "Failed to update comment.",
 			},
 		);
+
 		setIsEditing(false);
 	};
 
@@ -143,11 +159,18 @@ const TaskComment: React.FC<{
 
 	const handleDeleteComment = () => {
 		toast.promise(
-			() =>
-				deleteComment({
+			async () => {
+				const result = await deleteComment({
 					commentUuid: comment.uuid,
 					taskUuid: taskUuid,
-				}),
+				});
+
+				if (!result.success) {
+					throw new Error(result.message);
+				}
+
+				return result;
+			},
 			{
 				loading: "Deleting comment...",
 				success: "Comment deleted successfully!",
