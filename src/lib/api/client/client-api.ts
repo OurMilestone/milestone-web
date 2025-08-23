@@ -215,11 +215,9 @@ export const clientApi = {
 	},
 
 	getTaskComments: async (taskUuid: string): Promise<Comment[]> => {
-		const response = await callApi<{
-			status: boolean;
-			message: string;
-			data: Comment[];
-		}>(`/api/comment?taskId=${taskUuid}`);
-		return response.data || [];
+		const response = await callApi<Comment[]>(
+			`/api/comment?taskId=${taskUuid}`,
+		);
+		return response || [];
 	},
 };
