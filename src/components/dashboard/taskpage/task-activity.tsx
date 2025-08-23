@@ -255,19 +255,27 @@ const TaskActivity = ({ task }: { task: TaskDetail }) => {
 		if (!text.trim()) return;
 
 		toast.promise(
-			async () =>
-				await createComment({
+			async () => {
+				const result = await createComment({
 					task: task.id,
 					content: text,
 					mentions: mentions,
 					taskUuid: task.uuid,
-				}),
+				});
+
+				if (!result.success) {
+					throw new Error(result.message);
+				}
+
+				return result;
+			},
 			{
 				loading: "Adding comment...",
 				success: "Comment added!",
 				error: "Failed to add comment",
 			},
 		);
+
 		setText("");
 		setMentions([]);
 	};
