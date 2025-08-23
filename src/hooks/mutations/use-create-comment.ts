@@ -17,18 +17,19 @@ export function useCreateComment() {
 			taskUuid: string;
 		}) => createCommentAction(rest),
 
-		onSuccess: (_res, variables) => {
+		onSuccess: (res, variables) => {
+			console.log(res);
 			queryClient.invalidateQueries({
 				queryKey: queryKeys.taskComments(variables.taskUuid),
 			});
 		},
 
-		onSettled: (_, __, variables) => {
-			if (variables?.taskUuid) {
-				queryClient.invalidateQueries({
-					queryKey: queryKeys.taskComments(variables.taskUuid),
-				});
-			}
-		},
+		// onSettled: (_, __, variables) => {
+		// 	if (variables?.taskUuid) {
+		// 		queryClient.invalidateQueries({
+		// 			queryKey: queryKeys.taskComments(variables.taskUuid),
+		// 		});
+		// 	}
+		// },
 	});
 }
