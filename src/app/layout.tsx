@@ -1,33 +1,35 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
 
-const poppins = Poppins({
-	variable: "--font-poppins",
+const inter = Inter({
+	variable: "--font-inter",
 	subsets: ["latin"],
-	weight: ["400", "500", "600", "700", "800"],
+	weight: ["400", "500", "600", "700"],
 	display: "swap",
 });
 
 export const metadata: Metadata = {
-	title: "Milestone - Secure Payments & Project Management for Freelancers",
+	title: "Milestone — The operating system for managing external work",
 	description:
-		"Milestone helps remote workers and clients manage projects, resolve disputes, and ensure secure milestone-based payments.",
+		"Manage contractors from contract to payment. Milestone gives companies one place to manage agreements, track work, verify deliverables, approve milestones and manage payments.",
 	keywords: [
-		"freelancer payments",
-		"secure project payments",
-		"remote project management",
-		"dispute resolution",
-		"freelance contracts",
-		"milestone payment platform",
+		"contractor management",
+		"external workforce",
+		"milestone payments",
+		"contractor contracts",
+		"work verification",
+		"contractor operations",
+		"HR support",
+		"legal support",
 	],
 	authors: [{ name: "Milestone Team", url: "https://www.ourmilestones.com/" }],
 	creator: "Milestone Team",
 	publisher: "Milestone",
 	metadataBase: new URL("https://www.ourmilestones.com/"),
-	category: "technology",
+	category: "business",
 	generator: "Next.js",
 	applicationName: "Milestone",
 	referrer: "origin-when-cross-origin",
@@ -36,9 +38,9 @@ export const metadata: Metadata = {
 	},
 
 	openGraph: {
-		title: "Milestone - Secure Payments & Project Management for Freelancers",
+		title: "Milestone — Manage contractors from contract to payment",
 		description:
-			"Secure your freelance income with milestone-based project tracking and payments.",
+			"One place to manage contractor agreements, track work, verify deliverables, approve milestones and manage payments.",
 		url: "https://www.ourmilestones.com/",
 		siteName: "Milestone",
 		images: [
@@ -55,9 +57,9 @@ export const metadata: Metadata = {
 
 	twitter: {
 		card: "summary_large_image",
-		title: "Milestone - Secure Payments for Freelancers",
+		title: "Milestone — The operating system for managing external work",
 		description:
-			"Milestone offers milestone-based contracts, dispute management, and guaranteed payouts.",
+			"Manage contractors from contract to payment. Contracts, work, verification, approvals and payments in one place.",
 		images: [
 			"https://res.cloudinary.com/dbofcawb1/image/upload/v1752277670/Screenshot_2025-07-11_at_4.54.45_PM_he42bb.png",
 		],
@@ -72,7 +74,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${poppins.variable} antialiased font-sans`}>
+			<body className={`${inter.variable} ${inter.className} antialiased`}>
 				<script
 					type="application/ld+json"
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: Structured data for SEO
@@ -83,6 +85,8 @@ export default function RootLayout({
 							name: "Milestone",
 							url: "https://www.ourmilestones.com/",
 							logo: "https://res.cloudinary.com/dqy5f2fji/image/upload/v1752101116/milestone-media/milestone_full_lbaslt.jpg",
+							description:
+								"The operating system for managing external work. Manage contractors from contract to payment.",
 							sameAs: [
 								"https://x.com/_yourmilestone",
 								"https://www.linkedin.com/company/yourmilestone/",
@@ -90,7 +94,7 @@ export default function RootLayout({
 						}),
 					}}
 				/>
-				<NextTopLoader showSpinner={false} color="#edbb32" />
+				<NextTopLoader showSpinner={false} color="#0C153C" />
 				{children}
 				<Toaster position="top-right" />
 			</body>

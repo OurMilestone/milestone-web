@@ -1,168 +1,213 @@
-import { Button } from "@/components/ui/button";
-import { fadeInUp, staggerContainer } from "@/utils/animations";
+"use client";
+
 import { motion } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-function Hero() {
+const avatars = [
+	"/assets/svgs/memojis/hero-avatar-1.svg",
+	"/assets/svgs/memojis/hero-avatar-2.svg",
+	"/assets/svgs/memojis/hero-avatar-3.svg",
+	"/assets/svgs/memojis/hero-avatar-4.svg",
+];
+
+const bentoImages = {
+	handshake: "https://ik.imagekit.io/lbmbhaciz/IMG_3093.JPG.jpeg",
+	portrait: "https://ik.imagekit.io/lbmbhaciz/IMG_3095.JPG.jpeg",
+	globe: "https://ik.imagekit.io/lbmbhaciz/IMG_3098.JPG.jpeg",
+	currency: "https://ik.imagekit.io/lbmbhaciz/IMG_3096.JPG.jpeg",
+	clipboard: "https://ik.imagekit.io/lbmbhaciz/IMG_3097.JPG.jpeg",
+};
+
+function BentoCard({
+	color,
+	image,
+	fit = "cover",
+	position = "center",
+	className,
+}: {
+	color: string;
+	image?: string;
+	fit?: "cover" | "contain";
+	position?: string;
+	className?: string;
+}) {
 	return (
-		<div>
-			<section className="pt-20  relative overflow-hidden">
-				<div className="container mx-auto px-4 text-center relative z-10">
-					<motion.div
-						variants={staggerContainer}
-						initial="initial"
-						animate="animate"
-						className="max-w-5xl mx-auto"
-					>
-						<motion.div className="flex items-center justify-center gap-x-2 mb-4 py-2 max-w-xs mx-auto bg-[#FBF1D38A] rounded-xl">
-							<Image
-								src="/assets/icons/hero-icon.svg"
-								width={20}
-								height={20}
-								alt="remote"
-							/>
-							<span className=" text-[#EDBB24]">
-								Built for Remote & Contract Work
-							</span>
-						</motion.div>
-						<motion.h1
-							variants={fadeInUp}
-							className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-6 leading-tight"
-						>
-							Get Paid Faster and Manage Projects{" "}
-							<br className="hidden md:block" />
-							Seamlessly
-						</motion.h1>
-
-						<motion.p
-							variants={fadeInUp}
-							className="text-base text-primary mb-8 max-w-3xl mx-auto leading-relaxed"
-						>
-							Streamline your workflow with our comprehensive project management
-							platform. Track progress, manage teams, and get paid faster with
-							automated invoicing and milestone tracking.
-						</motion.p>
-
-						<motion.div
-							variants={fadeInUp}
-							className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-						>
-							<motion.div
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
-							>
-								<Link href="/register">
-									<Button
-										size="lg"
-										className="px-8 h-12 rounded-full text-base"
-									>
-										Get Started
-									</Button>
-								</Link>
-							</motion.div>
-							<motion.div
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
-							>
-								<Button
-									size="lg"
-									variant="secondary"
-									className="px-12 lg:px-8 h-12 rounded-full text-base text-white"
-									onClick={() => {
-										document.getElementById("how-it-works")?.scrollIntoView({
-											behavior: "smooth",
-										});
-									}}
-								>
-									How it Works
-								</Button>
-							</motion.div>
-						</motion.div>
-					</motion.div>
-				</div>
-
-				{/* Floating avatars */}
-				<motion.div
-					animate={{ y: [0, -10, 0] }}
-					transition={{
-						duration: 3,
-						repeat: Number.POSITIVE_INFINITY,
-						ease: "easeInOut",
-					}}
-					className="absolute top-4 md:top-20 left-0 md:left-10 2xl:left-60 w-16 h-16 rounded-full flex items-center justify-center"
-				>
-					<Image
-						src="/assets/images/hero-avatar-1.png"
-						alt="avatar float Icon"
-						width={50}
-						height={50}
-					/>
-				</motion.div>
-				<motion.div
-					animate={{ y: [0, 10, 0] }}
-					transition={{
-						duration: 4,
-						repeat: Number.POSITIVE_INFINITY,
-						ease: "easeInOut",
-					}}
-					className="absolute top-4 md:top-20 right-0 md:right-10 2xl:right-60 w-16 h-16 rounded-full flex items-center justify-center"
-				>
-					<Image
-						src="/assets/images/hero-avatar-2.png"
-						alt="avatar float Icon"
-						width={50}
-						height={50}
-					/>
-				</motion.div>
-				<motion.div
-					animate={{ y: [0, 10, 0] }}
-					transition={{
-						duration: 4,
-						repeat: Number.POSITIVE_INFINITY,
-						ease: "easeInOut",
-					}}
-					className="absolute bottom-[220px] md:bottom-96 left-0 md:left-10 2xl:left-60 w-16 h-16 rounded-full flex items-center justify-center"
-				>
-					<Image
-						src="/assets/images/hero-avatar-3.png"
-						alt="avatar float Icon"
-						width={50}
-						height={50}
-					/>
-				</motion.div>
-				<motion.div
-					animate={{ y: [0, 10, 0] }}
-					transition={{
-						duration: 4,
-						repeat: Number.POSITIVE_INFINITY,
-						ease: "easeInOut",
-					}}
-					className="absolute bottom-[220px] md:bottom-96 right-0 md:right-10 2xl:right-60 w-16 h-16 rounded-full flex items-center justify-center"
-				>
-					<Image
-						src="/assets/images/hero-avatar-4.png"
-						alt="avatar float Icon"
-						width={50}
-						height={50}
-					/>
-				</motion.div>
-				<motion.div
-					variants={fadeInUp}
-					className="relative w-96 flex items-center justify-center md:max-w-5xl md:w-full  mx-auto md:h-[500px] mt-10 "
-				>
-					<Image
-						src="/assets/images/home-hero.png"
-						alt="home hero dashboard preview"
-						width={1000}
-						height={1000}
-						objectFit="cover"
-						className="w-[500px] lg:w-[1000px] h-auto object-cover"
-					/>
-				</motion.div>
-			</section>
+		<div
+			className={`relative overflow-hidden rounded-[1.5rem] ${className ?? ""}`}
+			style={{ background: color }}
+		>
+			{image ? (
+				<Image
+					src={image}
+					alt=""
+					fill
+					sizes="(max-width: 1024px) 45vw, 280px"
+					className={
+						fit === "contain" ? "object-contain p-3 sm:p-4" : "object-cover"
+					}
+					style={fit === "cover" ? { objectPosition: position } : undefined}
+				/>
+			) : null}
 		</div>
 	);
 }
 
-export default Hero;
+function HeroBento() {
+	return (
+		<div className="relative h-[560px] sm:h-[620px] lg:h-[700px]">
+			<div
+				className="absolute inset-0 grid grid-cols-2 gap-3.5 sm:gap-4"
+				style={{
+					WebkitMaskImage:
+						"linear-gradient(to bottom, transparent 0%, transparent 6%, rgba(0,0,0,0.2) 14%, rgba(0,0,0,0.55) 24%, black 38%, black 68%, rgba(0,0,0,0.55) 85%, transparent 100%)",
+					maskImage:
+						"linear-gradient(to bottom, transparent 0%, transparent 6%, rgba(0,0,0,0.2) 14%, rgba(0,0,0,0.55) 24%, black 38%, black 68%, rgba(0,0,0,0.55) 85%, transparent 100%)",
+				}}
+			>
+				{/* Left track */}
+				<div className="flex min-h-0 flex-col gap-3.5 sm:gap-4">
+					<BentoCard color="#c8ced6" className="min-h-0 flex-1" />
+					<BentoCard
+						color="#2f5bff"
+						image={bentoImages.handshake}
+						fit="cover"
+						position="center"
+						className="min-h-0 flex-1"
+					/>
+					<BentoCard
+						color="#e8c4a8"
+						image={bentoImages.currency}
+						fit="cover"
+						position="center"
+						className="min-h-0 flex-1"
+					/>
+				</div>
+
+				{/* Right track — shifted down; same flex space keeps cards equal */}
+				<div className="flex min-h-0 translate-y-10 flex-col gap-3.5 sm:translate-y-14 sm:gap-4 lg:translate-y-16">
+					<BentoCard
+						color="#e8eaed"
+						image={bentoImages.globe}
+						fit="cover"
+						position="center"
+						className="min-h-0 flex-1"
+					/>
+					<BentoCard
+						color="#f0b429"
+						image={bentoImages.portrait}
+						fit="cover"
+						position="center 20%"
+						className="min-h-0 flex-1"
+					/>
+					<BentoCard
+						color="#7d9b8a"
+						image={bentoImages.clipboard}
+						fit="cover"
+						position="center"
+						className="min-h-0 flex-1"
+					/>
+				</div>
+			</div>
+
+			<div
+				aria-hidden
+				className="pointer-events-none absolute inset-x-0 top-0 z-10 h-44 bg-gradient-to-b from-white from-15% via-white/80 via-45% to-transparent sm:h-52"
+			/>
+			<div
+				aria-hidden
+				className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-40 bg-gradient-to-t from-white from-10% via-white/50 via-45% to-transparent sm:h-44"
+			/>
+		</div>
+	);
+}
+
+export default function Hero() {
+	return (
+		<section className="relative overflow-hidden bg-white pb-20 pt-8 sm:pb-24 sm:pt-10 lg:pb-28 lg:pt-12">
+			<div className="ms-container">
+				<div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-10 xl:gap-16">
+					<div className="max-w-xl">
+						<motion.div
+							initial={{ opacity: 0, y: 16 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.45 }}
+							className="flex flex-wrap items-center gap-3"
+						>
+							<div className="flex items-center -space-x-2.5">
+								{avatars.map((src, i) => (
+									<span
+										key={src}
+										className="relative inline-flex size-10 shrink-0 overflow-hidden rounded-full bg-[#f3f4f6] ring-2 ring-white"
+										style={{ zIndex: i + 1 }}
+									>
+										<img
+											src={src}
+											alt=""
+											width={40}
+											height={40}
+											className="size-full object-cover object-center"
+										/>
+									</span>
+								))}
+							</div>
+							<p className="max-w-[16rem] text-sm leading-snug text-[#6b7280] sm:max-w-none">
+								Trusted by companies managing contractors worldwide.
+							</p>
+						</motion.div>
+
+						<motion.h1
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5, delay: 0.06 }}
+							className="mt-7 text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.04em] text-[#111827] sm:text-5xl lg:text-[3.15rem] xl:text-[3.4rem]"
+						>
+							Manage contractors from contract to payment.
+						</motion.h1>
+
+						<motion.p
+							initial={{ opacity: 0, y: 16 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5, delay: 0.12 }}
+							className="mt-5 max-w-md text-base leading-relaxed text-[#6b7280] sm:text-[1.0625rem]"
+						>
+							Milestone brings contractor contracts, project work, deliverables,
+							approvals and payments into one place.
+						</motion.p>
+
+						<motion.div
+							initial={{ opacity: 0, y: 16 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5, delay: 0.18 }}
+							className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
+						>
+							<Link
+								href="/register"
+								className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#111827] px-6 text-sm font-medium text-white shadow-[0_8px_24px_rgb(17_24_39/0.18)] transition-colors hover:bg-black"
+							>
+								Get started
+								<ArrowUpRight className="size-4" />
+							</Link>
+							<a
+								href="#platform"
+								className="inline-flex h-12 items-center justify-center rounded-full border border-[#e5e7eb] bg-white px-6 text-sm font-medium text-[#111827] transition-colors hover:bg-[#f9fafb]"
+							>
+								See how it works
+							</a>
+						</motion.div>
+					</div>
+
+					<motion.div
+						initial={{ opacity: 0, y: 24 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.65, delay: 0.15 }}
+						className="mx-auto w-full max-w-[540px] lg:mx-0 lg:max-w-none"
+					>
+						<HeroBento />
+					</motion.div>
+				</div>
+			</div>
+		</section>
+	);
+}

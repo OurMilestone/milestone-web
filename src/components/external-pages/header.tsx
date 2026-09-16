@@ -1,199 +1,117 @@
-import { Button } from "@/components/ui/button";
+"use client";
+
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
+const navLinks = [
+	{ label: "Home", href: "/" },
+	{ label: "Platform", href: "#platform" },
+	{ label: "Pricing", href: "#pricing" },
+	{ label: "Solutions", href: "#solutions" },
+	{ label: "Contact", href: "#pricing" },
+];
+
 function Header() {
-	const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-	const toggleMenu = () => {
-		setIsMenuOpen(!isMenuOpen);
-	};
-
-	const menuItemVariants = {
-		closed: {
-			opacity: 0,
-			x: -20,
-			transition: {
-				duration: 0.2,
-			},
-		},
-		open: {
-			opacity: 1,
-			x: 0,
-			transition: {
-				duration: 0.2,
-			},
-		},
-	};
-
-	const hamburgerVariants = {
-		closed: {
-			rotate: 0,
-			transition: {
-				duration: 0.2,
-			},
-		},
-		open: {
-			rotate: 45,
-			transition: {
-				duration: 0.2,
-			},
-		},
-	};
+	const [mobileOpen, setMobileOpen] = useState(false);
 
 	return (
-		<motion.header
-			initial={{ opacity: 0, y: -20 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.6 }}
-			className="border border-gray-100 mx-5 md:max-w-4xl lg:max-w-5xl md:mx-auto rounded-xl lg:rounded-full bg-white/80 backdrop-blur-md sticky top-4 z-50"
-		>
-			<div className="container mx-auto px-4 py-3">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center space-x-2">
-						<Image
-							src="/assets/images/milestone-logo.png"
-							alt="logo"
-							width={140}
-							height={140}
-						/>
-					</div>
+		<header className="sticky top-0 z-50 bg-white">
+			<div className="ms-container">
+				<div className="flex h-16 items-center justify-between lg:h-[72px]">
+					<Link
+						href="/"
+						className="text-[1.125rem] font-semibold tracking-tight text-[#111827]"
+						onClick={() => setMobileOpen(false)}
+					>
+						Milestone
+					</Link>
 
-					{/* Desktop Navigation */}
-					<nav className="hidden md:flex items-center space-x-8">
-						<Button
-							className="text-primary bg-transparent shadow-none hover:bg-transparent cursor-pointer hover:text-gray-900 transition-colors"
-							onClick={() => {
-								document.getElementById("how-it-works")?.scrollIntoView({
-									behavior: "smooth",
-								});
-							}}
-						>
-							About Us
-						</Button>
-						<Link
-							href="#products"
-							className="text-primary hover:text-gray-900 transition-colors"
-						>
-							Products
-						</Link>
-						<Link
-							href="#teams"
-							className="text-primary hover:text-gray-900 transition-colors"
-						>
-							Teams
-						</Link>
-						<Link
-							href="#community"
-							className="text-primary hover:text-gray-900 transition-colors"
-						>
-							Our Community
-						</Link>
+					<nav className="hidden items-center gap-8 md:flex">
+						{navLinks.map((link) => (
+							<Link
+								key={link.label}
+								href={link.href}
+								className="text-sm font-medium text-[#6b7280] transition-colors hover:text-[#111827]"
+							>
+								{link.label}
+							</Link>
+						))}
 					</nav>
 
-					<motion.div
-						whileHover={{ scale: 1.05 }}
-						whileTap={{ scale: 0.95 }}
-						className="hidden md:block"
-					>
-						<Link href="/login">
-							<Button className=" text-white px-8 h-12 rounded-full">
-								Login
-							</Button>
-						</Link>
-					</motion.div>
-
-					{/* Mobile Hamburger Menu */}
-					<motion.button
-						onClick={toggleMenu}
-						className="md:hidden flex flex-col items-center justify-center w-8 h-8 space-y-1.5"
-						whileTap={{ scale: 0.95 }}
-					>
-						<motion.span
-							className="w-6 h-0.5 bg-gray-600 block"
-							variants={hamburgerVariants}
-							animate={isMenuOpen ? "open" : "closed"}
-						/>
-						<motion.span
-							className="w-6 h-0.5 bg-gray-600 block"
-							animate={{
-								opacity: isMenuOpen ? 0 : 1,
-								transition: { duration: 0.2 },
-							}}
-						/>
-						<motion.span
-							className="w-6 h-0.5 bg-gray-600 block"
-							animate={{
-								rotate: isMenuOpen ? -45 : 0,
-								y: isMenuOpen ? -16 : 0,
-								transition: { duration: 0.2 },
-							}}
-						/>
-					</motion.button>
-				</div>
-
-				{/* Mobile Menu */}
-				<AnimatePresence>
-					{isMenuOpen && (
-						<motion.div
-							variants={menuItemVariants}
-							initial="closed"
-							animate="open"
-							exit="closed"
-							className="md:hidden overflow-hidden"
+					<div className="hidden items-center gap-5 md:flex">
+						<Link
+							href="/login"
+							className="text-sm font-medium text-[#6b7280] transition-colors hover:text-[#111827]"
 						>
-							<nav className="pt-4 pb-2 space-y-4">
-								{["About Us", "Products", "Teams", "Our Community"].map(
-									(item, index) => (
-										<motion.div
-											key={item}
-											variants={menuItemVariants}
-											initial="closed"
-											animate="open"
-											exit="closed"
-											transition={{ delay: index * 0.1 }}
-										>
-											<Link
-												href="#nav"
-												className="block text-primary hover:text-gray-900 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50"
-												onClick={() => setIsMenuOpen(false)}
-											>
-												{item}
-											</Link>
-										</motion.div>
-									),
-								)}
+							Sign In
+						</Link>
+						<Link
+							href="/register"
+							className="inline-flex h-10 items-center gap-1.5 rounded-full bg-[#111827] px-5 text-sm font-medium text-white transition-colors hover:bg-black"
+						>
+							Get Started
+							<ArrowUpRight className="size-3.5" />
+						</Link>
+					</div>
 
-								<motion.div
-									variants={menuItemVariants}
-									initial="closed"
-									animate="open"
-									exit="closed"
-									transition={{ delay: 0.4 }}
-									className="pt-2"
-								>
-									<motion.div
-										whileHover={{ scale: 1.02 }}
-										whileTap={{ scale: 0.98 }}
-									>
-										<Link href="/login">
-											<Button
-												className="px-8 h-12 rounded-full w-full"
-												onClick={() => setIsMenuOpen(false)}
-											>
-												Login
-											</Button>
-										</Link>
-									</motion.div>
-								</motion.div>
-							</nav>
-						</motion.div>
-					)}
-				</AnimatePresence>
+					<button
+						type="button"
+						aria-label={mobileOpen ? "Close menu" : "Open menu"}
+						className="inline-flex size-10 items-center justify-center rounded-full border border-[#e5e7eb] text-[#111827] md:hidden"
+						onClick={() => setMobileOpen((v) => !v)}
+					>
+						{mobileOpen ? (
+							<X className="size-5" />
+						) : (
+							<Menu className="size-5" />
+						)}
+					</button>
+				</div>
 			</div>
-		</motion.header>
+
+			<AnimatePresence>
+				{mobileOpen && (
+					<motion.div
+						initial={{ opacity: 0, height: 0 }}
+						animate={{ opacity: 1, height: "auto" }}
+						exit={{ opacity: 0, height: 0 }}
+						className="overflow-hidden border-t border-[#e5e7eb] bg-white md:hidden"
+					>
+						<div className="ms-container space-y-1 py-4">
+							{navLinks.map((link) => (
+								<Link
+									key={link.label}
+									href={link.href}
+									onClick={() => setMobileOpen(false)}
+									className="block py-2.5 text-sm font-medium text-[#111827]"
+								>
+									{link.label}
+								</Link>
+							))}
+							<div className="flex flex-col gap-3 border-t border-[#e5e7eb] pt-4">
+								<Link
+									href="/login"
+									onClick={() => setMobileOpen(false)}
+									className="inline-flex h-11 items-center justify-center rounded-full border border-[#e5e7eb] text-sm font-medium text-[#111827]"
+								>
+									Sign In
+								</Link>
+								<Link
+									href="/register"
+									onClick={() => setMobileOpen(false)}
+									className="inline-flex h-11 items-center justify-center gap-1.5 rounded-full bg-[#111827] text-sm font-medium text-white"
+								>
+									Get Started
+									<ArrowUpRight className="size-3.5" />
+								</Link>
+							</div>
+						</div>
+					</motion.div>
+				)}
+			</AnimatePresence>
+		</header>
 	);
 }
 
