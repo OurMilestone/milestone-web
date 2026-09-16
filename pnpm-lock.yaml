@@ -217,9 +217,6 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.80.6
         version: 5.80.6(@tanstack/react-query@5.80.6(react@19.1.0))(react@19.1.0)
-      '@types/cal-heatmap':
-        specifier: ^4.0.0
-        version: 4.0.0
       '@types/node':
         specifier: ^20
         version: 20.17.47
@@ -1707,10 +1704,6 @@ packages:
     peerDependencies:
       '@tiptap/core': ^2.7.0
       '@tiptap/pm': ^2.7.0
-
-  '@types/cal-heatmap@4.0.0':
-    resolution: {integrity: sha512-pp7HgHqfUy+poqDRxPiDGdWtNDd2TXNRDDCfzMB46VfGcqICpXPznRrG0UwXFche4wC/CrBmBdh1pnRhKZElYw==}
-    deprecated: This is a stub types definition. cal-heatmap provides its own type definitions, so you do not need this installed.
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
@@ -4577,10 +4570,6 @@ snapshots:
     dependencies:
       '@tiptap/core': 2.12.0(@tiptap/pm@2.12.0)
       '@tiptap/pm': 2.12.0
-
-  '@types/cal-heatmap@4.0.0':
-    dependencies:
-      cal-heatmap: 4.2.4
 
   '@types/estree@1.0.8': {}
 

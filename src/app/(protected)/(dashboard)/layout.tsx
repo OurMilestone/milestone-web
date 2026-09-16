@@ -25,10 +25,10 @@ export default async function DashboardLayout({
 			<TooltipProvider delayDuration={200}>
 				<SidebarProvider className="bg-white">
 					<DashboardSidebar userRole={userRole} />
-					<div className="flex-1 overflow-y-auto mb-2">
-						<SidebarInset>
+					<div className="mb-2 flex-1 overflow-y-auto bg-[#F7F8FA]">
+						<SidebarInset className="bg-[#F7F8FA]">
 							<DashboardHeader />
-							<div className="flex flex-1 flex-col gap-4 px-4 bg-white">
+							<div className="flex flex-1 flex-col gap-4 bg-[#F7F8FA] px-4 pt-4 md:px-6">
 								{children}
 							</div>
 						</SidebarInset>

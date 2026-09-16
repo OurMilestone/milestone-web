@@ -29,20 +29,24 @@ export function DashboardHeader() {
 			? AppRoutePaths.ContractorDashboard.Payments.Home
 			: AppRoutePaths.FreelancerDashboard.Payments.Home;
 
-	const showHeader =
-		pathname === userDashboardRoute || pathname === userPaymentsRoute;
+	// Overview has its own in-page header chrome.
+	if (pathname === userDashboardRoute) {
+		return null;
+	}
+
+	const showHeader = pathname === userPaymentsRoute;
 
 	return (
 		<>
 			{showHeader ? (
-				<header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white">
+				<header className="flex h-16 shrink-0 items-center gap-2 border-b border-[#E8EAED] bg-[#F7F8FA] px-4">
 					<SidebarTrigger className="-ml-1" />
-					<div className="flex-1 w-full">
+					<div className="w-full flex-1">
 						<div className="relative">
-							<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+							<Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 							<Input
 								placeholder="Search here..."
-								className="pl-9 bg-transparent"
+								className="bg-transparent pl-9"
 							/>
 						</div>
 					</div>

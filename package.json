@@ -80,7 +80,6 @@
 		"@tailwindcss/postcss": "^4.3.3",
 		"@tanstack/eslint-plugin-query": "^5.78.0",
 		"@tanstack/react-query-devtools": "^5.80.6",
-		"@types/cal-heatmap": "^4.0.0",
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const features = [
 	{
@@ -101,9 +102,16 @@ export default function PlatformSection() {
 								{features[1].title}
 							</h3>
 						</div>
-						{/* UI screenshot placeholder */}
 						<div className="hidden w-[42%] shrink-0 items-end justify-end p-5 sm:flex">
-							<div className="h-full min-h-[140px] w-full rounded-2xl bg-[#dbeafe]/90" />
+							<div className="relative h-full min-h-[140px] w-full overflow-hidden rounded-2xl">
+								<Image
+									src="https://ik.imagekit.io/lbmbhaciz/IMG_3103.JPG.jpeg"
+									alt=""
+									fill
+									sizes="200px"
+									className="object-cover"
+								/>
+							</div>
 						</div>
 					</motion.article>
 
@@ -123,9 +131,16 @@ export default function PlatformSection() {
 								{features[2].title}
 							</h3>
 						</div>
-						{/* Photo placeholder */}
 						<div className="hidden w-[38%] shrink-0 items-stretch p-5 sm:flex">
-							<div className="h-full min-h-[140px] w-full rounded-2xl bg-[#7b93b8]" />
+							<div className="relative h-full min-h-[140px] w-full overflow-hidden rounded-2xl">
+								<Image
+									src="https://ik.imagekit.io/lbmbhaciz/IMG_3104.JPG.jpeg"
+									alt=""
+									fill
+									sizes="180px"
+									className="object-cover"
+								/>
+							</div>
 						</div>
 					</motion.article>
 				</div>
