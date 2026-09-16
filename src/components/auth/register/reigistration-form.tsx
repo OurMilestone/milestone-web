@@ -9,29 +9,36 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { LoadingButton } from "@/components/ui/loading-button";
 import { AppRoutePaths } from "@/config/routes-config";
 import { registerFormSchema } from "@/lib/schemas/auth-schema";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/auth/auth-types";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Lock, Mail, UserRound } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "nextjs-toploader/app";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
-import SectionHeader from "../../typography/section-header";
-import { Input } from "../../ui/input";
-import { LoadingButton } from "../../ui/loading-button";
 
 interface RegistrationFormProps {
 	selectedRole: UserRole;
 }
 
+const fieldClass =
+	"h-11 rounded-lg border-[#d0d5dd] bg-white px-3.5 text-[#101828] shadow-none placeholder:text-[#98a2b3] focus-visible:border-[#98a2b3] focus-visible:ring-[#98a2b3]/20";
+
 const RegistrationForm = ({ selectedRole }: RegistrationFormProps) => {
 	const [showPassword, setShowPassword] = useState(false);
+	const [parentLegal] = useAutoAnimate();
+	const [parentPreferred] = useAutoAnimate();
+	const [parentEmail] = useAutoAnimate();
+	const [parentPassword] = useAutoAnimate();
+	const [parentConfirm] = useAutoAnimate();
 	const router = useRouter();
 
 	const form = useForm<z.infer<typeof registerFormSchema>>({
@@ -83,207 +90,202 @@ const RegistrationForm = ({ selectedRole }: RegistrationFormProps) => {
 			},
 		);
 	};
+
 	return (
-		<div className="flex flex-col items-center">
-			<SectionHeader
-				title="Create your account"
-				caption="Let&apos;s get you started"
-				className="flex flex-col items-center mb-7"
-			/>
+		<div className="w-full">
+			<div className="mb-8">
+				<p className="mb-2 text-sm font-medium text-[#667085]">
+					Signing up as{" "}
+					<span className="font-semibold text-[#101828]">{selectedRole}</span>
+				</p>
+				<h1 className="text-[1.75rem] font-semibold tracking-[-0.03em] text-[#101828] sm:text-[1.9rem]">
+					Create your account
+				</h1>
+				<p className="mt-2 text-[0.95rem] text-[#667085]">
+					Enter your details below to get started.
+				</p>
+			</div>
 
 			<Form {...form}>
-				<form
-					onSubmit={form.handleSubmit(onsubmit)}
-					className="space-y-6 w-full max-w-md"
-				>
+				<form onSubmit={form.handleSubmit(onsubmit)} className="space-y-4">
 					<FormField
 						control={form.control}
 						name="legalName"
-						render={({ field }) => {
-							const [parent] = useAutoAnimate();
-							return (
-								<FormItem ref={parent}>
-									<FormLabel className="text-primary">Legal Name</FormLabel>
-									<FormControl>
-										<div className="relative">
-											<UserRound className="absolute left-4 top-4 h-4 w-4 text-primary" />
-											<Input
-												placeholder="John Doe"
-												className={cn(
-													"pl-10 h-[50px] text-primary placeholder:text-primary/50 placeholder:tracking-tight font-medium outline-0",
-													form.formState.errors.legalName &&
-														"border-red-500 focus:border-red-500",
-												)}
-												{...field}
-											/>
-										</div>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							);
-						}}
+						render={({ field }) => (
+							<FormItem ref={parentLegal} className="space-y-1.5">
+								<FormLabel className="text-sm font-medium text-[#344054]">
+									Legal name
+								</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="John Doe"
+										className={cn(
+											fieldClass,
+											form.formState.errors.legalName &&
+												"border-red-500 focus-visible:border-red-500",
+										)}
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
 					/>
 
 					<FormField
 						control={form.control}
 						name="preferredName"
-						render={({ field }) => {
-							const [parent] = useAutoAnimate();
-							return (
-								<FormItem ref={parent}>
-									<FormLabel className="text-primary">Preferred Name</FormLabel>
-									<FormControl>
-										<div className="relative">
-											<UserRound className="absolute left-4 top-4 h-4 w-4 text-primary" />
-											<Input
-												placeholder="Johnny"
-												className={cn(
-													"pl-10 h-[50px] text-primary placeholder:text-primary/50 placeholder:tracking-tight font-medium outline-0",
-													form.formState.errors.preferredName &&
-														"border-red-500 focus:border-red-500",
-												)}
-												{...field}
-											/>
-										</div>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							);
-						}}
+						render={({ field }) => (
+							<FormItem ref={parentPreferred} className="space-y-1.5">
+								<FormLabel className="text-sm font-medium text-[#344054]">
+									Preferred name
+								</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="Johnny"
+										className={cn(
+											fieldClass,
+											form.formState.errors.preferredName &&
+												"border-red-500 focus-visible:border-red-500",
+										)}
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
 					/>
 
 					<FormField
 						control={form.control}
 						name="email"
-						render={({ field }) => {
-							const [parent] = useAutoAnimate();
-							return (
-								<FormItem ref={parent}>
-									<FormLabel className="text-primary">Email Address</FormLabel>
-									<FormControl>
-										<div className="relative">
-											<Mail className="absolute left-4 top-4 h-4 w-4 text-primary" />
-											<Input
-												type="email"
-												placeholder="johnny@milestone.com"
-												className={cn(
-													"pl-10 h-[50px] text-primary placeholder:text-primary/50 placeholder:tracking-tight font-medium outline-0",
-													form.formState.errors.email &&
-														"border-red-500 focus:border-red-500",
-												)}
-												{...field}
-											/>
-										</div>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							);
-						}}
+						render={({ field }) => (
+							<FormItem ref={parentEmail} className="space-y-1.5">
+								<FormLabel className="text-sm font-medium text-[#344054]">
+									Email
+								</FormLabel>
+								<FormControl>
+									<Input
+										type="email"
+										placeholder="Enter your email"
+										className={cn(
+											fieldClass,
+											form.formState.errors.email &&
+												"border-red-500 focus-visible:border-red-500",
+										)}
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
 					/>
 
 					<FormField
 						control={form.control}
 						name="password"
-						render={({ field }) => {
-							const [parent] = useAutoAnimate();
-							return (
-								<FormItem ref={parent}>
-									<FormLabel className="text-primary">Password</FormLabel>
-									<FormControl>
-										<div className="relative">
-											<Lock className="absolute left-4 top-4 h-4 w-4 text-primary" />
-											<Input
-												type={showPassword ? "text" : "password"}
-												placeholder="* * * * * * * *"
-												className={cn(
-													"pl-10 h-[50px] text-primary placeholder:text-primary/50 placeholder:tracking-tight font-medium outline-0",
-													form.formState.errors.password &&
-														"border-red-500 focus:border-red-500",
-												)}
-												{...field}
-											/>
-											<button
-												type="button"
-												className="absolute right-3 top-3 text-primary"
-												onClick={() => setShowPassword(!showPassword)}
-											>
-												{showPassword ? (
-													<EyeOff className="h-4 w-4 cursor-pointer" />
-												) : (
-													<Eye className="h-4 w-4 cursor-pointer" />
-												)}
-											</button>
-										</div>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							);
-						}}
+						render={({ field }) => (
+							<FormItem ref={parentPassword} className="space-y-1.5">
+								<FormLabel className="text-sm font-medium text-[#344054]">
+									Password
+								</FormLabel>
+								<FormControl>
+									<div className="relative">
+										<Input
+											type={showPassword ? "text" : "password"}
+											placeholder="••••••••"
+											className={cn(
+												fieldClass,
+												"pr-11",
+												form.formState.errors.password &&
+													"border-red-500 focus-visible:border-red-500",
+											)}
+											{...field}
+										/>
+										<button
+											type="button"
+											className="absolute right-3 top-1/2 -translate-y-1/2 text-[#667085]"
+											onClick={() => setShowPassword(!showPassword)}
+											aria-label={
+												showPassword ? "Hide password" : "Show password"
+											}
+										>
+											{showPassword ? (
+												<EyeOff className="size-4" />
+											) : (
+												<Eye className="size-4" />
+											)}
+										</button>
+									</div>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
 					/>
 
 					<FormField
 						control={form.control}
 						name="confirmPassword"
-						render={({ field }) => {
-							const [parent] = useAutoAnimate();
-							return (
-								<FormItem ref={parent}>
-									<FormLabel className="text-primary">
-										Confirm Password
-									</FormLabel>
-									<FormControl>
-										<div className="relative">
-											<Lock className="absolute left-4 top-4 h-4 w-4 text-primary" />
-											<Input
-												type={showPassword ? "text" : "password"}
-												placeholder="* * * * * * * *"
-												className={cn(
-													"pl-10 h-[50px] text-primary placeholder:text-primary/50 placeholder:tracking-tight font-medium outline-0",
-													form.formState.errors.confirmPassword &&
-														"border-red-500 focus:border-red-500",
-												)}
-												{...field}
-											/>
-											<button
-												type="button"
-												className="absolute right-3 top-3 text-primary"
-												onClick={() => setShowPassword(!showPassword)}
-											>
-												{showPassword ? (
-													<EyeOff className="h-4 w-4 cursor-pointer" />
-												) : (
-													<Eye className="h-4 w-4 cursor-pointer" />
-												)}
-											</button>
-										</div>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							);
-						}}
+						render={({ field }) => (
+							<FormItem ref={parentConfirm} className="space-y-1.5">
+								<FormLabel className="text-sm font-medium text-[#344054]">
+									Confirm password
+								</FormLabel>
+								<FormControl>
+									<div className="relative">
+										<Input
+											type={showPassword ? "text" : "password"}
+											placeholder="••••••••"
+											className={cn(
+												fieldClass,
+												"pr-11",
+												form.formState.errors.confirmPassword &&
+													"border-red-500 focus-visible:border-red-500",
+											)}
+											{...field}
+										/>
+										<button
+											type="button"
+											className="absolute right-3 top-1/2 -translate-y-1/2 text-[#667085]"
+											onClick={() => setShowPassword(!showPassword)}
+											aria-label={
+												showPassword ? "Hide password" : "Show password"
+											}
+										>
+											{showPassword ? (
+												<EyeOff className="size-4" />
+											) : (
+												<Eye className="size-4" />
+											)}
+										</button>
+									</div>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
 					/>
 
 					<LoadingButton
 						type="submit"
-						className="w-full h-11 bg-primary hover:bg-primary/90 text-white"
+						className="mt-2 h-11 w-full rounded-lg bg-[#101828] text-sm font-semibold text-white hover:bg-black"
 						isLoading={form.formState.isSubmitting}
-						loadingText="Registering..."
-						spinnerClassName="size-4 mr-3"
+						loadingText="Creating account..."
+						spinnerClassName="size-4 mr-2"
 					>
-						Register
+						Get started
 					</LoadingButton>
 				</form>
 			</Form>
 
-			<div className="mt-6 text-sm text-primary">
+			<p className="mt-8 text-center text-sm text-[#667085]">
 				Already have an account?{" "}
 				<Link
 					href={AppRoutePaths.SignIn}
-					className="text-secondary hover:underline"
+					className="font-semibold text-[#101828] underline decoration-[#101828]/30 underline-offset-4 hover:decoration-[#101828]"
 				>
-					Sign in here
+					Log in
 				</Link>
-			</div>
+			</p>
 		</div>
 	);
 };

@@ -1,9 +1,12 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
 import { tabs } from "@/config/constants";
+import { AppRoutePaths } from "@/config/routes-config";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/auth/auth-types";
-import React from "react";
-import SectionHeader from "../../typography/section-header";
-import { Button } from "../../ui/button";
+import { Check } from "lucide-react";
+import Link from "next/link";
 
 interface RoleSelectionFormProps {
 	onRoleSelection: (role: UserRole) => void;
@@ -17,82 +20,89 @@ const RoleSelectionForm = ({
 	selectedRole,
 }: RoleSelectionFormProps) => {
 	return (
-		<section className="flex flex-col items-center">
-			<SectionHeader
-				title="How would you use Milestone?"
-				caption="Select your role and let&apos;s get you started."
-				className="flex flex-col items-center mb-7"
-			/>
+		<div className="w-full">
+			<div className="mb-8">
+				<h1 className="text-[1.75rem] font-semibold tracking-[-0.03em] text-[#101828] sm:text-[1.9rem]">
+					Create your account
+				</h1>
+				<p className="mt-2 text-[0.95rem] text-[#667085]">
+					Choose how you&apos;ll use Milestone to get started.
+				</p>
+			</div>
 
-			<div className="space-y-4 w-full max-w-md mb-8">
+			<div className="space-y-3">
 				{tabs.map((tab) => {
+					const selected = selectedRole === tab.role;
+					const Icon = tab.icon;
+
 					return (
-						<div
+						<button
 							key={tab.id}
-							className={cn(
-								"border-2 rounded-xl p-4 pb-5 cursor-pointer transition-all items-start flex gap-4 hover:border-primary",
-								selectedRole === tab.role
-									? "border-secondary bg-secondary/10"
-									: "border-[#566384]/10",
-							)}
+							type="button"
 							onClick={() => onRoleSelection(tab.role)}
-							onKeyDown={() => onRoleSelection(tab.role)}
+							className={cn(
+								"flex w-full items-start gap-4 rounded-xl border p-4 text-left transition-all sm:p-5",
+								selected
+									? "border-[#101828] bg-[#f9fafb] shadow-[0_1px_2px_rgb(16_24_40/0.05)]"
+									: "border-[#eaecf0] bg-white hover:border-[#d0d5dd] hover:bg-[#fafafa]",
+							)}
 						>
-							<div
+							<span
 								className={cn(
-									"p-2 rounded-lg transition-colors",
-									selectedRole === tab.role
-										? "bg-secondary border-secondary"
-										: "bg-transparent border border-[#566384]/40",
+									"mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg border transition-colors",
+									selected
+										? "border-[#101828] bg-[#101828] text-white"
+										: "border-[#eaecf0] bg-white text-[#667085]",
 								)}
 							>
-								<tab.icon
-									size={18}
-									className={cn(
-										selectedRole === tab.role
-											? "text-white"
-											: "text-[#566384]/40",
-										"transition-colors",
-									)}
-								/>
-							</div>
+								<Icon className="size-5" strokeWidth={1.75} />
+							</span>
 
-							<div>
-								<p
-									className={cn(
-										"font-medium text-lg",
-										selectedRole === tab.role
-											? "text-secondary"
-											: "text-[#566384]",
-									)}
-								>
-									{tab.name}
-								</p>
-
-								<p
-									className={cn(
-										"text-sm max-w-xs leading-6 block",
-										selectedRole === tab.role
-											? "text-secondary"
-											: "text-[#566384]",
-									)}
-								>
+							<span className="min-w-0 flex-1">
+								<span className="flex items-center justify-between gap-3">
+									<span className="text-base font-semibold text-[#101828]">
+										{tab.name}
+									</span>
+									<span
+										className={cn(
+											"flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors",
+											selected
+												? "border-[#101828] bg-[#101828] text-white"
+												: "border-[#d0d5dd] bg-white",
+										)}
+									>
+										{selected ? (
+											<Check className="size-3" strokeWidth={3} />
+										) : null}
+									</span>
+								</span>
+								<span className="mt-1 block text-sm leading-relaxed text-[#667085]">
 									{tab.description}
-								</p>
-							</div>
-						</div>
+								</span>
+							</span>
+						</button>
 					);
 				})}
-
-				<Button
-					className="w-full h-11 max-w-md bg-primary hover:bg-primary/90 text-white cursor-pointer"
-					onClick={onNextStep}
-					disabled={!selectedRole}
-				>
-					Continue
-				</Button>
 			</div>
-		</section>
+
+			<Button
+				className="mt-6 h-11 w-full rounded-lg bg-[#101828] text-sm font-semibold text-white hover:bg-black disabled:bg-[#d0d5dd] disabled:text-white"
+				onClick={onNextStep}
+				disabled={!selectedRole}
+			>
+				Continue
+			</Button>
+
+			<p className="mt-8 text-center text-sm text-[#667085]">
+				Already have an account?{" "}
+				<Link
+					href={AppRoutePaths.SignIn}
+					className="font-semibold text-[#101828] underline decoration-[#101828]/30 underline-offset-4 hover:decoration-[#101828]"
+				>
+					Log in
+				</Link>
+			</p>
+		</div>
 	);
 };
 

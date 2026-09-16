@@ -5,23 +5,36 @@ import { SessionProvider, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+const AUTH_PATH_PREFIXES = [
+	"/login",
+	"/register",
+	"/forgot-password",
+	"/verify-email",
+	"/post-login-redirect",
+];
+
 function SessionChecker({ children }: { children: React.ReactNode }) {
 	const { status } = useSession();
-	const [isLoading, setIsLoading] = useState(true);
 	const pathname = usePathname();
+	const [isLoading, setIsLoading] = useState(true);
+
+	const isAuthFlow = AUTH_PATH_PREFIXES.some(
+		(path) => pathname === path || pathname.startsWith(`${path}/`),
+	);
 
 	useEffect(() => {
-		if (status === "loading") {
-			setIsLoading(true);
-		} else {
+		if (isAuthFlow) {
 			setIsLoading(false);
+			return;
 		}
-	}, [status]);
+
+		setIsLoading(status === "loading");
+	}, [status, isAuthFlow]);
 
 	if (isLoading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<Loader className="h-8 w-8 text-primary animate-spin" />
+			<div className="flex min-h-screen items-center justify-center">
+				<Loader className="h-8 w-8 animate-spin text-primary" />
 			</div>
 		);
 	}
@@ -33,7 +46,7 @@ export default function AuthSessionProvider({
 	children,
 }: { children: React.ReactNode }) {
 	return (
-		<SessionProvider>
+		<SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
 			<SessionChecker>{children}</SessionChecker>
 		</SessionProvider>
 	);

@@ -1,9 +1,9 @@
 import { logoutUser } from "@/utils/auth";
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { env } from "../../../../env.mjs";
 
-const API_BASE_URL =
-	"https://8bmx14wuvb.execute-api.us-east-1.amazonaws.com/dev/api/v1";
+const API_BASE_URL = env.NEXT_PUBLIC_API_BASE_URL;
 
 const axiosInstance = axios.create({
 	baseURL: API_BASE_URL,

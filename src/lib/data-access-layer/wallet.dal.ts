@@ -2,6 +2,7 @@ import "server-only";
 
 import type { ActionResult } from "@/types";
 import type { Transaction } from "@/types/dashboard/payments-types";
+import axios from "axios";
 import { cache } from "react";
 import { getRequest, postRequest } from "../api/server/api-client";
 import { handleApiError, mapApiTransactionsToUITransaction } from "../utils";
@@ -30,6 +31,19 @@ export const getUserWallet = cache(
 				status: response.status,
 			};
 		} catch (error) {
+			if (axios.isAxiosError(error) && error.response?.status === 404) {
+				const apiMessage =
+					(error.response.data as { message?: string } | undefined)?.message ??
+					"No wallet found";
+
+				return {
+					success: true,
+					data: null,
+					message: apiMessage,
+					status: 404,
+				};
+			}
+
 			return handleApiError(error, "Failed to fetch wallet details!");
 		}
 	},

@@ -34,6 +34,7 @@ const columns: {
 			{ label: "Contracts", href: "#platform" },
 			{ label: "Dispute Resolution", href: "#dispute" },
 			{ label: "Integrations", href: "#integrations" },
+			{ label: "Insights", href: "#insights" },
 		],
 	},
 	{
@@ -44,16 +45,18 @@ const columns: {
 			{ label: "SMEs", href: "#solutions" },
 			{ label: "Remote Teams", href: "#solutions" },
 			{ label: "Growing Companies", href: "#solutions" },
+			{ label: "Legal", href: "#solutions" },
+			{ label: "HR", href: "#solutions" },
+			{ label: "Dispute", href: "#solutions" },
 		],
 	},
 	{
 		title: "Resources",
 		links: [
 			{ label: "Getting Started", href: "/register" },
-			{ label: "Help Center", href: "#pricing" },
 			{ label: "Product Updates", href: "#insights" },
 			{ label: "Guides & Insights", href: "#insights" },
-			{ label: "Talk to Us", href: "#pricing" },
+			{ label: "Talk to Us", href: "mailto:hello@ourmilestones.com" },
 		],
 	},
 ];
@@ -243,7 +246,9 @@ export default function Footer() {
 					</p>
 					<div className="flex flex-wrap items-center gap-6">
 						<a
-							href="#pricing"
+							href="/assets/docs/terms.pdf"
+							target="_blank"
+							rel="noreferrer noopener"
 							className="text-sm text-white/45 transition-colors hover:text-white"
 						>
 							Terms of Service

@@ -23,6 +23,18 @@ const solutions = [
 		title: "Growing Companies",
 		copy: "Build structure around an increasingly distributed workforce.",
 	},
+	{
+		title: "Legal",
+		copy: "Contractor agreements, contract reviews, and help with disputes or termination matters.",
+	},
+	{
+		title: "HR",
+		copy: "Onboarding, documentation, performance issues, and offboarding when you need an expert.",
+	},
+	{
+		title: "Dispute",
+		copy: "Expert facilitation between client and contractor so the project can move forward.",
+	},
 ];
 
 export default function SolutionsSection() {

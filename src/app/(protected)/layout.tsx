@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { AuthContextProvider } from "@/components/providers/auth-context-provider";
 import AuthSessionProvider from "@/components/providers/auth-session-provider";
 import { QueryProvider } from "@/components/providers/queryclient-provider";
-import { WalletProvider } from "@/components/providers/wallet-provider";
 import VerificationBanner from "@/components/shared/verification-banner";
 import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
@@ -25,7 +24,7 @@ export default function ProtectedRootLayout({
 				<AuthSessionProvider>
 					<AuthContextProvider>
 						<VerificationBanner />
-						<WalletProvider>{children}</WalletProvider>
+						{children}
 					</AuthContextProvider>
 				</AuthSessionProvider>
 				<Toaster position="top-right" />

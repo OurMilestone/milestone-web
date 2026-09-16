@@ -1,7 +1,10 @@
 "use client";
 
 import WalletBalanceCard from "@/components/dashboard/payments-page/wallet-balance-card";
-import { useWalletCtx } from "@/components/providers/wallet-provider";
+import {
+	WalletProvider,
+	useWalletCtx,
+} from "@/components/providers/wallet-provider";
 import { useWalletAccount } from "@/hooks/payments/use-wallet-account";
 import type { UserRole } from "@/types/auth/auth-types";
 import { useState } from "react";
@@ -14,9 +17,7 @@ interface PaymentsPageContentProps {
 	userRole: UserRole;
 }
 
-export default function PaymentsPageContent({
-	userRole,
-}: PaymentsPageContentProps) {
+function PaymentsPageBody({ userRole }: PaymentsPageContentProps) {
 	const {
 		wallet: walletAccount,
 		hasWallet,
@@ -59,7 +60,7 @@ export default function PaymentsPageContent({
 			<PaymentsPageHeader />
 
 			{isLoading ? (
-				<div className="h-40 flex items-center justify-center">
+				<div className="flex h-40 items-center justify-center">
 					<p className="text-sm text-muted-foreground">Loading wallet…</p>
 				</div>
 			) : !hasWallet ? (
@@ -70,8 +71,8 @@ export default function PaymentsPageContent({
 				/>
 			) : (
 				walletAccount && (
-					<div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-						<div className="lg:col-span-7 h-full">
+					<div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-12 lg:gap-8">
+						<div className="h-full lg:col-span-7">
 							<WalletBalanceCard
 								className="h-full"
 								walletAccount={walletAccount}
@@ -80,7 +81,7 @@ export default function PaymentsPageContent({
 							/>
 						</div>
 
-						<div className="lg:col-span-5 h-full">
+						<div className="h-full lg:col-span-5">
 							<WalletAccountDetails
 								className="h-full"
 								walletAccount={walletAccount}
@@ -91,5 +92,15 @@ export default function PaymentsPageContent({
 				)
 			)}
 		</>
+	);
+}
+
+export default function PaymentsPageContent({
+	userRole,
+}: PaymentsPageContentProps) {
+	return (
+		<WalletProvider>
+			<PaymentsPageBody userRole={userRole} />
+		</WalletProvider>
 	);
 }

@@ -16,54 +16,42 @@ export default function CountdownTimer({
 	onReset,
 }: CountdownTimerProps) {
 	const [seconds, setSeconds] = useState(initialSeconds);
-	const intervalRef = useRef<NodeJS.Timeout | null>(null);
+	const onCompleteRef = useRef(onComplete);
 
 	useEffect(() => {
-		if (isRunning) {
-			setSeconds(initialSeconds);
+		onCompleteRef.current = onComplete;
+	}, [onComplete]);
 
-			intervalRef.current = setInterval(() => {
-				setSeconds((prevSeconds) => {
-					if (prevSeconds <= 1) {
-						if (intervalRef.current) {
-							clearInterval(intervalRef.current);
-						}
-						//Defer this state update to the next event loop tick to prevent React from trying to immediately re-render the verify email form component but instead wait until the next event loop tick to ensure Reacts render/commit phase of this component is complete.
-						setTimeout(() => onComplete(), 0);
-						return 0;
-					}
-					return prevSeconds - 1;
-				});
-			}, 1000);
-		} else {
-			if (intervalRef.current) {
-				clearInterval(intervalRef.current);
-			}
+	useEffect(() => {
+		if (!isRunning) {
+			return;
 		}
 
-		return () => {
-			if (intervalRef.current) {
-				clearInterval(intervalRef.current);
-			}
-		};
-	}, [isRunning, initialSeconds, onComplete]);
+		setSeconds(initialSeconds);
 
-	const handleResendClick = () => {
-		onReset();
-	};
+		const intervalId = setInterval(() => {
+			setSeconds((prevSeconds) => {
+				if (prevSeconds <= 1) {
+					clearInterval(intervalId);
+					queueMicrotask(() => onCompleteRef.current());
+					return 0;
+				}
+				return prevSeconds - 1;
+			});
+		}, 1000);
 
-	const formatTime = (time: number) => {
-		return `${time}s`;
-	};
+		return () => clearInterval(intervalId);
+		// Only restart when the timer is (re)started — not when callbacks change
+	}, [isRunning, initialSeconds]);
 
 	return (
-		<div className="text-sm text-primary">
-			{seconds > 0 ? (
-				<span>Resend code in {formatTime(seconds)}</span>
+		<div className="text-sm text-[#667085]">
+			{isRunning && seconds > 0 ? (
+				<span>Resend code in {seconds}s</span>
 			) : (
 				<button
-					onClick={handleResendClick}
-					className="text-secondary hover:underline cursor-pointer"
+					onClick={onReset}
+					className="cursor-pointer font-semibold text-[#101828] hover:underline"
 					type="button"
 				>
 					Resend code

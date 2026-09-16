@@ -11,7 +11,11 @@ function makeQueryClient() {
 				staleTime: 5 * 60 * 1000,
 				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 				retry: (failureCount, error: any) => {
-					if (error?.status === 401 || error?.status === 403) {
+					if (
+						error?.status === 401 ||
+						error?.status === 403 ||
+						error?.status === 404
+					) {
 						return false;
 					}
 
@@ -19,7 +23,7 @@ function makeQueryClient() {
 						return failureCount < 1;
 					}
 
-					return failureCount < 3;
+					return failureCount < 2;
 				},
 				// refetchOnWindowFocus: false,
 				refetchOnReconnect: "always",

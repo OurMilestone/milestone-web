@@ -1,4 +1,5 @@
 import { auth } from "../../../../auth";
+import { env } from "../../../../env.mjs";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export interface ApiResponse<T = any> {
@@ -7,8 +8,7 @@ export interface ApiResponse<T = any> {
 	message?: string;
 	error?: string;
 }
-const API_BASE_URL =
-	"https://8bmx14wuvb.execute-api.us-east-1.amazonaws.com/dev/api/v1";
+const API_BASE_URL = env.NEXT_PUBLIC_API_BASE_URL;
 
 async function getAuthToken(): Promise<string | null> {
 	try {

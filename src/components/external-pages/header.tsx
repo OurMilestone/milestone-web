@@ -8,9 +8,8 @@ import { useState } from "react";
 const navLinks = [
 	{ label: "Home", href: "/" },
 	{ label: "Platform", href: "#platform" },
-	{ label: "Pricing", href: "#pricing" },
 	{ label: "Solutions", href: "#solutions" },
-	{ label: "Contact", href: "#pricing" },
+	{ label: "Contact", href: "mailto:hello@ourmilestones.com" },
 ];
 
 function Header() {

@@ -34,11 +34,7 @@ const getDomainByEnvironment = () => {
 };
 
 const getCurrentDomain = () => {
-	const domain = getDomainByEnvironment();
-	console.log(
-		`Auth.js using domain: ${domain} (NODE_ENV: ${process.env.NODE_ENV}, ENVIRONMENT: ${process.env.ENVIRONMENT})`,
-	);
-	return domain;
+	return getDomainByEnvironment();
 };
 
 const authOptions: NextAuthConfig = {
@@ -211,7 +207,7 @@ const authOptions: NextAuthConfig = {
 			return session;
 		},
 	},
-	debug: isDevelopment,
+	debug: false,
 	secret: process.env.AUTH_SECRET,
 	trustHost: true,
 	pages: {

@@ -1,10 +1,8 @@
 "use client";
 
-import { useWalletCtx } from "@/components/providers/wallet-provider";
 import { Card, CardContent } from "@/components/ui/card";
-import { CURRENCY, cn } from "@/lib/utils";
-import { formatCurrency } from "@/utils/format-currency";
-import { Briefcase, CheckCircle, Wallet } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Briefcase, CheckCircle } from "lucide-react";
 
 interface StatsCardsProps {
 	activeProjectsCount?: number;
@@ -15,8 +13,6 @@ export function StatsCards({
 	activeProjectsCount,
 	completedProjectsCount,
 }: StatsCardsProps) {
-	const { wallet, hasWallet } = useWalletCtx();
-
 	const cards = [
 		{
 			title: "Active Projects",
@@ -32,22 +28,10 @@ export function StatsCards({
 			iconBg: "bg-green-100",
 			iconColor: "text-green-500",
 		},
-		{
-			title: "Wallet Balance",
-			value: hasWallet
-				? `${
-						// biome-ignore lint/style/noNonNullAssertion: <explanation>
-						formatCurrency(wallet?.walletBalance!, CURRENCY)
-					}`
-				: "0.00",
-			icon: Wallet,
-			iconBg: "bg-purple-100",
-			iconColor: "text-purple-500",
-		},
 	];
 
 	return (
-		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
 			{cards.map((card, index) => {
 				const IconComponent = card.icon;
 				return (

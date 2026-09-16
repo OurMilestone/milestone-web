@@ -61,9 +61,9 @@ function HeroBento() {
 				className="absolute inset-0 grid grid-cols-2 gap-3.5 sm:gap-4"
 				style={{
 					WebkitMaskImage:
-						"linear-gradient(to bottom, transparent 0%, transparent 6%, rgba(0,0,0,0.2) 14%, rgba(0,0,0,0.55) 24%, black 38%, black 68%, rgba(0,0,0,0.55) 85%, transparent 100%)",
+						"linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.45) 6%, black 16%, black 84%, rgba(0,0,0,0.45) 94%, transparent 100%)",
 					maskImage:
-						"linear-gradient(to bottom, transparent 0%, transparent 6%, rgba(0,0,0,0.2) 14%, rgba(0,0,0,0.55) 24%, black 38%, black 68%, rgba(0,0,0,0.55) 85%, transparent 100%)",
+						"linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.45) 6%, black 16%, black 84%, rgba(0,0,0,0.45) 94%, transparent 100%)",
 				}}
 			>
 				{/* Left track */}
@@ -113,11 +113,11 @@ function HeroBento() {
 
 			<div
 				aria-hidden
-				className="pointer-events-none absolute inset-x-0 top-0 z-10 h-44 bg-gradient-to-b from-white from-15% via-white/80 via-45% to-transparent sm:h-52"
+				className="pointer-events-none absolute inset-x-0 top-0 z-10 h-20 bg-gradient-to-b from-white from-10% via-white/40 via-50% to-transparent sm:h-24"
 			/>
 			<div
 				aria-hidden
-				className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-40 bg-gradient-to-t from-white from-10% via-white/50 via-45% to-transparent sm:h-44"
+				className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-gradient-to-t from-white from-5% via-white/30 via-45% to-transparent sm:h-20"
 			/>
 		</div>
 	);

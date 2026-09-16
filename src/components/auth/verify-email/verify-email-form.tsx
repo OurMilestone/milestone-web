@@ -4,7 +4,6 @@ import {
 	resendOtpAction,
 	verifyOtpAction,
 } from "@/actions/auth-actions/auth.actions";
-import SectionHeader from "@/components/typography/section-header";
 import {
 	InputOTP,
 	InputOTPGroup,
@@ -25,7 +24,6 @@ import CountdownTimer from "./countdown-timer";
 export default function VerifyEmailForm() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
-	const email = searchParams.get("email");
 	const emailFromQuery = searchParams.get("email");
 	const callbackUrlFromQuery = searchParams.get("callbackUrl");
 
@@ -39,15 +37,23 @@ export default function VerifyEmailForm() {
 	const [isVerifying, setIsVerifying] = useState(false);
 	const [isResending, setIsResending] = useState(false);
 	const [timerRunning, setTimerRunning] = useState(true);
+	const [timerKey, setTimerKey] = useState(0);
 
 	const initialOtpResendDone = useRef(false);
+	const isResendingRef = useRef(false);
 
 	const emailToVerify = emailFromQuery || session?.user?.email;
 
+	const startTimer = useCallback(() => {
+		setTimerRunning(true);
+		setTimerKey((key) => key + 1);
+	}, []);
+
 	const doResendOtp = useCallback(
 		async (email: string, showLoadingToast = true) => {
-			if (isResending) return;
+			if (isResendingRef.current) return;
 
+			isResendingRef.current = true;
 			setIsResending(true);
 			if (showLoadingToast) {
 				toast.loading("Resending OTP...", { id: "resend-otp-toast" });
@@ -61,32 +67,25 @@ export default function VerifyEmailForm() {
 				}
 
 				setOtp("");
-				setTimerRunning(true);
+				startTimer();
 
-				if (showLoadingToast) {
-					toast.success(
-						result.message || "Verification code resent successfully.",
-						{ id: "resend-otp-toast" },
-					);
-				} else {
-					toast.success(
-						result.message || "Verification code resent successfully.",
-					);
-				}
+				toast.success(
+					result.message || "Verification code resent successfully.",
+					showLoadingToast ? { id: "resend-otp-toast" } : undefined,
+				);
 				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			} catch (error: any) {
-				if (showLoadingToast) {
-					toast.error(error.message || "Failed to resend OTP.", {
-						id: "resend-otp-toast",
-					});
-				} else {
-					toast.error(error.message || "Failed to resend OTP.");
-				}
+				setTimerRunning(false);
+				toast.error(
+					error.message || "Failed to resend OTP.",
+					showLoadingToast ? { id: "resend-otp-toast" } : undefined,
+				);
 			} finally {
+				isResendingRef.current = false;
 				setIsResending(false);
 			}
 		},
-		[isResending],
+		[startTimer],
 	);
 
 	useEffect(() => {
@@ -105,16 +104,14 @@ export default function VerifyEmailForm() {
 			callbackUrlFromQuery &&
 			!initialOtpResendDone.current
 		) {
-			doResendOtp(emailToVerify, false);
 			initialOtpResendDone.current = true;
-			setTimerRunning(true);
-		} else if (!sessionStatus || sessionStatus === "unauthenticated") {
-			setTimerRunning(true);
+			void doResendOtp(emailToVerify, false);
 		}
 	}, [
 		emailToVerify,
 		sessionStatus,
-		session,
+		session?.user?.is_verified,
+		session?.user?.email,
 		router,
 		callbackUrlFromQuery,
 		doResendOtp,
@@ -174,65 +171,38 @@ export default function VerifyEmailForm() {
 		}
 	};
 
-	const handleResendCode = useCallback(async () => {
-		if (isResending) return;
-
-		if (!emailToVerify) {
-			toast.error("Email address is missing for resending OTP.");
-			return;
-		}
-
-		setIsResending(true);
-
-		try {
-			const result = await resendOtpAction({ email: emailToVerify });
-			if (!result.success) {
-				throw new Error(result.message || "Failed to resend OTP.");
-			}
-			setOtp("");
-			setTimerRunning(true);
-			toast.success(result.message || "Verification code resent successfully.");
-
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		} catch (error: any) {
-			setTimerRunning(false);
-			toast.error(error.message || "Failed to resend OTP.");
-		} finally {
-			setIsResending(false);
-		}
-	}, [emailToVerify, isResending]);
-
 	const handleTimerComplete = useCallback(() => {
 		setTimerRunning(false);
 	}, []);
 
-	const handleTimerInitiatedResend = useCallback(() => {
-		if (emailToVerify) {
-			doResendOtp(emailToVerify);
-		} else {
+	const handleResendCode = useCallback(() => {
+		if (!emailToVerify) {
 			toast.error("Cannot resend OTP: Email address is missing.");
+			return;
 		}
+		void doResendOtp(emailToVerify);
 	}, [emailToVerify, doResendOtp]);
 
 	if (sessionStatus === "loading") {
 		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<Loader className="h-8 w-8 text-primary animate-spin" />
+			<div className="flex min-h-[40vh] items-center justify-center">
+				<Loader className="size-8 animate-spin text-[#101828]" />
 			</div>
 		);
 	}
 
 	if (!emailToVerify) {
 		return (
-			<div className="flex flex-col items-center justify-center min-h-screen text-center p-4">
-				<SectionHeader
-					title="Verification Error"
-					caption="Could not determine the email address for verification."
-					className="flex flex-col items-center mb-8"
-				/>
+			<div className="flex flex-col items-center text-center">
+				<h1 className="text-[1.75rem] font-semibold tracking-[-0.03em] text-[#101828]">
+					Verification error
+				</h1>
+				<p className="mt-2 text-sm text-[#667085]">
+					Could not determine the email address for verification.
+				</p>
 				<Link
 					href={AppRoutePaths.SignIn}
-					className="text-secondary hover:underline mt-4"
+					className="mt-6 text-sm font-semibold text-[#101828] underline underline-offset-4"
 				>
 					Go to Login
 				</Link>
@@ -241,14 +211,19 @@ export default function VerifyEmailForm() {
 	}
 
 	return (
-		<div className="flex flex-col items-center">
-			<SectionHeader
-				title="Verify your account"
-				caption={`We've sent a 6-digit code to ${emailToVerify}. If you don't see it, check your spam folder or resend.`}
-				className="flex flex-col items-center mb-8 text-center"
-			/>
+		<div className="w-full">
+			<div className="mb-8">
+				<h1 className="text-[1.75rem] font-semibold tracking-[-0.03em] text-[#101828] sm:text-[1.9rem]">
+					Verify your account
+				</h1>
+				<p className="mt-2 text-[0.95rem] text-[#667085]">
+					We&apos;ve sent a 6-digit code to{" "}
+					<span className="font-medium text-[#344054]">{emailToVerify}</span>.
+					If you don&apos;t see it, check your spam folder or resend.
+				</p>
+			</div>
 
-			<div className="w-full max-w-md space-y-6">
+			<div className="space-y-6">
 				<div className="flex flex-col items-center space-y-4">
 					<InputOTP
 						maxLength={6}
@@ -269,15 +244,16 @@ export default function VerifyEmailForm() {
 					</InputOTP>
 
 					<CountdownTimer
+						key={timerKey}
 						initialSeconds={60}
 						onComplete={handleTimerComplete}
 						isRunning={timerRunning}
-						onReset={handleTimerInitiatedResend}
+						onReset={handleResendCode}
 					/>
 				</div>
 
 				<LoadingButton
-					className="w-full bg-primary hover:bg-primary/80 text-white"
+					className="h-11 w-full rounded-lg bg-[#101828] text-sm font-semibold text-white hover:bg-black"
 					onClick={handleVerify}
 					isLoading={isVerifying}
 					loadingText="Verifying..."
